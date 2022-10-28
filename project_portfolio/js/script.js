@@ -1,13 +1,20 @@
 const hamburger = document.querySelector(".hamburger"),
   menu = document.querySelector(".menu"),
-  close = document.querySelector(".menu__close");
+  closeMenu = document.querySelector(".menu__close"),
+  links = menu.querySelectorAll(".menu__link");
 
 hamburger.addEventListener("click", () => {
   menu.classList.add("active");
 });
 
-close.addEventListener("click", () => {
+closeMenu.addEventListener("click", () => {
   menu.classList.remove("active");
+});
+
+links.forEach((link) => {
+  link.addEventListener("click", () => {
+    menu.classList.remove("active");
+  });
 });
 
 const counters = document.querySelectorAll(".skills__scales-number"),
