@@ -76,10 +76,13 @@ h2 {
     text-align: center;
     justify-content: center;
     align-items: center;
-    background-color: rgba(0, 255, 234, 0.3);
+    background-color: rgba(0, 255, 234, 0.4);
 }
 .js .project {
-    background-color: rgba(201, 255, 54, 0.3);
+    background-color: rgba(255, 252, 54, 0.4);
+}
+.libraries .project {
+    background-color: rgba(250, 164, 3, 0.5);
 }
 .project:hover {
     transform: scale(1.15);
