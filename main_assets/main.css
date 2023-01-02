@@ -58,6 +58,7 @@ h2 {
 .projects {
     margin: 0 20px 0 20px;
     display: grid;
+    grid-template-rows: 100px;
     gap: 20px;
     padding: 35px;
     background-color: rgba(255, 255, 255, 0.3);
@@ -84,10 +85,13 @@ h2 {
 .libraries .project {
     background-color: rgba(250, 164, 3, 0.5);
 }
+.react .project {
+    background-color: rgba(49, 82, 230, 0.5);
+}
 .project:hover {
-    transform: scale(1.15);
+    transform: scale(1.05);
     background-color: rgba(0, 255, 34, 0.4);
-    box-shadow: 0 5px 20px rgba(0, 12, 82, 0.5);
+    box-shadow: 0 5px 20px rgba(0, 12, 82, 0.75);
 }
 .project a {
     text-decoration: none;
