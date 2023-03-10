@@ -213,7 +213,6 @@ window.addEventListener("DOMContentLoaded", () => {
           .closest(".base__container_hero")
           .querySelector(".img__hero")
           .setAttribute("src", `${src.slice(0, -9)}.png`);
-        console.log(src.substring(src.length - 9));
       }
       if (sex == "woman" && src.substring(src.length - 9) !== "Woman.png") {
         // src = btn.closest(".base__container_hero").querySelector(".img__hero").getAttribute("src");
@@ -221,7 +220,6 @@ window.addEventListener("DOMContentLoaded", () => {
           .closest(".base__container_hero")
           .querySelector(".img__hero")
           .setAttribute("src", `${src.slice(0, -4)}Woman.png`);
-        console.log(src.substring(src.length - 9));
       }
     });
   });

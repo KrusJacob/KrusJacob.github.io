@@ -90,7 +90,6 @@ const skill = {
           // level_2 second
 
           dmg += talentRogue.levels.level_2.second.init(this.enemy);
-          console.log(dmg);
 
           this.enemy.hp -= dmg;
           const enemyDef = this.enemy.def;
@@ -124,7 +123,7 @@ const skill = {
           hero.critChance += finishBuff;
           hero.adapt += finishBuff;
           this.monkGates++;
-          console.log(this.monkGates, "gate");
+
           switch (this.monkGates) {
             case 1:
               addText(`1: Врата Начала открыты... +${finishBuff} к характеристикам `, "cyan");
@@ -159,7 +158,7 @@ const skill = {
             hero.critChance -= finishBuff;
             hero.adapt -= finishBuff;
             this.monkGates--;
-            console.log(this.monkGates, "gate");
+
             updateStats(".dodge", hero.dodge, true);
             updateStats(".critChance", hero.critChance, true);
             updateStats(".adapt", hero.adapt, true);

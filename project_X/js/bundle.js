@@ -1241,7 +1241,6 @@ function buff(hero) {
         hero[item][0] += Math.round(hero[item][0] * (buffObj.value.inc / 100));
         hero[item][1] += Math.round(hero[item][1] * (buffObj.value.inc / 100));
       } else {
-        console.log(hero[item], "hero item");
         const calcBuff = Math.round(hero[item] * (buffObj.value.inc / 100));
         hero[item] += calcBuff;
 
@@ -1401,8 +1400,6 @@ function calcHp(selector, numHp) {
     }
 
     totalHp.textContent = hpAtr;
-
-    // console.log(totalHp);
   }
 
   function setAttrHp(numHp) {
@@ -1489,7 +1486,6 @@ function searchEnemy(luck) {
 
   console.log(`${minLimit} - ${maxLimit}`);
   if (modLuck <= luck) {
-    console.log(`удача ${checkLuck} ${chanceGoldBox}`);
     chanceGoldBox++;
     return (0,_heroes__WEBPACK_IMPORTED_MODULE_0__["default"])("enemy", 0);
   } else {
@@ -2052,7 +2048,6 @@ function fight(target, assaulter, btnsHidden, btnReload, btnDisplay) {
     if (redDagger) {
       let chance = Math.floor(Math.random() * 100) + 1;
       if (chance <= 30) {
-        console.log(`Игнор брони${EnemyDef}`);
         return EnemyDef;
       } else {
         return 0;
@@ -2103,13 +2098,12 @@ function fight(target, assaulter, btnsHidden, btnReload, btnDisplay) {
   function fieryFist(hero, maxHPHero) {
     if (hero.hp < maxHPHero / (100 / 33)) {
       if (berserk === false) {
-        console.log("ЯРОСТЬ");
         berserk = true;
         return 30;
       }
     } else if (berserk === true) {
       berserk = false;
-      console.log("ярость пропала");
+
       return 0;
     }
     return 0;
@@ -2138,27 +2132,6 @@ function fight(target, assaulter, btnsHidden, btnReload, btnDisplay) {
   }
 
   _skills__WEBPACK_IMPORTED_MODULE_6__["default"].updateInform(target, maxHPHero);
-
-  function consoleName(name) {
-    console.log(name);
-  }
-
-  function useSkill() {
-    // assaulter.hp + 100 > maxHPHero ? (assaulter.hp = maxHPHero) : (assaulter.hp += 100);
-    // assaulter.hp += 100;
-    // target.hp = checkAttrHP(".enemy_hp");
-    if (target.hp > 0) {
-      if (target.hp <= 0) {
-        clearInterval(battleSetInterval);
-        // finishFight();
-      }
-      // mana -= 50;
-    }
-
-    (0,_calc_mp__WEBPACK_IMPORTED_MODULE_1__["default"])(assaulter.mana);
-    console.log(assaulter.hp);
-    console.log("хилка");
-  }
 
   function checkAttrHP(barHP) {
     return document.querySelector(barHP).getAttribute("data-current_hp");
@@ -2190,7 +2163,6 @@ function goldCoin(value, modificator) {
 
   if (modificator) {
     goldMod += +modificator;
-    console.log("мод золото");
   }
   getCoin(value);
 
@@ -2522,7 +2494,6 @@ function getParameter(selector, cardParametr) {
         (0,_update_stats__WEBPACK_IMPORTED_MODULE_0__["default"])(cardParametr, value);
       }
       if (parameter === "hpMax") {
-        console.log(maxHpHero);
         maxHpHero += +value;
         document.querySelector(".hero_hp").setAttribute("data-hp", maxHpHero);
         objHero.hp += value;
@@ -2532,12 +2503,11 @@ function getParameter(selector, cardParametr) {
         (0,_update_stats__WEBPACK_IMPORTED_MODULE_0__["default"])(".attackMin", value);
         (0,_update_stats__WEBPACK_IMPORTED_MODULE_0__["default"])(".attackMax", value);
       } else if (parameter === "hp") {
-        console.log("hp");
         objHero[parameter] += Math.round(maxHpHero / 4);
       } else {
         objHero[parameter] += value;
       }
-      console.log(price.textContent);
+
       updateHero(objHero, maxHpHero);
       (0,_calc_hp__WEBPACK_IMPORTED_MODULE_1__["default"])(".hero_hp", objHero.hp);
 
@@ -2671,7 +2641,6 @@ const skill = {
           // level_2 second
 
           dmg += _talents_talentsHeroes_rogue__WEBPACK_IMPORTED_MODULE_4__["default"].levels.level_2.second.init(this.enemy);
-          console.log(dmg);
 
           this.enemy.hp -= dmg;
           const enemyDef = this.enemy.def;
@@ -2705,7 +2674,7 @@ const skill = {
           hero.critChance += finishBuff;
           hero.adapt += finishBuff;
           this.monkGates++;
-          console.log(this.monkGates, "gate");
+
           switch (this.monkGates) {
             case 1:
               (0,_text__WEBPACK_IMPORTED_MODULE_0__["default"])(`1: Врата Начала открыты... +${finishBuff} к характеристикам `, "cyan");
@@ -2740,7 +2709,7 @@ const skill = {
             hero.critChance -= finishBuff;
             hero.adapt -= finishBuff;
             this.monkGates--;
-            console.log(this.monkGates, "gate");
+
             (0,_update_stats__WEBPACK_IMPORTED_MODULE_1__["default"])(".dodge", hero.dodge, true);
             (0,_update_stats__WEBPACK_IMPORTED_MODULE_1__["default"])(".critChance", hero.critChance, true);
             (0,_update_stats__WEBPACK_IMPORTED_MODULE_1__["default"])(".adapt", hero.adapt, true);
@@ -3197,7 +3166,7 @@ const coreTalents = {
                 "2: Увеличивает урон от Боевого крика на 20%",
                 "3: Увеличивает урон от Боевого крика на 25%",
               ],
-              img: "url(../../img/icons/talents/warrior/talent_warrior_1_1.png)",
+              img: "url(./img/icons/talents/warrior/talent_warrior_1_1.png)",
             },
           },
 
@@ -3205,12 +3174,12 @@ const coreTalents = {
             first: {
               title: "Оглушающий рев",
               descr: ["Боевой Крик оглушает противника на 1 ход и навсегда снижает его уклонение на 15%"],
-              img: "url(../../img/icons/talents/warrior/talent_warrior_2_1.png)",
+              img: "url(./img/icons/talents/warrior/talent_warrior_2_1.png)",
             },
             second: {
               title: "Защитная стойка",
               descr: ["Блок после Боевого Крика дополнительно уменьшает получаемый урон на 25%"],
-              img: "url(../../img/icons/talents/warrior/talent_warrior_2_2.png)",
+              img: "url(./img/icons/talents/warrior/talent_warrior_2_2.png)",
             },
           },
 
@@ -3222,12 +3191,12 @@ const coreTalents = {
                 "2: Боевой Крик восстанавливает 12.5% от макс.запаса здоровья ",
                 "3: Боевой Крик восстанавливает 15% от макс.запаса здоровья ",
               ],
-              img: "url(../../img/icons/talents/warrior/talent_warrior_3_1.png)",
+              img: "url(./img/icons/talents/warrior/talent_warrior_3_1.png)",
             },
             second: {
               title: "Укрепленный доспех",
               descr: ["1: Увеличивает защиту на 3", "2: Увеличивает защиту на 6", "3: Увеличивает защиту на 9"],
-              img: "url(../../img/icons/talents/warrior/talent_warrior_3_2.png)",
+              img: "url(./img/icons/talents/warrior/talent_warrior_3_2.png)",
             },
           },
         });
@@ -3242,7 +3211,7 @@ const coreTalents = {
                 "2: Увеличивает атаку на 5 и шанс крит.удара на 4%",
                 "3: Увеличивает атаку на 7 и шанс крит.удара на 5%",
               ],
-              img: "url(../../img/icons/talents/rogue/talent_rogue_1_1.png)",
+              img: "url(./img/icons/talents/rogue/talent_rogue_1_1.png)",
             },
           },
 
@@ -3250,12 +3219,12 @@ const coreTalents = {
             first: {
               title: "Сокрушение брони",
               descr: ["После Двойного удара ваши атаки игнорируют защиту врага на 100%"],
-              img: "url(../../img/icons/talents/rogue/talent_rogue_2_1.png)",
+              img: "url(./img/icons/talents/rogue/talent_rogue_2_1.png)",
             },
             second: {
               title: "Удар в сердце",
               descr: ["Двойной удар наносит дополнительно 12%(боссу: 6%) от макс.здоровья врага"],
-              img: "url(../../img/icons/talents/rogue/talent_rogue_2_2.png)",
+              img: "url(./img/icons/talents/rogue/talent_rogue_2_2.png)",
             },
           },
 
@@ -3266,7 +3235,7 @@ const coreTalents = {
                 "2: Двойной удар исцеляет на 30% от нанесенного урона",
                 "3: Двойной удар исцеляет на 35% от нанесенного урона",
               ],
-              img: "url(../../img/icons/talents/rogue/talent_rogue_3_1.png)",
+              img: "url(./img/icons/talents/rogue/talent_rogue_3_1.png)",
             },
             second: {
               descr: [
@@ -3274,7 +3243,7 @@ const coreTalents = {
                 "2: После Двойного удара уклонение повышается на 55% на 6 секунд",
                 "3: После Двойного удара уклонение повышается на 70% на 6 секунд",
               ],
-              img: "url(../../img/icons/talents/rogue/talent_rogue_3_2.png)",
+              img: "url(./img/icons/talents/rogue/talent_rogue_3_2.png)",
             },
           },
         });
@@ -3289,7 +3258,7 @@ const coreTalents = {
                 "2: Увеличивает атаку на 4. Даёт 40% шанс получить единицу маны при атаке",
                 "3: Увеличивает атаку на 6. Даёт 50% шанс получить единицу маны при атаке",
               ],
-              img: "url(../../img/icons/talents/monk/talent_monk_1_1.png)",
+              img: "url(./img/icons/talents/monk/talent_monk_1_1.png)",
             },
           },
 
@@ -3299,12 +3268,12 @@ const coreTalents = {
               descr: [
                 "Дает 33% шанс при уклонении героя, нанести врагу дополнительный удар, равный вашему уклонению",
               ],
-              img: "url(../../img/icons/talents/monk/talent_monk_2_1.png)",
+              img: "url(./img/icons/talents/monk/talent_monk_2_1.png)",
             },
             second: {
               title: "Стиль Тигра",
               descr: ["Дает 33% шанс при крит.ударе, нанести врагу дополнительный удар, равный вашей атаке"],
-              img: "url(../../img/icons/talents/monk/talent_monk_2_2.png)",
+              img: "url(./img/icons/talents/monk/talent_monk_2_2.png)",
             },
           },
 
@@ -3316,7 +3285,7 @@ const coreTalents = {
                 "2: Дает 7% шанс при атаке, нанести врагу урон 18%(боссу: 10%) от его макс.запаса здоровья и оглушить на 1 ход",
                 "3: Дает 8% шанс при атаке, нанести врагу урон 20%(боссу: 10%) от его макс.запаса здоровья и оглушить на 1 ход",
               ],
-              img: "url(../../img/icons/talents/monk/talent_monk_3_1.png)",
+              img: "url(./img/icons/talents/monk/talent_monk_3_1.png)",
             },
             second: {
               title: "Синергия чакр",
@@ -3325,7 +3294,7 @@ const coreTalents = {
                 "2: Увеличивает макс.запас здоровья и маны на 50, и регенерацию после боя на 20",
                 "3: Увеличивает макс.запас здоровья и маны на 65, и регенерацию после боя на 25",
               ],
-              img: "url(../../img/icons/talents/monk/talent_monk_3_2.png)",
+              img: "url(./img/icons/talents/monk/talent_monk_3_2.png)",
             },
           },
         });
@@ -3341,7 +3310,7 @@ const coreTalents = {
                 "2: После каждого боя герой воостанавливает 24 маны",
                 "3: После каждого боя герой воостанавливает 28 маны",
               ],
-              img: "url(../../img/icons/talents/jester/talent_jester_1_1.png)",
+              img: "url(./img/icons/talents/jester/talent_jester_1_1.png)",
             },
           },
 
@@ -3349,12 +3318,12 @@ const coreTalents = {
             first: {
               title: "Везучий тип",
               descr: ["Увеличивает удачу героя на 10"],
-              img: "url(../../img/icons/talents/jester/talent_jester_2_1.png)",
+              img: "url(./img/icons/talents/jester/talent_jester_2_1.png)",
             },
             second: {
               title: "С молотом наперевес",
               descr: ["Увеличивает атаку на 7, и шанс крит.удара на 7%"],
-              img: "url(../../img/icons/talents/jester/talent_jester_2_2.png)",
+              img: "url(./img/icons/talents/jester/talent_jester_2_2.png)",
             },
           },
 
@@ -3366,7 +3335,7 @@ const coreTalents = {
                 "2: Есть 60% шанс после использования способности, уменьшить атаку противника на 35% на 3 хода",
                 "3: Есть 70% шанс после использования способности, уменьшить атаку противника на 40% на 3 хода",
               ],
-              img: "url(../../img/icons/talents/jester/talent_jester_3_1.png)",
+              img: "url(./img/icons/talents/jester/talent_jester_3_1.png)",
             },
             second: {
               title: "Мухлёж",
@@ -3375,7 +3344,7 @@ const coreTalents = {
                 "2: Есть 20% шанс после использования способности восстановить 50 маны",
                 "3: Есть 22% шанс после использования способности восстановить 60 маны",
               ],
-              img: "url(../../img/icons/talents/jester/talent_jester_3_2.png)",
+              img: "url(./img/icons/talents/jester/talent_jester_3_2.png)",
             },
           },
         });
@@ -3390,7 +3359,7 @@ const coreTalents = {
                 "2: После использования способности, герой восстанавливает каждый ход 4% макс.запаса здоровья в течении 6 секунд",
                 "3: После использования способности, герой восстанавливает каждый ход 5% макс.запаса здоровья в течении 6 секунд",
               ],
-              img: "url(../../img/icons/talents/dryad/talent_dryad_1_1.png)",
+              img: "url(./img/icons/talents/dryad/talent_dryad_1_1.png)",
             },
           },
 
@@ -3398,12 +3367,12 @@ const coreTalents = {
             first: {
               title: "Знак дикой природы",
               descr: ["Увеличивает атаку на 7, защиту на 2 и адаптацию на 18%"],
-              img: "url(../../img/icons/talents/dryad/talent_dryad_2_1.png)",
+              img: "url(./img/icons/talents/dryad/talent_dryad_2_1.png)",
             },
             second: {
               title: "Бузиновый посох",
               descr: ["Урон от Вмешательства природы увеличен на 50%"],
-              img: "url(../../img/icons/talents/dryad/talent_dryad_2_2.png)",
+              img: "url(./img/icons/talents/dryad/talent_dryad_2_2.png)",
             },
           },
 
@@ -3415,7 +3384,7 @@ const coreTalents = {
                 "2: Вмешательства природы уменьшает получаемый урон на 50% на 2 хода",
                 "3: Вмешательства природы уменьшает получаемый урон на 60% на 2 хода",
               ],
-              img: "url(../../img/icons/talents/dryad/talent_dryad_3_1.png)",
+              img: "url(./img/icons/talents/dryad/talent_dryad_3_1.png)",
             },
             second: {
               title: "Наставление друида",
@@ -3424,7 +3393,7 @@ const coreTalents = {
                 "2: Увеличивает силу Магии на 6 и уменьшает на 10 стоимость маны: Вмешательства природы ",
                 "3: Увеличивает силу Магии на 8 и уменьшает на 15 стоимость маны: Вмешательства природы ",
               ],
-              img: "url(../../img/icons/talents/dryad/talent_dryad_3_2.png)",
+              img: "url(./img/icons/talents/dryad/talent_dryad_3_2.png)",
             },
           },
         });
@@ -3439,7 +3408,7 @@ const coreTalents = {
                 "2: С 18% шансом ваши атаки уменьшают защиту противника на 4, увеличивая вашу, на 2 хода",
                 "3: С 21% шансом ваши атаки уменьшают защиту противника на 5, увеличивая вашу, на 2 хода",
               ],
-              img: "url(../../img/icons/talents/mechanic/talent_mechanic_1_1.png)",
+              img: "url(./img/icons/talents/mechanic/talent_mechanic_1_1.png)",
             },
           },
 
@@ -3447,12 +3416,12 @@ const coreTalents = {
             first: {
               title: "Мозговой чип",
               descr: ["Режим Турбо дополнительно увеличивает адаптацию на 35%"],
-              img: "url(../../img/icons/talents/mechanic/talent_mechanic_2_1.png)",
+              img: "url(./img/icons/talents/mechanic/talent_mechanic_2_1.png)",
             },
             second: {
               title: "Экономия энергии",
               descr: ["Продлевает длительность Режима Турбо на 3 секунды"],
-              img: "url(../../img/icons/talents/mechanic/talent_mechanic_2_2.png)",
+              img: "url(./img/icons/talents/mechanic/talent_mechanic_2_2.png)",
             },
           },
 
@@ -3464,7 +3433,7 @@ const coreTalents = {
                 "2: Увеличивает уклонение на 8% и макс.запас здоровья на 40",
                 "3: Увеличивает уклонение на 10% и макс.запас здоровья на 50",
               ],
-              img: "url(../../img/icons/talents/mechanic/talent_mechanic_3_1.png)",
+              img: "url(./img/icons/talents/mechanic/talent_mechanic_3_1.png)",
             },
             second: {
               title: "Броне-пластины",
@@ -3473,7 +3442,7 @@ const coreTalents = {
                 "2: Режим Турбо дополнительно увеличивает защиту на 9",
                 "3: Режим Турбо дополнительно увеличивает защиту на 12",
               ],
-              img: "url(../../img/icons/talents/mechanic/talent_mechanic_3_2.png)",
+              img: "url(./img/icons/talents/mechanic/talent_mechanic_3_2.png)",
             },
           },
         });
@@ -3489,7 +3458,7 @@ const coreTalents = {
                 "2: Усиливает урон Чароплетсво на 20%",
                 "3: Усиливает урон Чароплетсво на 25%",
               ],
-              img: "url(../../img/icons/talents/witchmag/talent_witchmag_1_1.png)",
+              img: "url(./img/icons/talents/witchmag/talent_witchmag_1_1.png)",
             },
           },
 
@@ -3497,12 +3466,12 @@ const coreTalents = {
             first: {
               title: "Кража ресурсов",
               descr: ["Чароплетсво также крадет 3 маны каждый ход"],
-              img: "url(../../img/icons/talents/witchmag/talent_witchmag_2_1.png)",
+              img: "url(./img/icons/talents/witchmag/talent_witchmag_2_1.png)",
             },
             second: {
               title: "Глубокая связь",
               descr: ["Продлевает длительность Чароплетсво на 1 ход"],
-              img: "url(../../img/icons/talents/witchmag/talent_witchmag_2_2.png)",
+              img: "url(./img/icons/talents/witchmag/talent_witchmag_2_2.png)",
             },
           },
 
@@ -3514,7 +3483,7 @@ const coreTalents = {
                 "2: Атака пассивно усилена на 8, а во время Чароплетства еще на 8",
                 "3: Атака пассивно усилена на 10, а во время Чароплетства еще на 10",
               ],
-              img: "url(../../img/icons/talents/witchmag/talent_witchmag_3_1.png)",
+              img: "url(./img/icons/talents/witchmag/talent_witchmag_3_1.png)",
             },
             second: {
               title: "Смертельный ритуал",
@@ -3523,7 +3492,7 @@ const coreTalents = {
                 "2: После окончания Чароплетства враг получает 30%(боссу: 15%) от его макс.запаса здоровья",
                 "3: После окончания Чароплетства враг получает 35%(боссу: 17.5%) от его макс.запаса здоровья",
               ],
-              img: "url(../../img/icons/talents/witchmag/talent_witchmag_3_2.png)",
+              img: "url(./img/icons/talents/witchmag/talent_witchmag_3_2.png)",
             },
           },
         });
@@ -5184,7 +5153,6 @@ window.addEventListener("DOMContentLoaded", () => {
           .closest(".base__container_hero")
           .querySelector(".img__hero")
           .setAttribute("src", `${src.slice(0, -9)}.png`);
-        console.log(src.substring(src.length - 9));
       }
       if (sex == "woman" && src.substring(src.length - 9) !== "Woman.png") {
         // src = btn.closest(".base__container_hero").querySelector(".img__hero").getAttribute("src");
@@ -5192,7 +5160,6 @@ window.addEventListener("DOMContentLoaded", () => {
           .closest(".base__container_hero")
           .querySelector(".img__hero")
           .setAttribute("src", `${src.slice(0, -4)}Woman.png`);
-        console.log(src.substring(src.length - 9));
       }
     });
   });

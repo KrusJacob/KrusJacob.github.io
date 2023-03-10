@@ -517,7 +517,6 @@ function fight(target, assaulter, btnsHidden, btnReload, btnDisplay) {
     if (redDagger) {
       let chance = Math.floor(Math.random() * 100) + 1;
       if (chance <= 30) {
-        console.log(`Игнор брони${EnemyDef}`);
         return EnemyDef;
       } else {
         return 0;
@@ -568,13 +567,12 @@ function fight(target, assaulter, btnsHidden, btnReload, btnDisplay) {
   function fieryFist(hero, maxHPHero) {
     if (hero.hp < maxHPHero / (100 / 33)) {
       if (berserk === false) {
-        console.log("ЯРОСТЬ");
         berserk = true;
         return 30;
       }
     } else if (berserk === true) {
       berserk = false;
-      console.log("ярость пропала");
+
       return 0;
     }
     return 0;
@@ -603,27 +601,6 @@ function fight(target, assaulter, btnsHidden, btnReload, btnDisplay) {
   }
 
   skill.updateInform(target, maxHPHero);
-
-  function consoleName(name) {
-    console.log(name);
-  }
-
-  function useSkill() {
-    // assaulter.hp + 100 > maxHPHero ? (assaulter.hp = maxHPHero) : (assaulter.hp += 100);
-    // assaulter.hp += 100;
-    // target.hp = checkAttrHP(".enemy_hp");
-    if (target.hp > 0) {
-      if (target.hp <= 0) {
-        clearInterval(battleSetInterval);
-        // finishFight();
-      }
-      // mana -= 50;
-    }
-
-    calcMp(assaulter.mana);
-    console.log(assaulter.hp);
-    console.log("хилка");
-  }
 
   function checkAttrHP(barHP) {
     return document.querySelector(barHP).getAttribute("data-current_hp");

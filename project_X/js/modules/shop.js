@@ -38,7 +38,6 @@ function getParameter(selector, cardParametr) {
         updateStats(cardParametr, value);
       }
       if (parameter === "hpMax") {
-        console.log(maxHpHero);
         maxHpHero += +value;
         document.querySelector(".hero_hp").setAttribute("data-hp", maxHpHero);
         objHero.hp += value;
@@ -48,12 +47,11 @@ function getParameter(selector, cardParametr) {
         updateStats(".attackMin", value);
         updateStats(".attackMax", value);
       } else if (parameter === "hp") {
-        console.log("hp");
         objHero[parameter] += Math.round(maxHpHero / 4);
       } else {
         objHero[parameter] += value;
       }
-      console.log(price.textContent);
+
       updateHero(objHero, maxHpHero);
       calcHp(".hero_hp", objHero.hp);
 

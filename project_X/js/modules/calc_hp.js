@@ -31,8 +31,6 @@ function calcHp(selector, numHp) {
     }
 
     totalHp.textContent = hpAtr;
-
-    // console.log(totalHp);
   }
 
   function setAttrHp(numHp) {

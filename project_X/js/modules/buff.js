@@ -141,7 +141,6 @@ function buff(hero) {
         hero[item][0] += Math.round(hero[item][0] * (buffObj.value.inc / 100));
         hero[item][1] += Math.round(hero[item][1] * (buffObj.value.inc / 100));
       } else {
-        console.log(hero[item], "hero item");
         const calcBuff = Math.round(hero[item] * (buffObj.value.inc / 100));
         hero[item] += calcBuff;
 

@@ -6,7 +6,6 @@ function goldCoin(value, modificator) {
 
   if (modificator) {
     goldMod += +modificator;
-    console.log("мод золото");
   }
   getCoin(value);
 

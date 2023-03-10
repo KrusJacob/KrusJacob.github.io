@@ -9,7 +9,6 @@ function searchEnemy(luck) {
 
   console.log(`${minLimit} - ${maxLimit}`);
   if (modLuck <= luck) {
-    console.log(`удача ${checkLuck} ${chanceGoldBox}`);
     chanceGoldBox++;
     return createHeroes("enemy", 0);
   } else {
