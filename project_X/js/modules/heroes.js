@@ -94,7 +94,7 @@ function createHeroes(part, hero) {
       return new Enemy([21, 27], 370, 12, 10, 210, 1, 25, "guard", "img/enemy/guard.png", 17);
     },
     function stoneTroll() {
-      return new Enemy([24, 30], 350, 9, 20, 175, 15, 25, "stoneTroll", "img/enemy/stoneTroll.png", 19);
+      return new Enemy([24, 31], 350, 9, 20, 175, 15, 25, "stoneTroll", "img/enemy/stoneTroll.png", 19);
     },
     function trader() {
       return new Enemy([12, 15], 160, 1, 1, 150, 5, 1, "trader", "img/enemy/trader.png", 5);
@@ -124,61 +124,61 @@ function createHeroes(part, hero) {
       return new Enemy([42, 53], 380, 2, 40, 150, 40, 25, "dreamEater", "img/enemy/dreamEater.png", 34);
     },
     function giantZombie() {
-      return new Enemy([47, 54], 480, 10, 33, 175, 1, 15, "giantZombie", "img/enemy/giantZombie.png", 35);
+      return new Enemy([47, 54], 490, 10, 33, 175, 1, 15, "giantZombie", "img/enemy/giantZombie.png", 35);
     },
     function cyclops() {
-      return new Enemy([48, 58], 500, 7, 25, 175, 5, 3, "cyclops", "img/enemy/cyclops.png", 37);
+      return new Enemy([48, 58], 500, 8, 25, 175, 5, 3, "cyclops", "img/enemy/cyclops.png", 37);
     },
     function goldDragon() {
-      return new Enemy([50, 58], 480, 22, 20, 190, 10, 35, "goldDragon", "img/enemy/goldDragon.png", 110);
+      return new Enemy([50, 58], 480, 22, 20, 190, 10, 35, "goldDragon", "img/enemy/goldDragon.png", 100);
     },
     function SeaZombie() {
       return new Enemy([62, 70], 380, 4, 25, 215, 30, 20, "SeaZombie", "img/enemy/SeaZombie.png", 40);
     },
     function viking() {
-      return new Enemy([50, 58], 550, 12, 33, 150, 20, 25, "viking", "img/enemy/viking.png", 42);
+      return new Enemy([50, 58], 560, 12, 33, 150, 20, 25, "viking", "img/enemy/viking.png", 42);
     },
     function imps() {
       return new Enemy([48, 61], 450, 3, 45, 175, 55, 20, "imps", "img/enemy/imps.png", 45);
     },
     function titan() {
-      return new Enemy([54, 68], 670, 16, 20, 215, 1, 30, "titan", "img/enemy/titan.png", 47);
+      return new Enemy([54, 68], 680, 16, 20, 215, 1, 30, "titan", "img/enemy/titan.png", 47);
     },
     function masterOfMark() {
-      return new Enemy([57, 65], 530, 5, 25, 200, 35, 40, "masterOfMark", "img/enemy/masterOfMark.png", 50);
+      return new Enemy([57, 65], 530, 5, 25, 200, 35, 40, "masterOfMark", "img/enemy/masterOfMark.png", 49);
     },
     function diablo() {
-      return new Enemy([60, 69], 700, 20, 15, 200, 20, 35, "diablo", "img/enemy/diablo.png", 53);
+      return new Enemy([60, 71], 700, 20, 15, 200, 20, 35, "diablo", "img/enemy/diablo.png", 51);
     },
     function blackDragon() {
-      return new Enemy([67, 78], 590, 8, 35, 150, 40, 30, "blackDragon", "img/enemy/blackDragon.png", 56);
+      return new Enemy([67, 78], 600, 8, 35, 150, 40, 30, "blackDragon", "img/enemy/blackDragon.png", 54);
     },
     function stoneGiant() {
-      return new Enemy([56, 62], 850, 32, 10, 200, 1, 40, "stoneGiant", "img/enemy/stoneGiant.png", 59);
+      return new Enemy([56, 64], 860, 32, 10, 200, 1, 40, "stoneGiant", "img/enemy/stoneGiant.png", 57);
     },
     function evilMonster() {
-      return new Enemy([77, 87], 900, 15, 25, 200, 9, 25, "evilMonster", "img/enemy/evilMonster.png", 63);
+      return new Enemy([77, 89], 900, 15, 25, 200, 9, 25, "evilMonster", "img/enemy/evilMonster.png", 60);
     },
     function ghostKnight() {
-      return new Enemy([82, 92], 880, 24, 35, 150, 18, 30, "evilMonster", "img/enemy/ghostKnight.png", 67);
+      return new Enemy([82, 92], 880, 24, 35, 150, 18, 30, "evilMonster", "img/enemy/ghostKnight.png", 63);
     },
     function AncientButcher() {
-      return new Enemy([77, 87], 1050, 13, 20, 235, 8, 35, "AncientButcher", "img/enemy/AncientButcher.png", 72);
+      return new Enemy([77, 89], 1050, 13, 20, 235, 8, 35, "AncientButcher", "img/enemy/AncientButcher.png", 67);
     },
     function ermungand() {
-      return new Enemy([79, 91], 1150, 22, 33, 175, 20, 40, "ermungand", "img/enemy/ermungand.png", 77);
+      return new Enemy([79, 91], 1150, 23, 33, 175, 20, 40, "ermungand", "img/enemy/ermungand.png", 71);
     },
     function devourer() {
-      return new Enemy([86, 96], 1400, 13, 20, 200, 5, 40, "devourer", "img/enemy/devourer.png", 83);
+      return new Enemy([86, 96], 1400, 13, 20, 200, 5, 45, "devourer", "img/enemy/devourer.png", 75);
     },
     function demon() {
-      return new Enemy([91, 100], 1400, 12, 10, 150, 10, 45, "demon", "img/enemy/demon.png", 88);
+      return new Enemy([91, 100], 1400, 12, 10, 150, 10, 45, "demon", "img/enemy/demon.png", 80);
     },
     function devil() {
-      return new Enemy([100, 115], 1400, 8, 35, 215, 35, 50, "devil", "img/enemy/devil.png", 94);
+      return new Enemy([100, 115], 1400, 8, 35, 215, 35, 50, "devil", "img/enemy/devil.png", 86);
     },
     function angelFighter() {
-      return new Enemy([95, 115], 1555, 15, 55, 155, 55, 55, "angelFighter", "img/enemy/angelFighter.png", 100);
+      return new Enemy([95, 115], 1555, 15, 55, 155, 55, 55, "angelFighter", "img/enemy/angelFighter.png", 93);
     },
     function death() {
       return new Enemy([180, 190], 2077, 12, 70, 300, 45, 99, "death", "img/enemy/death.png", 120);

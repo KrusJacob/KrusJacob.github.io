@@ -617,7 +617,6 @@ function getXp(hero, guarantLegendArt = false, boss = false) {
       case "thunderHammer":
         incAttackHero(5, 5);
         incSecondaryStatHero("magicPower", 5);
-
         hero.thunderHammer = true;
         alert("вы получили Громовой Молот");
         break;

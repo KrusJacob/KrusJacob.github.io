@@ -86,7 +86,7 @@ const skill = {
       case "rogue":
         if (hero.hp > 0 && this.enemy.hp > 0 && mana >= this.manaCost.rogue) {
           let buffmagicPower = hero.magicPower * 0.01 + 1;
-          let dmg = Math.round(30 + (hero.attack[0] + hero.attack[1]) * 0.6 * buffmagicPower);
+          let dmg = Math.round(25 + (hero.attack[0] + hero.attack[1]) * 0.6 * buffmagicPower);
           // level_2 second
 
           dmg += talentRogue.levels.level_2.second.init(this.enemy);
@@ -175,12 +175,12 @@ const skill = {
           let chance = Math.random() * 100 + 1 + bonusChance;
           if (chance <= 33) {
             let bonus = hero.luck * 1.25;
-            let heal = 35 + Math.round((this.maxHPHero / 12 + bonus) * buffmagicPower);
+            let heal = 35 + Math.round((this.maxHPHero / 13 + bonus) * buffmagicPower);
             hero.hp + heal > this.maxHPHero ? (hero.hp = this.maxHPHero) : (hero.hp += heal);
             addText(`карта:Валет, вы исцеляетесь на ${heal}`, "cyan");
           } else if (chance > 33 && chance <= 58) {
             let bonus = hero.luck * 1.35;
-            let dmg = 35 + Math.round((this.enemy.hp / 11 + bonus) * buffmagicPower);
+            let dmg = 35 + Math.round((this.enemy.hp / 12 + bonus) * buffmagicPower);
             this.enemy.hp -= dmg;
             addText(`карта:Дама, вы наносите врагу ${dmg} урона`, "cyan");
           } else if (chance > 58 && chance <= 77) {
@@ -195,16 +195,16 @@ const skill = {
             }, duration);
           } else if (chance > 77 && chance <= 95) {
             let bonus = hero.luck * 1.45;
-            let dmgHeal = 35 + Math.round((this.enemy.hp / 16 + bonus) * buffmagicPower);
+            let dmgHeal = 45 + Math.round((this.enemy.hp / 17 + bonus) * buffmagicPower);
             hero.hp + dmgHeal > this.maxHPHero ? (hero.hp = this.maxHPHero) : (hero.hp += dmgHeal);
             this.enemy.hp -= dmgHeal;
             addText(`Карта:Туз, вы наносите врагу ${dmgHeal} урона и исцеляетесь`, "cyan");
           } else if (chance > 95) {
             let bonus = hero.luck * 1.6;
-            let dmg = 35 + Math.round((this.maxHPHero / 13 + bonus) * buffmagicPower);
+            let dmg = 40 + Math.round((this.maxHPHero / 14 + bonus) * buffmagicPower);
             this.enemy.hp -= dmg;
             if (this.enemy.hp <= 0) {
-              let heal = 35 + Math.round(this.maxHPHero / 13 + bonus);
+              let heal = 40 + Math.round(this.maxHPHero / 14 + bonus);
               hero.hp + heal > this.maxHPHero ? (hero.hp = this.maxHPHero) : (hero.hp += heal);
               mana += 50;
             }

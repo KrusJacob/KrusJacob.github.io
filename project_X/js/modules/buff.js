@@ -105,13 +105,13 @@ const arrBuffs = [
   },
   {
     name: "adapt-magicPower",
-    title: "Метка Зубра",
+    title: "Метка Хамелеона",
     descr: `Адаптация + 9% <br> Сила Магии + 9%`,
     value: { inc: 9, percent: true, buff: ["adapt", "magicPower"], selector: [".adapt", ".magicPower"] },
   },
   {
     name: "luck-magicPower",
-    title: "Метка Зубра",
+    title: "Метка Журавля",
     descr: `Удача + 9% <br> Сила Магии + 9%`,
     value: { inc: 9, percent: true, buff: ["luck", "magicPower"], selector: [".luck", ".magicPower"] },
   },

@@ -13,14 +13,3 @@ function addText(text, color) {
 }
 
 export default addText;
-
-// const level = item.getAttribute("level");
-//               const branch = item.getAttribute("branch");
-
-//               unlocksTalents: {
-//                 level_1_1: true,
-//                 level_2_1: false,
-//                 level_2_2: false,
-//                 level_3_1: false
-//                 level_3_2: false
-//               },
