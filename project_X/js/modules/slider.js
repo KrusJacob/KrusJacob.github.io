@@ -1,3 +1,5 @@
+import musicAction from "./audio/audio";
+
 const sliderHero = (slides, prev, next) => {
   const slidesElem = document.querySelectorAll(slides),
     arrowPrev = document.querySelector(prev),
@@ -27,12 +29,14 @@ const sliderHero = (slides, prev, next) => {
     slidesElem[slideIndex].classList.add("hidden");
     slidesElem[slideIndex + 4].classList.remove("hidden");
     plusSlide(1);
+    musicAction("clickSliderArrow");
   });
 
   arrowPrev.addEventListener("click", () => {
     plusSlide(-1);
     slidesElem[slideIndex].classList.remove("hidden");
     slidesElem[slideIndex + 4].classList.add("hidden");
+    musicAction("clickSliderArrow");
   });
 };
 

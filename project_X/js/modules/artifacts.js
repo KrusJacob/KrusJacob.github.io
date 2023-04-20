@@ -36,6 +36,7 @@ const artifacts = [
   "potion_Hp_Mp",
   "magicBook",
   "staffOfHealing",
+  "emblemDragon",
 ];
 const artifactsLegends = [
   "goldSword",
@@ -135,6 +136,14 @@ function getXp(hero, guarantLegendArt = false, boss = false) {
 
   function getSrcImgArt(art) {
     switch (art) {
+      case "emblemDragon":
+        return {
+          name: "emblemDragon",
+          src: "img/artifacts/emblemDragon.png",
+          rarity: "royalblue",
+          title: "Эмблема Дракона",
+          descr: "При получении крит.удара, увеличивает защиту и атаку на 5 в течении 3 ходов",
+        };
       case "thunderHammer":
         return {
           name: "thunderHammer",
@@ -405,8 +414,7 @@ function getXp(hero, guarantLegendArt = false, boss = false) {
           src: "img/artifacts/fieryHand.png",
           rarity: "gold",
           title: "Огненная Кожа",
-          descr:
-            "Увеличивает защиту на 3, также при получении урона есть шанс нанести часть этого урона в противника",
+          descr: "Увеличивает защиту на 3, также при получении урона есть шанс вернуть часть урона в противника",
         };
       case "shieldAndSword":
         return {
@@ -592,8 +600,8 @@ function getXp(hero, guarantLegendArt = false, boss = false) {
   }
 
   function useArtifact(art, hero) {
-    let hpMax = document.querySelector(".hero_hp").getAttribute("data-hp");
-    let mpMax = document.querySelector(".hero_mp").getAttribute("data-mp");
+    let hpMax = +document.querySelector(".hero_hp").getAttribute("data-hp");
+    let mpMax = +document.querySelector(".hero_mp").getAttribute("data-mp");
 
     function icnMaxHPHero(hpMax, value) {
       hpMax = +hpMax + value;
@@ -614,6 +622,10 @@ function getXp(hero, guarantLegendArt = false, boss = false) {
     }
 
     switch (art) {
+      case "emblemDragon":
+        hero.emblemDragon = true;
+        alert("вы получили Эмблему Дракона");
+        break;
       case "thunderHammer":
         incAttackHero(5, 5);
         incSecondaryStatHero("magicPower", 5);
@@ -845,7 +857,7 @@ function getXp(hero, guarantLegendArt = false, boss = false) {
 
         break;
       case "flacon":
-        hero.hp = hpMax;
+        hero.hp = +hpMax;
         hero.regeneration += 20;
         calcHp(".hero_hp", hero.hp);
         alert("вы получили Флакон Здоровья");

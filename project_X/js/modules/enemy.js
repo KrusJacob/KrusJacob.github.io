@@ -14,11 +14,11 @@ function searchEnemy(luck) {
   } else {
     // const enemyNum = Math.floor(Math.random() * (0 - difficulty + 1)) + difficulty;
     const enemyNum = Math.floor(minLimit + Math.random() * (maxLimit + 1 - minLimit));
-    if (maxLimit < createHeroes("count")) {
+    if (maxLimit <= createHeroes("count") - 1) {
       // maxLimit += 1;
       maxLimit += 0.75;
     }
-    if (minLimit < createHeroes("count") - 2) {
+    if (minLimit <= createHeroes("count") - 3) {
       // minLimit += 0.5;
       minLimit += 0.7;
     }

@@ -6,6 +6,15 @@ import goldCoin from "./gold_coin";
 import updateStats from "./update_stats";
 import skill from "./skills";
 import buff from "./buff";
+import { critPowerMod, critСhanceMod, dodgeMod, defMod, adaptMod } from "./mods/mods";
+
+import AudioAction from "./audio/audio";
+
+//
+
+//
+
+import changeBg from "./changeBg";
 
 let mana = 0;
 
@@ -18,11 +27,11 @@ const textRaidLvl = document.querySelector(".text__raid span");
 
 let enemyCount = 0;
 
-const critPowerMod = (critPower) => Math.round(critPower * 0.85);
-const critСhanceMod = (critChance) => Math.round(critChance * 0.85);
-const dodgeMod = (dodge) => Math.round(dodge * 0.85);
-const defMod = (def) => Math.round(def * 0.85);
-const adaptMod = (adapt) => Math.round(adapt * 0.35);
+// const critPowerMod = (critPower) => Math.round(critPower * 0.85);
+// const critСhanceMod = (critChance) => Math.round(critChance * 0.85);
+// const dodgeMod = (dodge) => Math.round(dodge * 0.85);
+// const defMod = (def) => Math.round(def * 0.8);
+// const adaptMod = (adapt) => Math.round(adapt * 0.35);
 
 function fight(target, assaulter, btnsHidden, btnReload, btnDisplay) {
   let maxHPHero = +document.querySelector(".hero_hp").getAttribute("data-hp");
@@ -92,11 +101,16 @@ function fight(target, assaulter, btnsHidden, btnReload, btnDisplay) {
       return;
     }
     if (ObjDmg === "Промах") {
+      // AudioAction("missAttack");
+      assaulter.audio.miss();
       addText("Промах!", "orange");
       comboMechanic = 0;
 
       assaulter.swordKingHell ? swordKingHell(assaulter, target) : null;
     } else {
+      // ObjDmg.crit ? AudioAction("swordCrit") : AudioAction("swordStrike");
+      ObjDmg.crit ? assaulter.audio.crit() : assaulter.audio.attack();
+      // musicAction("warriorStrike");
       let dmgHeroNum = ObjDmg.dmg;
       dmgHeroNum += redDagger(assaulter.redDagger, target.def);
       dmgHeroNum = CountComboMechanic(assaulter.name, dmgHeroNum) + buffAttack;
@@ -109,8 +123,6 @@ function fight(target, assaulter, btnsHidden, btnReload, btnDisplay) {
       assaulter.name == "mechanic" && assaulter.mechanicMaster
         ? assaulter.mechanicMaster(assaulter, target)
         : null;
-
-      console.log(target.def);
 
       target.hp -= dmgHeroNum;
       touchOfDeath(assaulter, target);
@@ -135,6 +147,7 @@ function fight(target, assaulter, btnsHidden, btnReload, btnDisplay) {
       if (assaulter.mana < maxMP) {
         assaulter.bonusMP ? (assaulter.mana += manaRegen + assaulter.bonusMP) : (assaulter.mana += manaRegen);
         ObjDmg.crit && assaulter.frostsword ? (assaulter.mana += 2) : null;
+        // assaulter.name == "mage" ? (assaulter.mana += 1) : null;
 
         // monk level_1 first
         if (assaulter.name == "monk" && assaulter.monkSnakeStrikes) {
@@ -158,6 +171,11 @@ function fight(target, assaulter, btnsHidden, btnReload, btnDisplay) {
       addText(`Вы нанесли${ObjDmg.crit} ${dmgHeroNum} урона`, "yellow");
     }
 
+    // specificity mage
+    if (assaulter.mana < maxMP && assaulter.name == "mage") {
+      assaulter.mana += 1;
+      calcMp(assaulter.mana);
+    }
     staffOmbalStep++;
 
     setTimeout(() => {
@@ -171,12 +189,17 @@ function fight(target, assaulter, btnsHidden, btnReload, btnDisplay) {
         return;
       }
       if (ObjDmgEnemy === "Промах") {
+        musicAction("missAttack");
         addText("Вы увернулись", "green");
 
         assaulter.robberyCloak ? robberyCloak(assaulter) : null;
         // monk level_2 first
         assaulter.name == "monk" && assaulter.monkMantis ? monkMantis(assaulter, target) : null;
+        // mage level_3 first
+        assaulter.name == "mage" && assaulter.mageSkillMage ? mageSkillMage(assaulter) : null;
       } else {
+        ObjDmgEnemy.crit ? assaulter.audio.getCrit() : assaulter.audio.getDemage();
+
         let dmgEnemyNum = Math.round(ObjDmgEnemy.dmg * target.multiplierDmg);
 
         if (assaulter.block) {
@@ -191,8 +214,39 @@ function fight(target, assaulter, btnsHidden, btnReload, btnDisplay) {
           dmgEnemyNum = sphereDM(assaulter, dmgEnemyNum);
         }
 
-        assaulter.hp -= dmgEnemyNum;
-        calcHp(".hero_hp", assaulter.hp);
+        // barrier
+
+        if (assaulter.barrier) {
+          if (assaulter.barrier - dmgEnemyNum > 0) {
+            assaulter.barrier -= dmgEnemyNum;
+            addText(`Ледяной щит поглотил ${dmgEnemyNum} урона. Прочность: ${assaulter.barrier}`, "aqua");
+            dmgEnemyNum = 0;
+          } else {
+            dmgEnemyNum = -(assaulter.barrier - dmgEnemyNum);
+            assaulter.hp -= dmgEnemyNum;
+            calcHp(".hero_hp", assaulter.hp);
+            addText(`Ледяной щит поглотил ${assaulter.barrier} урона и был разбит`, "aqua");
+            assaulter.barrier = 0;
+            assaulter.absorbDamage = 0;
+            assaulter.mageOnIceShield = false;
+          }
+          // mage level_2 first
+          if (assaulter.name == "mage" && assaulter.mageShieldReflect) {
+            target.hp -= assaulter.mageShieldReflect();
+            calcHp(".enemy_hp", target.hp);
+          }
+        } else {
+          assaulter.hp -= dmgEnemyNum;
+          calcHp(".hero_hp", assaulter.hp);
+        }
+
+        // mage level_3 first
+        ObjDmgEnemy.crit && assaulter.name == "mage" && assaulter.mageSkillMage ? mageSkillMage(assaulter) : null;
+
+        ObjDmgEnemy.crit && assaulter.emblemDragon ? emblemDragon(assaulter) : null;
+
+        // assaulter.hp -= dmgEnemyNum;
+        // calcHp(".hero_hp", assaulter.hp);
 
         if (assaulter.reflect) {
           target.hp -= fieryHand(dmgEnemyNum);
@@ -204,7 +258,7 @@ function fight(target, assaulter, btnsHidden, btnReload, btnDisplay) {
         }
 
         if (assaulter.fieryFist) {
-          buffAttack += fieryFist(assaulter, maxHPHero);
+          buffAttack = fieryFist(assaulter, maxHPHero);
         }
 
         if (assaulter.hp <= 0) {
@@ -262,6 +316,12 @@ function fight(target, assaulter, btnsHidden, btnReload, btnDisplay) {
       }
       calcMp(assaulter.mana);
     }, 900);
+
+    // mage level_3 second
+    if (assaulter.name == "mage" && assaulter.magePotionsCooking) {
+      assaulter.magePotionsCooking();
+    }
+
     checkNameEnemy(target, assaulter);
     setTimeout(() => {
       btnsHidden.forEach((btn) => {
@@ -317,6 +377,11 @@ function fight(target, assaulter, btnsHidden, btnReload, btnDisplay) {
     return dmg;
   }
 
+  // mage level_3 first
+  function mageSkillMage(hero) {
+    hero.mageSkillMage();
+  }
+
   // monk level_2 first
   function monkMantis(hero, enemy) {
     let dmgMantis = hero.monkMantis(hero.dodge);
@@ -352,7 +417,6 @@ function fight(target, assaulter, btnsHidden, btnReload, btnDisplay) {
   }
 
   function healHP(hero) {
-    console.log(hero.lvl);
     let extraHP = 35;
     if (hero.regeneration) {
       extraHP += hero.regeneration;
@@ -376,6 +440,23 @@ function fight(target, assaulter, btnsHidden, btnReload, btnDisplay) {
   }
 
   // Артефакты
+
+  function emblemDragon(hero) {
+    hero.attack[0] += 5;
+    hero.attack[1] += 5;
+    hero.def += 5;
+    updateStats(".attackMin", hero.attackMin, true);
+    updateStats(".attackMax", hero.attackMax, true);
+    updateStats(".def", hero.def, true);
+    setTimeout(() => {
+      hero.attack[0] -= 5;
+      hero.attack[1] -= 5;
+      hero.def -= 5;
+      updateStats(".attackMin", hero.attackMin, true);
+      updateStats(".attackMax", hero.attackMax, true);
+      updateStats(".def", hero.def, true);
+    }, 6000);
+  }
 
   function thunderHammer(hero, enemy) {
     if (hero.thunderHammer) {
@@ -566,14 +647,8 @@ function fight(target, assaulter, btnsHidden, btnReload, btnDisplay) {
 
   function fieryFist(hero, maxHPHero) {
     if (hero.hp < maxHPHero / (100 / 33)) {
-      if (berserk === false) {
-        berserk = true;
-        return 30;
-      }
-    } else if (berserk === true) {
-      berserk = false;
-
-      return 0;
+      console.log("берсерк");
+      return 30;
     }
     return 0;
   }

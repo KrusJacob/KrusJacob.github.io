@@ -7,6 +7,9 @@ import talentJester from "./talents/talentsHeroes/jester";
 import talentDryad from "./talents/talentsHeroes/dryad";
 import talentMechanic from "./talents/talentsHeroes/mechanic";
 import talentWitchmag from "./talents/talentsHeroes/witchmage";
+import talentMage from "./talents/talentsHeroes/mage";
+
+import { critPowerMod, critСhanceMod, adaptMod } from "./mods/mods";
 
 // Воин
 // урон + защита
@@ -37,13 +40,15 @@ const skill = {
     // jester: 5,
     dryad: 90,
     // dryad: 40,
-    mechanic: 75,
+    mechanic: 70,
     witchmag: 70,
+    mage: 30,
   },
 
   enemy: {},
   maxHPHero: 0,
   monkGates: 0,
+  onIceShield: false,
 
   skills: function (hero, mana) {
     // target.hp = +document.querySelector(".enemy_hp").getAttribute("data-current_hp");
@@ -115,7 +120,7 @@ const skill = {
       case "monk":
         if (hero.hp > 0 && this.enemy.hp > 0 && mana >= this.manaCost.monk) {
           let buffmagicPower = hero.magicPower * 0.011 + 1;
-          const initBuffStats = Math.round(11 * buffmagicPower);
+          const initBuffStats = Math.round(10 * buffmagicPower);
           const buffOfGate = Math.round(this.monkGates * 1.75);
           const finishBuff = initBuffStats + buffOfGate;
 
@@ -252,7 +257,7 @@ const skill = {
           const buffMinAttack = Math.round(hero.attack[0] * (buffAttack / 100));
           const buffMaxAttack = Math.round(hero.attack[1] * (buffAttack / 100));
           const buffDefTalent = talentMechanic.levels.level_3.second.init();
-          const buffDef = Math.round((hero.def * 0.2 + 5 + buffDefTalent) * buffmagicPower);
+          const buffDef = Math.round((hero.def * 0.2 + 6 + buffDefTalent) * buffmagicPower);
           const buffAdapt = 30 + talentMechanic.levels.level_2.first.init();
           const duration = Math.round(8000 + talentMechanic.levels.level_2.second.init());
           hero.def += buffDef;
@@ -285,11 +290,11 @@ const skill = {
 
       case "witchmag":
         if (hero.hp > 0 && this.enemy.hp > 0 && mana >= this.manaCost.witchmag) {
-          let buffmagicPower = hero.magicPower * 0.02 + 1;
+          let buffmagicPower = hero.magicPower * 0.018 + 1;
 
           // level_1 first
           const factorDmg = talentWitchmag.levels.level_1.first.init();
-          let dmg = 16 + Math.round((this.enemy.maxHPEnemy / 55) * buffmagicPower * factorDmg);
+          let dmg = 17 + Math.round((this.enemy.maxHPEnemy / 60) * buffmagicPower * factorDmg);
 
           // level_2 second
           const duration = talentWitchmag.levels.level_2.second.init();
@@ -322,6 +327,54 @@ const skill = {
           }, 150);
 
           mana -= this.manaCost.witchmag;
+        }
+        return [mana, this.enemy.hp];
+
+      case "mage":
+        if (hero.hp > 0 && this.enemy.hp > 0 && mana >= this.manaCost.mage) {
+          let buffmagicPower = hero.magicPower * 0.026 + 1;
+
+          const fireBoll = () => {
+            let dmg = Math.round(5 + (35 + hero.lvl) * buffmagicPower);
+            const сheckCrit = Math.round(Math.random() * 100) + 1;
+            if (сheckCrit <= critСhanceMod(hero.critChance) - adaptMod(this.enemy.adapt)) {
+              dmg = Math.round(dmg * (critPowerMod(hero.critPower) / 100));
+              this.enemy.hp -= dmg;
+              addText(`Вы запускаете огромный огненный шар во врага, нанося ${dmg} урона`, "cyan");
+            } else {
+              this.enemy.hp -= dmg;
+              addText(`Вы запускаете огненный шар во врага, нанося ${dmg} урона`, "cyan");
+            }
+            // mage level_2 second
+            talentMage.levels.level_2.second.init(hero, this.enemy);
+          };
+          const iceShield = () => {
+            hero.absorbDamage = 25;
+            hero.barrier = Math.round(5 + (hero.magicPower + hero.lvl) * 1.1);
+            hero.mageOnIceShield = true;
+            addText(`Вы создаете ледяной щит. Прочность: ${hero.barrier}`, "cyan");
+            // setTimeout(() => {
+            //   hero.absorbDamage = 0;
+            //   hero.mageOnIceShield = false;
+            // }, 8000);
+          };
+          const thunderСlap = () => {
+            const сheckCrit = Math.round(Math.random() * 100) + 1;
+            let dmg = Math.round((25 + hero.lvl) * buffmagicPower);
+            if (сheckCrit <= critСhanceMod(hero.critChance) - adaptMod(this.enemy.adapt)) {
+              dmg = Math.round(dmg * (critPowerMod(hero.critPower) / 100));
+              this.enemy.hp -= dmg;
+              addText(`Вы паражаете врага серией ударов молнии, нанося ${dmg} урона и оглушая на 1 ход`, "cyan");
+            } else {
+              this.enemy.hp -= dmg;
+              addText(`Вы паражаете врага ударом молнии, нанося ${dmg} урона и оглушая на 1 ход`, "cyan");
+            }
+            this.enemy.stun = true;
+          };
+
+          hero.hp > this.maxHPHero / 2 ? fireBoll() : hero.mageOnIceShield ? thunderСlap() : iceShield();
+
+          mana -= this.manaCost.mage;
         }
         return [mana, this.enemy.hp];
     }

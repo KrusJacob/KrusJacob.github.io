@@ -16,7 +16,7 @@ const talentJester = {
             let bonusMana = 0;
             switch (this.amount) {
               case 1: {
-                bonusMana = 18;
+                bonusMana = 20;
                 break;
               }
               case 2: {

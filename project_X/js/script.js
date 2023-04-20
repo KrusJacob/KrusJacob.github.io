@@ -9,12 +9,16 @@ import shop from "./modules/shop";
 import { updateHero } from "./modules/shop";
 import accordion from "./modules/talents/accordion";
 import coreTalents from "./modules/talents/core-talents";
+import changeBg from "./modules/changeBg";
+import playAudio from "./modules/audio/audio";
+import AudioAction, { setAudioToHero } from "./modules/audio/audio";
 
 window.addEventListener("DOMContentLoaded", () => {
   let hero;
   let maxHpHero;
   let maxMpHero;
   let enemy;
+  let sex = "man";
 
   //
   const btnStart = document.querySelector(".btn__start");
@@ -23,6 +27,9 @@ window.addEventListener("DOMContentLoaded", () => {
   btnStart.addEventListener("click", () => {
     content.classList.add("show", "fade");
     btnStart.remove();
+
+    AudioAction("background", "loop");
+    AudioAction("background");
   });
 
   //
@@ -67,6 +74,7 @@ window.addEventListener("DOMContentLoaded", () => {
     btn.addEventListener("click", (e) => {
       e.stopPropagation();
       const atr = e.target.closest(".base__container_hero").getAttribute("data");
+      sex = e.target.closest(".base__container_hero").getAttribute("sex");
       bars.classList.remove("hidden");
       allHeroes.forEach((item) => {
         item.classList.add("hidden");
@@ -92,6 +100,7 @@ window.addEventListener("DOMContentLoaded", () => {
       calcHp(".hero_hp", maxHpHero);
 
       hero.boss = 0;
+      hero.sex = sex;
 
       mpHero.setAttribute("data-mp", hero.mp);
       maxMpHero = mpHero.getAttribute("data-mp");
@@ -99,6 +108,14 @@ window.addEventListener("DOMContentLoaded", () => {
 
       coreTalents.init(hero);
 
+      //
+
+      AudioAction("heroChosen");
+      AudioAction("background", "stop");
+
+      setAudioToHero(hero);
+
+      //
       // buff();
     });
   });
@@ -114,7 +131,10 @@ window.addEventListener("DOMContentLoaded", () => {
   const btnSkill = document.querySelector(".btn__skill");
   btnGo.addEventListener("click", () => {
     enemy = searchEnemy(hero.luck);
+
     createEnemy();
+
+    changeBg(enemy.name);
   });
 
   btnFight.addEventListener("click", () => {
@@ -213,6 +233,8 @@ window.addEventListener("DOMContentLoaded", () => {
           .closest(".base__container_hero")
           .querySelector(".img__hero")
           .setAttribute("src", `${src.slice(0, -9)}.png`);
+
+        btn.closest(".base__container_hero").setAttribute("sex", "man");
       }
       if (sex == "woman" && src.substring(src.length - 9) !== "Woman.png") {
         // src = btn.closest(".base__container_hero").querySelector(".img__hero").getAttribute("src");
@@ -220,7 +242,10 @@ window.addEventListener("DOMContentLoaded", () => {
           .closest(".base__container_hero")
           .querySelector(".img__hero")
           .setAttribute("src", `${src.slice(0, -4)}Woman.png`);
+
+        btn.closest(".base__container_hero").setAttribute("sex", "woman");
       }
+      console.log(sex);
     });
   });
 });

@@ -18,17 +18,17 @@ const talentMechanic = {
             let decDef = 0;
             switch (this.amount) {
               case 1: {
-                chance = 15;
+                chance = 17;
                 decDef = 3;
                 break;
               }
               case 2: {
-                chance = 18;
+                chance = 20;
                 decDef = 4;
                 break;
               }
               case 3: {
-                chance = 21;
+                chance = 23;
                 decDef = 5;
                 break;
               }
@@ -64,7 +64,7 @@ const talentMechanic = {
         amount: 0,
         init: function () {
           if (this.learn) {
-            return 35;
+            return 40;
           } else {
             return 0;
           }

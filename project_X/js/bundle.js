@@ -56,6 +56,7 @@ const artifacts = [
   "potion_Hp_Mp",
   "magicBook",
   "staffOfHealing",
+  "emblemDragon",
 ];
 const artifactsLegends = [
   "goldSword",
@@ -155,6 +156,14 @@ function getXp(hero, guarantLegendArt = false, boss = false) {
 
   function getSrcImgArt(art) {
     switch (art) {
+      case "emblemDragon":
+        return {
+          name: "emblemDragon",
+          src: "img/artifacts/emblemDragon.png",
+          rarity: "royalblue",
+          title: "Эмблема Дракона",
+          descr: "При получении крит.удара, увеличивает защиту и атаку на 5 в течении 3 ходов",
+        };
       case "thunderHammer":
         return {
           name: "thunderHammer",
@@ -425,8 +434,7 @@ function getXp(hero, guarantLegendArt = false, boss = false) {
           src: "img/artifacts/fieryHand.png",
           rarity: "gold",
           title: "Огненная Кожа",
-          descr:
-            "Увеличивает защиту на 3, также при получении урона есть шанс нанести часть этого урона в противника",
+          descr: "Увеличивает защиту на 3, также при получении урона есть шанс вернуть часть урона в противника",
         };
       case "shieldAndSword":
         return {
@@ -612,8 +620,8 @@ function getXp(hero, guarantLegendArt = false, boss = false) {
   }
 
   function useArtifact(art, hero) {
-    let hpMax = document.querySelector(".hero_hp").getAttribute("data-hp");
-    let mpMax = document.querySelector(".hero_mp").getAttribute("data-mp");
+    let hpMax = +document.querySelector(".hero_hp").getAttribute("data-hp");
+    let mpMax = +document.querySelector(".hero_mp").getAttribute("data-mp");
 
     function icnMaxHPHero(hpMax, value) {
       hpMax = +hpMax + value;
@@ -634,6 +642,10 @@ function getXp(hero, guarantLegendArt = false, boss = false) {
     }
 
     switch (art) {
+      case "emblemDragon":
+        hero.emblemDragon = true;
+        alert("вы получили Эмблему Дракона");
+        break;
       case "thunderHammer":
         incAttackHero(5, 5);
         incSecondaryStatHero("magicPower", 5);
@@ -865,7 +877,7 @@ function getXp(hero, guarantLegendArt = false, boss = false) {
 
         break;
       case "flacon":
-        hero.hp = hpMax;
+        hero.hp = +hpMax;
         hero.regeneration += 20;
         (0,_calc_hp__WEBPACK_IMPORTED_MODULE_0__["default"])(".hero_hp", hero.hp);
         alert("вы получили Флакон Здоровья");
@@ -1081,6 +1093,176 @@ function getArt(artObj, content = artContent) {
 //           descr: "Увеличивает максимальное здоровье на 100 и уклонение на 10%",
 
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (getXp);
+
+
+/***/ }),
+
+/***/ "./src/js/modules/audio/audio.js":
+/*!***************************************!*\
+  !*** ./src/js/modules/audio/audio.js ***!
+  \***************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__),
+/* harmony export */   "setAudioToHero": () => (/* binding */ setAudioToHero)
+/* harmony export */ });
+// Main
+const AudioBackground = new Audio("../../audio/background.mp3");
+decVolume(AudioBackground, 0.2);
+const AudioClickSliderArrows = new Audio("../../audio/click_slider-arrows.mp3");
+decVolume(AudioClickSliderArrows, 0.5);
+const AudioHeroChosen = new Audio("../../audio/hero_chosen.mp3");
+decVolume(AudioHeroChosen, 0.3);
+// sword Strikes
+const AudioSwordStrike = new Audio("../../audio/sword_strike.mp3");
+decVolume(AudioSwordStrike, 0.1);
+const AudioSwordStrike2 = new Audio("../../audio/sword_strike_2.mp3");
+decVolume(AudioSwordStrike2, 0.1);
+const AudioSwordStrike3 = new Audio("../../audio/sword_strike_3.mp3");
+decVolume(AudioSwordStrike3, 0.1);
+const AudioSwordCrit = new Audio("../../audio/sword_strike_crit.mp3");
+decVolume(AudioSwordCrit, 0.2);
+// punch Strikes
+const AudioPunchStrike = new Audio("../../audio/punch_strike.mp3");
+decVolume(AudioPunchStrike, 0.1);
+const AudioPunchStrike2 = new Audio("../../audio/punch_strike_2.mp3");
+decVolume(AudioPunchStrike2, 0.1);
+const AudioPunchStrike3 = new Audio("../../audio/punch_strike_3.mp3");
+decVolume(AudioPunchStrike3, 0.1);
+const AudioPunchCrit = new Audio("../../audio/punch_strike_crit.mp3");
+decVolume(AudioPunchCrit, 0.2);
+// staff Strikes
+const AudioStaffStrike = new Audio("../../audio/staff_strike.mp3");
+decVolume(AudioStaffStrike, 0.1);
+const AudioStaffStrike2 = new Audio("../../audio/staff_strike_2.mp3");
+decVolume(AudioStaffStrike2, 0.1);
+const AudioStaffStrike3 = new Audio("../../audio/staff_strike_3.mp3");
+decVolume(AudioStaffStrike3, 0.1);
+const AudioStaffCrit = new Audio("../../audio/staff_strike_crit.mp3");
+decVolume(AudioStaffCrit, 0.2);
+// Miss Attack
+const AudioMissAttack = new Audio("../../audio/miss_attack.mp3");
+decVolume(AudioMissAttack, 0.2);
+// get Demage Man
+const AudioGetDemageMan = new Audio("../../audio/get_demage_man.mp3");
+decVolume(AudioGetDemageMan, 0.1);
+const AudioGetDemageMan2 = new Audio("../../audio/get_demage_man_2.mp3");
+decVolume(AudioGetDemageMan2, 0.1);
+const AudioGetDemageMan3 = new Audio("../../audio/get_demage_man_3.mp3");
+decVolume(AudioGetDemageMan3, 0.1);
+const AudioGetDemageMan4 = new Audio("../../audio/get_demage_man_4.mp3");
+decVolume(AudioGetDemageMan4, 0.1);
+// get Demage Woman
+const AudioGetDemageWoman = new Audio("../../audio/get_demage_woman.mp3");
+decVolume(AudioGetDemageWoman, 0.1);
+const AudioGetDemageWoman2 = new Audio("../../audio/get_demage_woman_2.mp3");
+decVolume(AudioGetDemageWoman2, 0.1);
+const AudioGetDemageWoman3 = new Audio("../../audio/get_demage_woman_3.mp3");
+decVolume(AudioGetDemageWoman3, 0.1);
+const AudioGetDemageWoman4 = new Audio("../../audio/get_demage_woman_4.mp3");
+decVolume(AudioGetDemageWoman4, 0.1);
+
+function decVolume(audio, volume) {
+  audio.volume = volume;
+}
+
+function AudioAction(audio, action) {
+  if (action === "loop") {
+    getAudio(audio).loop = true;
+  } else if (action === "stop") {
+    getAudio(audio).pause();
+  } else {
+    getAudio(audio).play();
+  }
+
+  function getAudio(audio) {
+    switch (audio) {
+      case "background":
+        return AudioBackground;
+      case "heroChosen":
+        return AudioHeroChosen;
+      case "clickSliderArrow":
+        return AudioClickSliderArrows;
+      case "swordStrike":
+        const audioSwordArr = [AudioSwordStrike, AudioSwordStrike2, AudioSwordStrike3];
+        const audioSwordNum = Math.floor(Math.random() * audioSwordArr.length);
+        return audioSwordArr[audioSwordNum];
+      case "swordCrit":
+        return AudioSwordCrit;
+      case "punchStrike":
+        const audioPunchArr = [AudioPunchStrike, AudioPunchStrike2, AudioPunchStrike3];
+        const audioPunchNum = Math.floor(Math.random() * audioPunchArr.length);
+        return audioPunchArr[audioPunchNum];
+      case "punchCrit":
+        return AudioPunchCrit;
+      case "staffStrike":
+        const audioStaffArr = [AudioStaffStrike, AudioStaffStrike2, AudioStaffStrike3];
+        const audioStaffNum = Math.floor(Math.random() * audioStaffArr.length);
+        return audioStaffArr[audioStaffNum];
+      case "staffCrit":
+        return AudioStaffCrit;
+      case "getDemageMan":
+        const audioManArr = [AudioGetDemageMan, AudioGetDemageMan2, AudioGetDemageMan3];
+        const audioManNum = Math.floor(Math.random() * audioManArr.length);
+        return audioManArr[audioManNum];
+      case "getCritDemageMan":
+        return AudioGetDemageMan4;
+      case "getDemageWoman":
+        const audioWomanArr = [AudioGetDemageWoman, AudioGetDemageWoman2, AudioGetDemageWoman3];
+        const audioWomanNum = Math.floor(Math.random() * audioWomanArr.length);
+        return audioWomanArr[audioWomanNum];
+      case "getCritDemageWoman":
+        return AudioGetDemageWoman4;
+      case "missAttack":
+        return AudioMissAttack;
+    }
+  }
+}
+
+function setAudioToHero(hero) {
+  hero.audio = {};
+  switch (hero.name) {
+    case "warrior":
+    case "rogue":
+    case "witchmag":
+      hero.audio.attack = () => AudioAction("swordStrike");
+      hero.audio.crit = () => AudioAction("swordCrit");
+      break;
+    case "monk":
+    case "jester":
+    case "mechanic":
+      hero.audio.attack = () => AudioAction("punchStrike");
+      hero.audio.crit = () => AudioAction("punchCrit");
+      break;
+    case "dryad":
+    case "mage":
+      hero.audio.attack = () => AudioAction("staffStrike");
+      hero.audio.crit = () => AudioAction("staffCrit");
+      break;
+  }
+
+  switch (hero.sex) {
+    case "man":
+      console.log("man");
+      hero.audio.getDemage = () => AudioAction("getDemageMan");
+      hero.audio.getCrit = () => AudioAction("getCritDemageMan");
+      break;
+    case "woman":
+      console.log("woman");
+      hero.audio.getDemage = () => AudioAction("getDemageWoman");
+      hero.audio.getCrit = () => AudioAction("getCritDemageWoman");
+      break;
+  }
+
+  hero.audio.miss = () => AudioAction("missAttack");
+
+  console.log(hero);
+}
+
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (AudioAction);
+
 
 
 /***/ }),
@@ -1369,6 +1551,7 @@ __webpack_require__.r(__webpack_exports__);
 function calcHp(selector, numHp) {
   const hpBar = document.querySelector(selector);
   const hpBarShadow = hpBar.parentNode.querySelector(".bar__hp-f-shadow");
+  const barrierBar = hpBar.parentNode.querySelector(".bar__hp-f-barrier");
 
   let hpAtr = +hpBar.getAttribute("data-hp");
   const factor = hpBar.parentNode.clientWidth / hpAtr;
@@ -1463,6 +1646,40 @@ function calcMp(numMp) {
 
 /***/ }),
 
+/***/ "./src/js/modules/changeBg.js":
+/*!************************************!*\
+  !*** ./src/js/modules/changeBg.js ***!
+  \************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+let mainBg = document.body;
+const changeBg = (enemyName) => {
+  switch (enemyName) {
+    case "greenMonster":
+    case "fierySkeleton":
+      mainBg.classList.add("dark_forest");
+      break;
+    case "imps":
+    case "titan":
+      mainBg.classList.add("hell");
+      break;
+    case "angelFighter":
+      mainBg.classList.add("paradise");
+      break;
+    default:
+      null;
+  }
+};
+
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (changeBg);
+
+
+/***/ }),
+
 /***/ "./src/js/modules/enemy.js":
 /*!*********************************!*\
   !*** ./src/js/modules/enemy.js ***!
@@ -1490,11 +1707,11 @@ function searchEnemy(luck) {
   } else {
     // const enemyNum = Math.floor(Math.random() * (0 - difficulty + 1)) + difficulty;
     const enemyNum = Math.floor(minLimit + Math.random() * (maxLimit + 1 - minLimit));
-    if (maxLimit < (0,_heroes__WEBPACK_IMPORTED_MODULE_0__["default"])("count")) {
+    if (maxLimit <= (0,_heroes__WEBPACK_IMPORTED_MODULE_0__["default"])("count") - 1) {
       // maxLimit += 1;
       maxLimit += 0.75;
     }
-    if (minLimit < (0,_heroes__WEBPACK_IMPORTED_MODULE_0__["default"])("count") - 2) {
+    if (minLimit <= (0,_heroes__WEBPACK_IMPORTED_MODULE_0__["default"])("count") - 3) {
       // minLimit += 0.5;
       minLimit += 0.7;
     }
@@ -1528,12 +1745,24 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _update_stats__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./update_stats */ "./src/js/modules/update_stats.js");
 /* harmony import */ var _skills__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./skills */ "./src/js/modules/skills.js");
 /* harmony import */ var _buff__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./buff */ "./src/js/modules/buff.js");
+/* harmony import */ var _mods_mods__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ./mods/mods */ "./src/js/modules/mods/mods.js");
+/* harmony import */ var _audio_audio__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ./audio/audio */ "./src/js/modules/audio/audio.js");
+/* harmony import */ var _changeBg__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! ./changeBg */ "./src/js/modules/changeBg.js");
 
 
 
 
 
 
+
+
+
+
+
+
+//
+
+//
 
 
 
@@ -1548,11 +1777,11 @@ const textRaidLvl = document.querySelector(".text__raid span");
 
 let enemyCount = 0;
 
-const critPowerMod = (critPower) => Math.round(critPower * 0.85);
-const critСhanceMod = (critChance) => Math.round(critChance * 0.85);
-const dodgeMod = (dodge) => Math.round(dodge * 0.85);
-const defMod = (def) => Math.round(def * 0.85);
-const adaptMod = (adapt) => Math.round(adapt * 0.35);
+// const critPowerMod = (critPower) => Math.round(critPower * 0.85);
+// const critСhanceMod = (critChance) => Math.round(critChance * 0.85);
+// const dodgeMod = (dodge) => Math.round(dodge * 0.85);
+// const defMod = (def) => Math.round(def * 0.8);
+// const adaptMod = (adapt) => Math.round(adapt * 0.35);
 
 function fight(target, assaulter, btnsHidden, btnReload, btnDisplay) {
   let maxHPHero = +document.querySelector(".hero_hp").getAttribute("data-hp");
@@ -1573,25 +1802,25 @@ function fight(target, assaulter, btnsHidden, btnReload, btnDisplay) {
     function attack(att, def, critChance, critPower, dodge, adapt, absorb = 0) {
       const checkDodge = Math.round(Math.random() * 100) + 1;
 
-      if (checkDodge <= dodgeMod(dodge) - adaptMod(adapt)) {
+      if (checkDodge <= (0,_mods_mods__WEBPACK_IMPORTED_MODULE_8__.dodgeMod)(dodge) - (0,_mods_mods__WEBPACK_IMPORTED_MODULE_8__.adaptMod)(adapt)) {
         return "Промах";
       } else {
         const result = Math.floor(att[0] + Math.random() * (att[1] + 1 - att[0]));
         const сheckCrit = Math.round(Math.random() * 100) + 1;
-        if (сheckCrit <= critСhanceMod(critChance) - adaptMod(adapt)) {
-          if (Math.round(result * (critPowerMod(critPower) / 100) - defMod(def)) <= 0) {
+        if (сheckCrit <= (0,_mods_mods__WEBPACK_IMPORTED_MODULE_8__["critСhanceMod"])(critChance) - (0,_mods_mods__WEBPACK_IMPORTED_MODULE_8__.adaptMod)(adapt)) {
+          if (Math.round(result * ((0,_mods_mods__WEBPACK_IMPORTED_MODULE_8__.critPowerMod)(critPower) / 100) - (0,_mods_mods__WEBPACK_IMPORTED_MODULE_8__.defMod)(def)) <= 0) {
             return { dmg: 2, crit: ` Критический удар!` };
           } else {
             return {
-              dmg: Math.round(result * (critPower / 100) - defMod(def)) * ((100 - absorb) / 100),
+              dmg: Math.round(result * (critPower / 100) - (0,_mods_mods__WEBPACK_IMPORTED_MODULE_8__.defMod)(def)) * ((100 - absorb) / 100),
               crit: ` Критический удар!`,
             };
           }
         }
-        if (result - defMod(def) <= 0) {
+        if (result - (0,_mods_mods__WEBPACK_IMPORTED_MODULE_8__.defMod)(def) <= 0) {
           return { dmg: 1, crit: "" };
         } else {
-          return { dmg: Math.round((result - defMod(def)) * ((100 - absorb) / 100)), crit: "" };
+          return { dmg: Math.round((result - (0,_mods_mods__WEBPACK_IMPORTED_MODULE_8__.defMod)(def)) * ((100 - absorb) / 100)), crit: "" };
         }
       }
     }
@@ -1622,11 +1851,16 @@ function fight(target, assaulter, btnsHidden, btnReload, btnDisplay) {
       return;
     }
     if (ObjDmg === "Промах") {
+      // AudioAction("missAttack");
+      assaulter.audio.miss();
       (0,_text__WEBPACK_IMPORTED_MODULE_2__["default"])("Промах!", "orange");
       comboMechanic = 0;
 
       assaulter.swordKingHell ? swordKingHell(assaulter, target) : null;
     } else {
+      // ObjDmg.crit ? AudioAction("swordCrit") : AudioAction("swordStrike");
+      ObjDmg.crit ? assaulter.audio.crit() : assaulter.audio.attack();
+      // musicAction("warriorStrike");
       let dmgHeroNum = ObjDmg.dmg;
       dmgHeroNum += redDagger(assaulter.redDagger, target.def);
       dmgHeroNum = CountComboMechanic(assaulter.name, dmgHeroNum) + buffAttack;
@@ -1639,8 +1873,6 @@ function fight(target, assaulter, btnsHidden, btnReload, btnDisplay) {
       assaulter.name == "mechanic" && assaulter.mechanicMaster
         ? assaulter.mechanicMaster(assaulter, target)
         : null;
-
-      console.log(target.def);
 
       target.hp -= dmgHeroNum;
       touchOfDeath(assaulter, target);
@@ -1665,6 +1897,7 @@ function fight(target, assaulter, btnsHidden, btnReload, btnDisplay) {
       if (assaulter.mana < maxMP) {
         assaulter.bonusMP ? (assaulter.mana += manaRegen + assaulter.bonusMP) : (assaulter.mana += manaRegen);
         ObjDmg.crit && assaulter.frostsword ? (assaulter.mana += 2) : null;
+        // assaulter.name == "mage" ? (assaulter.mana += 1) : null;
 
         // monk level_1 first
         if (assaulter.name == "monk" && assaulter.monkSnakeStrikes) {
@@ -1688,6 +1921,11 @@ function fight(target, assaulter, btnsHidden, btnReload, btnDisplay) {
       (0,_text__WEBPACK_IMPORTED_MODULE_2__["default"])(`Вы нанесли${ObjDmg.crit} ${dmgHeroNum} урона`, "yellow");
     }
 
+    // specificity mage
+    if (assaulter.mana < maxMP && assaulter.name == "mage") {
+      assaulter.mana += 1;
+      (0,_calc_mp__WEBPACK_IMPORTED_MODULE_1__["default"])(assaulter.mana);
+    }
     staffOmbalStep++;
 
     setTimeout(() => {
@@ -1701,12 +1939,17 @@ function fight(target, assaulter, btnsHidden, btnReload, btnDisplay) {
         return;
       }
       if (ObjDmgEnemy === "Промах") {
+        musicAction("missAttack");
         (0,_text__WEBPACK_IMPORTED_MODULE_2__["default"])("Вы увернулись", "green");
 
         assaulter.robberyCloak ? robberyCloak(assaulter) : null;
         // monk level_2 first
         assaulter.name == "monk" && assaulter.monkMantis ? monkMantis(assaulter, target) : null;
+        // mage level_3 first
+        assaulter.name == "mage" && assaulter.mageSkillMage ? mageSkillMage(assaulter) : null;
       } else {
+        ObjDmgEnemy.crit ? assaulter.audio.getCrit() : assaulter.audio.getDemage();
+
         let dmgEnemyNum = Math.round(ObjDmgEnemy.dmg * target.multiplierDmg);
 
         if (assaulter.block) {
@@ -1721,8 +1964,39 @@ function fight(target, assaulter, btnsHidden, btnReload, btnDisplay) {
           dmgEnemyNum = sphereDM(assaulter, dmgEnemyNum);
         }
 
-        assaulter.hp -= dmgEnemyNum;
-        (0,_calc_hp__WEBPACK_IMPORTED_MODULE_0__["default"])(".hero_hp", assaulter.hp);
+        // barrier
+
+        if (assaulter.barrier) {
+          if (assaulter.barrier - dmgEnemyNum > 0) {
+            assaulter.barrier -= dmgEnemyNum;
+            (0,_text__WEBPACK_IMPORTED_MODULE_2__["default"])(`Ледяной щит поглотил ${dmgEnemyNum} урона. Прочность: ${assaulter.barrier}`, "aqua");
+            dmgEnemyNum = 0;
+          } else {
+            dmgEnemyNum = -(assaulter.barrier - dmgEnemyNum);
+            assaulter.hp -= dmgEnemyNum;
+            (0,_calc_hp__WEBPACK_IMPORTED_MODULE_0__["default"])(".hero_hp", assaulter.hp);
+            (0,_text__WEBPACK_IMPORTED_MODULE_2__["default"])(`Ледяной щит поглотил ${assaulter.barrier} урона и был разбит`, "aqua");
+            assaulter.barrier = 0;
+            assaulter.absorbDamage = 0;
+            assaulter.mageOnIceShield = false;
+          }
+          // mage level_2 first
+          if (assaulter.name == "mage" && assaulter.mageShieldReflect) {
+            target.hp -= assaulter.mageShieldReflect();
+            (0,_calc_hp__WEBPACK_IMPORTED_MODULE_0__["default"])(".enemy_hp", target.hp);
+          }
+        } else {
+          assaulter.hp -= dmgEnemyNum;
+          (0,_calc_hp__WEBPACK_IMPORTED_MODULE_0__["default"])(".hero_hp", assaulter.hp);
+        }
+
+        // mage level_3 first
+        ObjDmgEnemy.crit && assaulter.name == "mage" && assaulter.mageSkillMage ? mageSkillMage(assaulter) : null;
+
+        ObjDmgEnemy.crit && assaulter.emblemDragon ? emblemDragon(assaulter) : null;
+
+        // assaulter.hp -= dmgEnemyNum;
+        // calcHp(".hero_hp", assaulter.hp);
 
         if (assaulter.reflect) {
           target.hp -= fieryHand(dmgEnemyNum);
@@ -1734,7 +2008,7 @@ function fight(target, assaulter, btnsHidden, btnReload, btnDisplay) {
         }
 
         if (assaulter.fieryFist) {
-          buffAttack += fieryFist(assaulter, maxHPHero);
+          buffAttack = fieryFist(assaulter, maxHPHero);
         }
 
         if (assaulter.hp <= 0) {
@@ -1792,6 +2066,12 @@ function fight(target, assaulter, btnsHidden, btnReload, btnDisplay) {
       }
       (0,_calc_mp__WEBPACK_IMPORTED_MODULE_1__["default"])(assaulter.mana);
     }, 900);
+
+    // mage level_3 second
+    if (assaulter.name == "mage" && assaulter.magePotionsCooking) {
+      assaulter.magePotionsCooking();
+    }
+
     checkNameEnemy(target, assaulter);
     setTimeout(() => {
       btnsHidden.forEach((btn) => {
@@ -1847,12 +2127,17 @@ function fight(target, assaulter, btnsHidden, btnReload, btnDisplay) {
     return dmg;
   }
 
+  // mage level_3 first
+  function mageSkillMage(hero) {
+    hero.mageSkillMage();
+  }
+
   // monk level_2 first
   function monkMantis(hero, enemy) {
     let dmgMantis = hero.monkMantis(hero.dodge);
     if (dmgMantis > 0) {
-      dmgMantis - defMod(enemy.def) <= 0 ? (dmgMantis = 1) : null;
-      enemy.hp -= dmgMantis - defMod(enemy.def);
+      dmgMantis - (0,_mods_mods__WEBPACK_IMPORTED_MODULE_8__.defMod)(enemy.def) <= 0 ? (dmgMantis = 1) : null;
+      enemy.hp -= dmgMantis - (0,_mods_mods__WEBPACK_IMPORTED_MODULE_8__.defMod)(enemy.def);
       (0,_text__WEBPACK_IMPORTED_MODULE_2__["default"])(`Вы контратакавали врага нанеся ${dmgMantis} урона`, "cyan");
       (0,_calc_hp__WEBPACK_IMPORTED_MODULE_0__["default"])(".enemy_hp", enemy.hp);
     }
@@ -1862,7 +2147,7 @@ function fight(target, assaulter, btnsHidden, btnReload, btnDisplay) {
     setTimeout(() => {
       const dmg = hero.monkTiger(hero.attack);
       if (dmg > 0) {
-        enemy.hp -= dmg - defMod(enemy.def);
+        enemy.hp -= dmg - (0,_mods_mods__WEBPACK_IMPORTED_MODULE_8__.defMod)(enemy.def);
         (0,_text__WEBPACK_IMPORTED_MODULE_2__["default"])(`Вы быстро атакуете еще раз, нанося ${dmg} урона`, "cyan");
         (0,_calc_hp__WEBPACK_IMPORTED_MODULE_0__["default"])(".enemy_hp", enemy.hp);
       }
@@ -1882,7 +2167,6 @@ function fight(target, assaulter, btnsHidden, btnReload, btnDisplay) {
   }
 
   function healHP(hero) {
-    console.log(hero.lvl);
     let extraHP = 35;
     if (hero.regeneration) {
       extraHP += hero.regeneration;
@@ -1906,6 +2190,23 @@ function fight(target, assaulter, btnsHidden, btnReload, btnDisplay) {
   }
 
   // Артефакты
+
+  function emblemDragon(hero) {
+    hero.attack[0] += 5;
+    hero.attack[1] += 5;
+    hero.def += 5;
+    (0,_update_stats__WEBPACK_IMPORTED_MODULE_5__["default"])(".attackMin", hero.attackMin, true);
+    (0,_update_stats__WEBPACK_IMPORTED_MODULE_5__["default"])(".attackMax", hero.attackMax, true);
+    (0,_update_stats__WEBPACK_IMPORTED_MODULE_5__["default"])(".def", hero.def, true);
+    setTimeout(() => {
+      hero.attack[0] -= 5;
+      hero.attack[1] -= 5;
+      hero.def -= 5;
+      (0,_update_stats__WEBPACK_IMPORTED_MODULE_5__["default"])(".attackMin", hero.attackMin, true);
+      (0,_update_stats__WEBPACK_IMPORTED_MODULE_5__["default"])(".attackMax", hero.attackMax, true);
+      (0,_update_stats__WEBPACK_IMPORTED_MODULE_5__["default"])(".def", hero.def, true);
+    }, 6000);
+  }
 
   function thunderHammer(hero, enemy) {
     if (hero.thunderHammer) {
@@ -2096,14 +2397,8 @@ function fight(target, assaulter, btnsHidden, btnReload, btnDisplay) {
 
   function fieryFist(hero, maxHPHero) {
     if (hero.hp < maxHPHero / (100 / 33)) {
-      if (berserk === false) {
-        berserk = true;
-        return 30;
-      }
-    } else if (berserk === true) {
-      berserk = false;
-
-      return 0;
+      console.log("берсерк");
+      return 30;
     }
     return 0;
   }
@@ -2216,9 +2511,10 @@ function createHeroes(part, hero) {
       this.mp = mp;
       this.mana = 0;
       this.regeneration = 0;
-      this.absorbDamage;
+      this.absorbDamage = 0;
       this.lvl = 1;
       this.talentsPoint = 0;
+      this.barrier = 0;
     }
   }
   class Enemy {
@@ -2239,25 +2535,28 @@ function createHeroes(part, hero) {
   const heroes = [
     function warrior() {
       // return new Hero([700, 760], 700, 5, 17, 160, 5, 7, 11, 15, 160, "warrior");
-      return new Hero([22, 28], 330, 6, 17, 160, 5, 6, 11, 15, 160, "warrior");
+      return new Hero([25, 32], 350, 7, 17, 155, 5, 6, 11, 15, 160, "warrior");
     },
     function rogue() {
-      return new Hero([29, 36], 250, 2, 21, 175, 17, 9, 15, 14, 170, "rogue");
+      return new Hero([32, 39], 275, 3, 21, 170, 17, 9, 15, 14, 170, "rogue");
     },
     function monk() {
-      return new Hero([22, 27], 340, 1, 15, 190, 24, 12, 21, 20, 200, "monk");
+      return new Hero([24, 30], 365, 2, 15, 175, 24, 12, 21, 20, 200, "monk");
     },
     function jester() {
-      return new Hero([21, 32], 270, 0, 16, 210, 18, 17, 10, 23, 200, "jester");
+      return new Hero([23, 35], 300, 0, 16, 200, 18, 17, 10, 23, 200, "jester");
     },
     function dryad() {
-      return new Hero([21, 26], 280, 1, 17, 160, 20, 13, 13, 39, 200, "dryad");
+      return new Hero([23, 29], 310, 1, 17, 150, 20, 13, 13, 39, 200, "dryad");
     },
     function mechanic() {
-      return new Hero([23, 27], 280, 3, 18, 200, 11, 8, 16, 16, 175, "mechanic");
+      return new Hero([25, 31], 315, 4, 18, 190, 11, 8, 16, 16, 175, "mechanic");
     },
     function witchmag() {
-      return new Hero([26, 33], 260, 2, 18, 185, 14, 9, 17, 31, 180, "witchmag");
+      return new Hero([28, 35], 285, 2, 18, 175, 14, 9, 17, 31, 180, "witchmag");
+    },
+    function mage() {
+      return new Hero([15, 21], 270, 1, 20, 150, 13, 12, 14, 45, 250, "mage");
     },
   ];
 
@@ -2266,145 +2565,151 @@ function createHeroes(part, hero) {
       return new Enemy([5, 5], 100, 5, 1, 1, 1, 1, "goldBox", "img/enemy/goldBox.png", 50);
     },
     function wolf() {
-      return new Enemy([16, 21], 135, 1, 12, 175, 12, 10, "wolf", "img/enemy/wolf.png", 6);
+      return new Enemy([17, 23], 160, 1, 13, 170, 12, 10, "wolf", "img/enemy/wolf.png", 6);
     },
     function goblin() {
-      return new Enemy([16, 23], 170, 2, 18, 150, 17, 12, "goblin", "img/enemy/goblin.png", 7);
+      return new Enemy([18, 25], 200, 2, 18, 150, 17, 12, "goblin", "img/enemy/goblin.png", 7);
     },
     function satyr() {
-      return new Enemy([17, 23], 150, 1, 12, 150, 27, 10, "satyr", "img/enemy/satyr.png", 8);
+      return new Enemy([20, 25], 165, 1, 14, 150, 27, 10, "satyr", "img/enemy/satyr.png", 8);
     },
     function werewolf() {
-      return new Enemy([16, 25], 200, 1, 25, 175, 15, 12, "werewolf", "img/enemy/werewolf.png", 9);
+      return new Enemy([17, 27], 215, 1, 25, 170, 15, 12, "werewolf", "img/enemy/werewolf.png", 9);
     },
     function ork() {
-      return new Enemy([15, 20], 300, 4, 10, 200, 5, 10, "ork", "img/enemy/ork.png", 10);
+      return new Enemy([16, 22], 320, 4, 10, 190, 5, 10, "ork", "img/enemy/ork.png", 10);
     },
     function skeleton() {
-      return new Enemy([19, 28], 200, 0, 18, 200, 21, 10, "skeleton", "img/enemy/skeleton.png", 11);
+      return new Enemy([21, 30], 210, 0, 18, 200, 21, 10, "skeleton", "img/enemy/skeleton.png", 11);
     },
     function gnome() {
-      return new Enemy([9, 14], 140, 0, 33, 175, 80, 15, "gnome", "img/enemy/gnome.png", 12);
+      return new Enemy([9, 15], 150, 0, 33, 170, 80, 15, "gnome", "img/enemy/gnome.png", 12);
     },
     function behemoth() {
-      return new Enemy([20, 28], 310, 7, 10, 150, 1, 25, "behemoth", "img/enemy/behemoth.png", 13);
+      return new Enemy([22, 30], 330, 7, 10, 150, 1, 25, "behemoth", "img/enemy/behemoth.png", 13);
     },
     function dragon() {
-      return new Enemy([21, 32], 240, 4, 45, 150, 15, 15, "dragon", "img/enemy/dragon.png", 15);
+      return new Enemy([22, 34], 240, 5, 45, 150, 15, 15, "dragon", "img/enemy/dragon.png", 15);
     },
     function guard() {
-      return new Enemy([21, 27], 370, 12, 10, 210, 1, 25, "guard", "img/enemy/guard.png", 17);
+      return new Enemy([24, 29], 380, 12, 10, 200, 1, 25, "guard", "img/enemy/guard.png", 17);
     },
     function stoneTroll() {
-      return new Enemy([24, 31], 350, 9, 20, 175, 15, 25, "stoneTroll", "img/enemy/stoneTroll.png", 19);
+      return new Enemy([26, 33], 370, 9, 20, 170, 15, 25, "stoneTroll", "img/enemy/stoneTroll.png", 19);
     },
     function trader() {
-      return new Enemy([12, 15], 160, 1, 1, 150, 5, 1, "trader", "img/enemy/trader.png", 5);
+      return new Enemy([13, 16], 175, 1, 1, 150, 5, 1, "trader", "img/enemy/trader.png", 5);
     },
     function greenMonster() {
-      return new Enemy([27, 36], 260, 2, 30, 200, 38, 15, "greenMonster", "img/enemy/greenMonster.png", 21);
+      return new Enemy([29, 38], 280, 3, 30, 200, 38, 15, "greenMonster", "img/enemy/greenMonster.png", 21);
     },
     function fierySkeleton() {
-      return new Enemy([35, 45], 290, 1, 20, 215, 25, 15, "fierySkeleton", "img/enemy/fierySkeleton.png", 23);
+      return new Enemy([37, 47], 300, 1, 20, 210, 25, 15, "fierySkeleton", "img/enemy/fierySkeleton.png", 23);
     },
     function cannibal() {
-      return new Enemy([34, 42], 430, 6, 25, 150, 1, 20, "cannibal", "img/enemy/cannibal.png", 25);
+      return new Enemy([35, 45], 440, 9, 25, 150, 1, 20, "cannibal", "img/enemy/cannibal.png", 25);
     },
     function kikimora() {
-      return new Enemy([40, 48], 320, 2, 24, 175, 35, 15, "kikimora", "img/enemy/kikimora.png", 27);
+      return new Enemy([42, 50], 330, 3, 24, 170, 35, 15, "kikimora", "img/enemy/kikimora.png", 27);
     },
     function spirit() {
-      return new Enemy([40, 47], 270, 0, 27, 150, 67, 15, "spirit", "img/enemy/spirit.png", 29);
+      return new Enemy([41, 49], 280, 0, 27, 150, 67, 15, "spirit", "img/enemy/spirit.png", 29);
     },
     function unicorn() {
-      return new Enemy([38, 50], 260, 0, 15, 225, 45, 5, "unicorn", "img/enemy/unicorn.png", 30);
+      return new Enemy([40, 50], 285, 1, 15, 215, 45, 5, "unicorn", "img/enemy/unicorn.png", 30);
     },
     function damn() {
-      return new Enemy([42, 52], 330, 2, 45, 150, 40, 15, "damn", "img/enemy/damn.png", 32);
+      return new Enemy([43, 53], 360, 4, 45, 150, 40, 15, "damn", "img/enemy/damn.png", 32);
     },
     function dreamEater() {
-      return new Enemy([42, 53], 380, 2, 40, 150, 40, 25, "dreamEater", "img/enemy/dreamEater.png", 34);
+      return new Enemy([44, 55], 400, 4, 40, 150, 40, 25, "dreamEater", "img/enemy/dreamEater.png", 34);
     },
     function giantZombie() {
-      return new Enemy([47, 54], 490, 10, 33, 175, 1, 15, "giantZombie", "img/enemy/giantZombie.png", 35);
+      return new Enemy([48, 55], 520, 15, 33, 175, 1, 15, "giantZombie", "img/enemy/giantZombie.png", 35);
     },
     function cyclops() {
-      return new Enemy([48, 58], 500, 8, 25, 175, 5, 3, "cyclops", "img/enemy/cyclops.png", 37);
+      return new Enemy([50, 58], 540, 12, 25, 175, 5, 3, "cyclops", "img/enemy/cyclops.png", 37);
     },
     function goldDragon() {
-      return new Enemy([50, 58], 480, 22, 20, 190, 10, 35, "goldDragon", "img/enemy/goldDragon.png", 100);
+      return new Enemy([51, 60], 500, 25, 20, 190, 10, 35, "goldDragon", "img/enemy/goldDragon.png", 100);
     },
     function SeaZombie() {
-      return new Enemy([62, 70], 380, 4, 25, 215, 30, 20, "SeaZombie", "img/enemy/SeaZombie.png", 40);
+      return new Enemy([63, 72], 410, 7, 25, 210, 30, 20, "SeaZombie", "img/enemy/SeaZombie.png", 40);
     },
     function viking() {
-      return new Enemy([50, 58], 560, 12, 33, 150, 20, 25, "viking", "img/enemy/viking.png", 42);
+      return new Enemy([50, 60], 580, 16, 33, 150, 20, 25, "viking", "img/enemy/viking.png", 42);
     },
     function imps() {
-      return new Enemy([48, 61], 450, 3, 45, 175, 55, 20, "imps", "img/enemy/imps.png", 45);
+      return new Enemy([50, 61], 470, 6, 45, 175, 55, 20, "imps", "img/enemy/imps.png", 45);
     },
     function titan() {
-      return new Enemy([54, 68], 680, 16, 20, 215, 1, 30, "titan", "img/enemy/titan.png", 47);
+      return new Enemy([56, 70], 700, 19, 20, 210, 1, 30, "titan", "img/enemy/titan.png", 47);
     },
     function masterOfMark() {
-      return new Enemy([57, 65], 530, 5, 25, 200, 35, 40, "masterOfMark", "img/enemy/masterOfMark.png", 49);
+      return new Enemy([57, 65], 550, 7, 25, 200, 35, 40, "masterOfMark", "img/enemy/masterOfMark.png", 49);
     },
     function diablo() {
-      return new Enemy([60, 71], 700, 20, 15, 200, 20, 35, "diablo", "img/enemy/diablo.png", 51);
+      return new Enemy([60, 71], 720, 23, 15, 200, 20, 40, "diablo", "img/enemy/diablo.png", 51);
     },
     function blackDragon() {
-      return new Enemy([67, 78], 600, 8, 35, 150, 40, 30, "blackDragon", "img/enemy/blackDragon.png", 54);
+      return new Enemy([69, 79], 600, 13, 35, 150, 40, 35, "blackDragon", "img/enemy/blackDragon.png", 54);
     },
     function stoneGiant() {
-      return new Enemy([56, 64], 860, 32, 10, 200, 1, 40, "stoneGiant", "img/enemy/stoneGiant.png", 57);
+      return new Enemy([56, 66], 880, 34, 10, 200, 1, 45, "stoneGiant", "img/enemy/stoneGiant.png", 57);
     },
     function evilMonster() {
-      return new Enemy([77, 89], 900, 15, 25, 200, 9, 25, "evilMonster", "img/enemy/evilMonster.png", 60);
+      return new Enemy([77, 89], 940, 18, 25, 200, 9, 25, "evilMonster", "img/enemy/evilMonster.png", 60);
     },
     function ghostKnight() {
-      return new Enemy([82, 92], 880, 24, 35, 150, 18, 30, "evilMonster", "img/enemy/ghostKnight.png", 63);
+      return new Enemy([83, 93], 950, 27, 35, 150, 18, 35, "evilMonster", "img/enemy/ghostKnight.png", 63);
     },
     function AncientButcher() {
-      return new Enemy([77, 89], 1050, 13, 20, 235, 8, 35, "AncientButcher", "img/enemy/AncientButcher.png", 67);
+      return new Enemy([77, 88], 1150, 14, 20, 225, 8, 45, "AncientButcher", "img/enemy/AncientButcher.png", 67);
     },
     function ermungand() {
-      return new Enemy([79, 91], 1150, 23, 33, 175, 20, 40, "ermungand", "img/enemy/ermungand.png", 71);
+      return new Enemy([79, 90], 1200, 27, 33, 175, 20, 50, "ermungand", "img/enemy/ermungand.png", 71);
     },
     function devourer() {
-      return new Enemy([86, 96], 1400, 13, 20, 200, 5, 45, "devourer", "img/enemy/devourer.png", 75);
+      return new Enemy([86, 96], 1500, 14, 20, 200, 5, 55, "devourer", "img/enemy/devourer.png", 75);
     },
     function demon() {
-      return new Enemy([91, 100], 1400, 12, 10, 150, 10, 45, "demon", "img/enemy/demon.png", 80);
+      return new Enemy([90, 99], 1480, 12, 10, 150, 10, 50, "demon", "img/enemy/demon.png", 80);
     },
     function devil() {
-      return new Enemy([100, 115], 1400, 8, 35, 215, 35, 50, "devil", "img/enemy/devil.png", 86);
+      return new Enemy([105, 110], 1500, 8, 35, 215, 35, 60, "devil", "img/enemy/devil.png", 85);
     },
     function angelFighter() {
-      return new Enemy([95, 115], 1555, 15, 55, 155, 55, 55, "angelFighter", "img/enemy/angelFighter.png", 93);
+      return new Enemy([95, 115], 1555, 15, 55, 155, 55, 55, "angelFighter", "img/enemy/angelFighter.png", 91);
+    },
+    function whiteDragon() {
+      return new Enemy([100, 113], 1650, 18, 30, 175, 60, 60, "whiteDragon", "img/enemy/whiteDragon.png", 97);
     },
     function death() {
-      return new Enemy([180, 190], 2077, 12, 70, 300, 45, 99, "death", "img/enemy/death.png", 120);
+      return new Enemy([180, 200], 2077, 15, 70, 300, 45, 99, "death", "img/enemy/death.png", 120);
     },
   ];
 
+  // console.log(enemy.length);
+  // console.log(enemy[enemy.length]);
+
   const boss = [
     function bossOrk() {
-      return new Enemy([44, 49], 500, 10, 20, 175, 20, 25, "boss", "img/enemy/bossOrk.png", 50);
+      return new Enemy([44, 49], 520, 10, 20, 175, 20, 25, "boss", "img/enemy/bossOrk.png", 50);
     },
     function mimic() {
-      return new Enemy([60, 70], 590, 3, 25, 225, 40, 30, "boss", "img/enemy/boss/mimic.png", 75);
+      return new Enemy([60, 70], 610, 5, 25, 225, 40, 35, "boss", "img/enemy/boss/mimic.png", 75);
     },
     function ombal() {
-      return new Enemy([71, 83], 1500, 10, 20, 200, 5, 45, "boss", "img/enemy/boss/ombal.png", 100);
+      return new Enemy([72, 84], 1500, 12, 20, 200, 5, 50, "boss", "img/enemy/boss/ombal.png", 100);
     },
     function diamondMan() {
-      return new Enemy([77, 87], 1750, 46, 10, 225, 5, 60, "boss", "img/enemy/boss/diamondMan.png", 125);
+      return new Enemy([78, 89], 1780, 47, 10, 225, 5, 65, "boss", "img/enemy/boss/diamondMan.png", 125);
     },
     function kingHell() {
-      return new Enemy([140, 150], 2100, 34, 35, 250, 20, 65, "boss", "img/enemy/boss/kingHell.png", 150);
+      return new Enemy([140, 150], 2100, 35, 35, 250, 20, 75, "boss", "img/enemy/boss/kingHell.png", 150);
     },
     function fireMinotaur() {
-      return new Enemy([200, 220], 3200, 25, 40, 275, 10, 75, "boss", "img/enemy/boss/fireMinotaur.png", 500);
+      return new Enemy([200, 220], 3200, 28, 40, 275, 10, 85, "boss", "img/enemy/boss/fireMinotaur.png", 500);
     },
   ];
 
@@ -2436,6 +2741,29 @@ function createHeroes(part, hero) {
 }
 
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (createHeroes);
+
+
+/***/ }),
+
+/***/ "./src/js/modules/mods/mods.js":
+/*!*************************************!*\
+  !*** ./src/js/modules/mods/mods.js ***!
+  \*************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "adaptMod": () => (/* binding */ adaptMod),
+/* harmony export */   "critPowerMod": () => (/* binding */ critPowerMod),
+/* harmony export */   "critСhanceMod": () => (/* binding */ critСhanceMod),
+/* harmony export */   "defMod": () => (/* binding */ defMod),
+/* harmony export */   "dodgeMod": () => (/* binding */ dodgeMod)
+/* harmony export */ });
+const critPowerMod = (critPower) => Math.round(critPower * 0.85);
+const critСhanceMod = (critChance) => Math.round(critChance * 0.85);
+const dodgeMod = (dodge) => Math.round(dodge * 0.85);
+const defMod = (def) => Math.round(def * 0.8);
+const adaptMod = (adapt) => Math.round(adapt * 0.35);
 
 
 /***/ }),
@@ -2548,6 +2876,11 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _talents_talentsHeroes_dryad__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./talents/talentsHeroes/dryad */ "./src/js/modules/talents/talentsHeroes/dryad.js");
 /* harmony import */ var _talents_talentsHeroes_mechanic__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./talents/talentsHeroes/mechanic */ "./src/js/modules/talents/talentsHeroes/mechanic.js");
 /* harmony import */ var _talents_talentsHeroes_witchmage__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ./talents/talentsHeroes/witchmage */ "./src/js/modules/talents/talentsHeroes/witchmage.js");
+/* harmony import */ var _talents_talentsHeroes_mage__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ./talents/talentsHeroes/mage */ "./src/js/modules/talents/talentsHeroes/mage.js");
+/* harmony import */ var _mods_mods__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! ./mods/mods */ "./src/js/modules/mods/mods.js");
+
+
+
 
 
 
@@ -2587,13 +2920,15 @@ const skill = {
     // jester: 5,
     dryad: 90,
     // dryad: 40,
-    mechanic: 75,
+    mechanic: 70,
     witchmag: 70,
+    mage: 30,
   },
 
   enemy: {},
   maxHPHero: 0,
   monkGates: 0,
+  onIceShield: false,
 
   skills: function (hero, mana) {
     // target.hp = +document.querySelector(".enemy_hp").getAttribute("data-current_hp");
@@ -2665,7 +3000,7 @@ const skill = {
       case "monk":
         if (hero.hp > 0 && this.enemy.hp > 0 && mana >= this.manaCost.monk) {
           let buffmagicPower = hero.magicPower * 0.011 + 1;
-          const initBuffStats = Math.round(11 * buffmagicPower);
+          const initBuffStats = Math.round(10 * buffmagicPower);
           const buffOfGate = Math.round(this.monkGates * 1.75);
           const finishBuff = initBuffStats + buffOfGate;
 
@@ -2802,7 +3137,7 @@ const skill = {
           const buffMinAttack = Math.round(hero.attack[0] * (buffAttack / 100));
           const buffMaxAttack = Math.round(hero.attack[1] * (buffAttack / 100));
           const buffDefTalent = _talents_talentsHeroes_mechanic__WEBPACK_IMPORTED_MODULE_7__["default"].levels.level_3.second.init();
-          const buffDef = Math.round((hero.def * 0.2 + 5 + buffDefTalent) * buffmagicPower);
+          const buffDef = Math.round((hero.def * 0.2 + 6 + buffDefTalent) * buffmagicPower);
           const buffAdapt = 30 + _talents_talentsHeroes_mechanic__WEBPACK_IMPORTED_MODULE_7__["default"].levels.level_2.first.init();
           const duration = Math.round(8000 + _talents_talentsHeroes_mechanic__WEBPACK_IMPORTED_MODULE_7__["default"].levels.level_2.second.init());
           hero.def += buffDef;
@@ -2835,11 +3170,11 @@ const skill = {
 
       case "witchmag":
         if (hero.hp > 0 && this.enemy.hp > 0 && mana >= this.manaCost.witchmag) {
-          let buffmagicPower = hero.magicPower * 0.02 + 1;
+          let buffmagicPower = hero.magicPower * 0.018 + 1;
 
           // level_1 first
           const factorDmg = _talents_talentsHeroes_witchmage__WEBPACK_IMPORTED_MODULE_8__["default"].levels.level_1.first.init();
-          let dmg = 16 + Math.round((this.enemy.maxHPEnemy / 55) * buffmagicPower * factorDmg);
+          let dmg = 17 + Math.round((this.enemy.maxHPEnemy / 60) * buffmagicPower * factorDmg);
 
           // level_2 second
           const duration = _talents_talentsHeroes_witchmage__WEBPACK_IMPORTED_MODULE_8__["default"].levels.level_2.second.init();
@@ -2872,6 +3207,54 @@ const skill = {
           }, 150);
 
           mana -= this.manaCost.witchmag;
+        }
+        return [mana, this.enemy.hp];
+
+      case "mage":
+        if (hero.hp > 0 && this.enemy.hp > 0 && mana >= this.manaCost.mage) {
+          let buffmagicPower = hero.magicPower * 0.026 + 1;
+
+          const fireBoll = () => {
+            let dmg = Math.round(5 + (35 + hero.lvl) * buffmagicPower);
+            const сheckCrit = Math.round(Math.random() * 100) + 1;
+            if (сheckCrit <= (0,_mods_mods__WEBPACK_IMPORTED_MODULE_10__["critСhanceMod"])(hero.critChance) - (0,_mods_mods__WEBPACK_IMPORTED_MODULE_10__.adaptMod)(this.enemy.adapt)) {
+              dmg = Math.round(dmg * ((0,_mods_mods__WEBPACK_IMPORTED_MODULE_10__.critPowerMod)(hero.critPower) / 100));
+              this.enemy.hp -= dmg;
+              (0,_text__WEBPACK_IMPORTED_MODULE_0__["default"])(`Вы запускаете огромный огненный шар во врага, нанося ${dmg} урона`, "cyan");
+            } else {
+              this.enemy.hp -= dmg;
+              (0,_text__WEBPACK_IMPORTED_MODULE_0__["default"])(`Вы запускаете огненный шар во врага, нанося ${dmg} урона`, "cyan");
+            }
+            // mage level_2 second
+            _talents_talentsHeroes_mage__WEBPACK_IMPORTED_MODULE_9__["default"].levels.level_2.second.init(hero, this.enemy);
+          };
+          const iceShield = () => {
+            hero.absorbDamage = 25;
+            hero.barrier = Math.round(5 + (hero.magicPower + hero.lvl) * 1.1);
+            hero.mageOnIceShield = true;
+            (0,_text__WEBPACK_IMPORTED_MODULE_0__["default"])(`Вы создаете ледяной щит. Прочность: ${hero.barrier}`, "cyan");
+            // setTimeout(() => {
+            //   hero.absorbDamage = 0;
+            //   hero.mageOnIceShield = false;
+            // }, 8000);
+          };
+          const thunderСlap = () => {
+            const сheckCrit = Math.round(Math.random() * 100) + 1;
+            let dmg = Math.round((25 + hero.lvl) * buffmagicPower);
+            if (сheckCrit <= (0,_mods_mods__WEBPACK_IMPORTED_MODULE_10__["critСhanceMod"])(hero.critChance) - (0,_mods_mods__WEBPACK_IMPORTED_MODULE_10__.adaptMod)(this.enemy.adapt)) {
+              dmg = Math.round(dmg * ((0,_mods_mods__WEBPACK_IMPORTED_MODULE_10__.critPowerMod)(hero.critPower) / 100));
+              this.enemy.hp -= dmg;
+              (0,_text__WEBPACK_IMPORTED_MODULE_0__["default"])(`Вы паражаете врага серией ударов молнии, нанося ${dmg} урона и оглушая на 1 ход`, "cyan");
+            } else {
+              this.enemy.hp -= dmg;
+              (0,_text__WEBPACK_IMPORTED_MODULE_0__["default"])(`Вы паражаете врага ударом молнии, нанося ${dmg} урона и оглушая на 1 ход`, "cyan");
+            }
+            this.enemy.stun = true;
+          };
+
+          hero.hp > this.maxHPHero / 2 ? fireBoll() : hero.mageOnIceShield ? thunderСlap() : iceShield();
+
+          mana -= this.manaCost.mage;
         }
         return [mana, this.enemy.hp];
     }
@@ -2911,6 +3294,9 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
 /* harmony export */ });
+/* harmony import */ var _audio_audio__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./audio/audio */ "./src/js/modules/audio/audio.js");
+
+
 const sliderHero = (slides, prev, next) => {
   const slidesElem = document.querySelectorAll(slides),
     arrowPrev = document.querySelector(prev),
@@ -2940,12 +3326,14 @@ const sliderHero = (slides, prev, next) => {
     slidesElem[slideIndex].classList.add("hidden");
     slidesElem[slideIndex + 4].classList.remove("hidden");
     plusSlide(1);
+    (0,_audio_audio__WEBPACK_IMPORTED_MODULE_0__["default"])("clickSliderArrow");
   });
 
   arrowPrev.addEventListener("click", () => {
     plusSlide(-1);
     slidesElem[slideIndex].classList.remove("hidden");
     slidesElem[slideIndex + 4].classList.add("hidden");
+    (0,_audio_audio__WEBPACK_IMPORTED_MODULE_0__["default"])("clickSliderArrow");
   });
 };
 
@@ -3009,6 +3397,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _talentsHeroes_dryad__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./talentsHeroes/dryad */ "./src/js/modules/talents/talentsHeroes/dryad.js");
 /* harmony import */ var _talentsHeroes_mechanic__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./talentsHeroes/mechanic */ "./src/js/modules/talents/talentsHeroes/mechanic.js");
 /* harmony import */ var _talentsHeroes_witchmage__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./talentsHeroes/witchmage */ "./src/js/modules/talents/talentsHeroes/witchmage.js");
+/* harmony import */ var _talentsHeroes_mage__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./talentsHeroes/mage */ "./src/js/modules/talents/talentsHeroes/mage.js");
+
 
 
 
@@ -3143,6 +3533,9 @@ const coreTalents = {
         break;
       case "witchmag":
         _talentsHeroes_witchmage__WEBPACK_IMPORTED_MODULE_6__["default"].init(item, this.hero);
+        break;
+      case "mage":
+        _talentsHeroes_mage__WEBPACK_IMPORTED_MODULE_7__["default"].init(item, this.hero);
         break;
     }
   },
@@ -3305,7 +3698,7 @@ const coreTalents = {
             first: {
               title: "Перетасовка колоды",
               descr: [
-                "1: После каждого боя герой воостанавливает 18 маны",
+                "1: После каждого боя герой воостанавливает 20 маны",
                 "2: После каждого боя герой воостанавливает 24 маны",
                 "3: После каждого боя герой воостанавливает 28 маны",
               ],
@@ -3403,9 +3796,9 @@ const coreTalents = {
             first: {
               title: "Мастер-ломастер",
               descr: [
-                "1: С 15% шансом ваши атаки уменьшают защиту противника на 3, увеличивая вашу, на 2 хода",
-                "2: С 18% шансом ваши атаки уменьшают защиту противника на 4, увеличивая вашу, на 2 хода",
-                "3: С 21% шансом ваши атаки уменьшают защиту противника на 5, увеличивая вашу, на 2 хода",
+                "1: С 17% шансом ваши атаки уменьшают защиту противника на 3, увеличивая вашу, на 2 хода",
+                "2: С 20% шансом ваши атаки уменьшают защиту противника на 4, увеличивая вашу, на 2 хода",
+                "3: С 23% шансом ваши атаки уменьшают защиту противника на 5, увеличивая вашу, на 2 хода",
               ],
               img: "url(./img/icons/talents/mechanic/talent_mechanic_1_1.png)",
             },
@@ -3414,7 +3807,7 @@ const coreTalents = {
           level_2: {
             first: {
               title: "Мозговой чип",
-              descr: ["Режим Турбо дополнительно увеличивает адаптацию на 35%"],
+              descr: ["Режим Турбо дополнительно увеличивает адаптацию на 40%"],
               img: "url(./img/icons/talents/mechanic/talent_mechanic_2_1.png)",
             },
             second: {
@@ -3453,9 +3846,9 @@ const coreTalents = {
             first: {
               title: "Усиленные чары",
               descr: [
-                "1: Усиливает урон Чароплетсво на 15%",
-                "2: Усиливает урон Чароплетсво на 20%",
-                "3: Усиливает урон Чароплетсво на 25%",
+                "1: Усиливает урон Чароплетсво на 17%",
+                "2: Усиливает урон Чароплетсво на 23%",
+                "3: Усиливает урон Чароплетсво на 30%",
               ],
               img: "url(./img/icons/talents/witchmag/talent_witchmag_1_1.png)",
             },
@@ -3479,8 +3872,8 @@ const coreTalents = {
               title: "Зачарованный клинок",
               descr: [
                 "1: Атака пассивно усилена на 6, а во время Чароплетства еще на 6",
-                "2: Атака пассивно усилена на 8, а во время Чароплетства еще на 8",
-                "3: Атака пассивно усилена на 10, а во время Чароплетства еще на 10",
+                "2: Атака пассивно усилена на 9, а во время Чароплетства еще на 9",
+                "3: Атака пассивно усилена на 12, а во время Чароплетства еще на 12",
               ],
               img: "url(./img/icons/talents/witchmag/talent_witchmag_3_1.png)",
             },
@@ -3492,6 +3885,57 @@ const coreTalents = {
                 "3: После окончания Чароплетства враг получает 35%(боссу: 17.5%) от его макс.запаса здоровья",
               ],
               img: "url(./img/icons/talents/witchmag/talent_witchmag_3_2.png)",
+            },
+          },
+        });
+        break;
+      case "mage":
+        this.setDescr({
+          level_1: {
+            first: {
+              title: "Сконцентрированный взмах",
+              descr: [
+                "1: Увеличивает шанс крит.удара на 3% и силу магии 4",
+                "2: Увеличивает шанс крит.удара на 4% и силу магии 6",
+                "3: Увеличивает шанс крит.удара на 5% и силу магии 8",
+              ],
+              img: "url(./img/icons/talents/mage/talent_mage_1_1.png)",
+            },
+          },
+
+          level_2: {
+            first: {
+              title: "Школа магии льда",
+              descr: [
+                "Пока активен ледяной щит, атакующий вас враг получает урон в размере 50% от вашей силы магии",
+              ],
+              img: "url(./img/icons/talents/mage/talent_mage_2_1.png)",
+            },
+            second: {
+              title: "Школа магии огня",
+              descr: ["Огненный шар поджигает врага на 3 хода"],
+              img: "url(./img/icons/talents/mage/talent_mage_2_2.png)",
+            },
+          },
+
+          level_3: {
+            first: {
+              title: "Искусный волшебник",
+              descr: [
+                "1: При уклонении или при получении крит.урона, вы получаете ледяной щит, поглощающий 12% от макс.здоровья героя, суммируется",
+                "2: При уклонении или при получении крит.урона, вы получаете ледяной щит, поглощающий 15% от макс.здоровья героя, суммируется",
+                "3: При уклонении или при получении крит.урона, вы получаете ледяной щит, поглощающий 18% от макс.здоровья героя, суммируется",
+              ],
+              img: "url(./img/icons/talents/mage/talent_mage_3_1.png)",
+            },
+            second: {
+              title: "Зельеварение",
+              descr: [
+                "1: После каждого боя вы варите зелье и восстанавливаете 12% здровья и 15 маны.",
+                "2: После каждого боя вы варите зелье и восстанавливаете 14% здровья и 20 маны.",
+                "3: После каждого боя вы варите зелье и восстанавливаете 16% здровья и 25 маны.",
+              ],
+              img: "url(./img/icons/talents/mage/talent_mage_3_2.png)",
             },
           },
         });
@@ -3713,7 +4157,7 @@ const talentJester = {
             let bonusMana = 0;
             switch (this.amount) {
               case 1: {
-                bonusMana = 18;
+                bonusMana = 20;
                 break;
               }
               case 2: {
@@ -3858,6 +4302,195 @@ const talentJester = {
 
 /***/ }),
 
+/***/ "./src/js/modules/talents/talentsHeroes/mage.js":
+/*!******************************************************!*\
+  !*** ./src/js/modules/talents/talentsHeroes/mage.js ***!
+  \******************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var _update_stats__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../update_stats */ "./src/js/modules/update_stats.js");
+/* harmony import */ var _calc_hp__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../calc_hp */ "./src/js/modules/calc_hp.js");
+/* harmony import */ var _calc_mp__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../../calc_mp */ "./src/js/modules/calc_mp.js");
+/* harmony import */ var _text__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../../text */ "./src/js/modules/text.js");
+
+
+
+
+
+const talentMage = {
+  hero: {},
+
+  levels: {
+    level_1: {
+      first: {
+        learn: false,
+        amount: 0,
+        init: function (hero) {
+          if (this.learn) {
+            switch (this.amount) {
+              case 1: {
+                hero.magicPower += 4;
+                hero.critChance += 3;
+                break;
+              }
+              case 2: {
+                hero.magicPower += 2;
+                hero.critChance += 1;
+                break;
+              }
+              case 3: {
+                hero.magicPower += 2;
+                hero.critChance += 1;
+                break;
+              }
+              default:
+                null;
+            }
+            (0,_update_stats__WEBPACK_IMPORTED_MODULE_0__["default"])(".magicPower", hero.magicPower, true);
+            (0,_update_stats__WEBPACK_IMPORTED_MODULE_0__["default"])(".critChance", hero.critChance, true);
+          }
+        },
+      },
+    },
+    level_2: {
+      first: {
+        learn: false,
+        amount: 0,
+        init: function (hero) {
+          if (this.learn) {
+            hero.mageShieldReflect = function () {
+              return Math.round(hero.magicPower / 2);
+            };
+          }
+        },
+      },
+      second: {
+        learn: false,
+        amount: 0,
+        init: function (hero, enemy) {
+          if (this.learn) {
+            const duration = 3;
+            let count = 0;
+            let dmg = Math.floor(10 + hero.magicPower / 2);
+            const dot = setInterval(() => {
+              if (count >= duration || enemy.hp <= 0 || hero.hp < 0) {
+                clearInterval(dot);
+              } else {
+                enemy.hp -= dmg;
+                count++;
+                (0,_text__WEBPACK_IMPORTED_MODULE_3__["default"])(`Враг горит и получает ${dmg} урона,`, "cyan");
+                (0,_calc_hp__WEBPACK_IMPORTED_MODULE_1__["default"])(".enemy_hp", enemy.hp);
+              }
+            }, 2000);
+          } else {
+            return null;
+          }
+        },
+      },
+    },
+    level_3: {
+      first: {
+        learn: false,
+        amount: 0,
+        init: function (hero) {
+          if (this.learn) {
+            let factor = 0;
+            switch (this.amount) {
+              case 1:
+                factor = 12;
+                break;
+              case 2:
+                factor = 15;
+                break;
+              case 3:
+                factor = 18;
+                break;
+            }
+            hero.mageSkillMage = function () {
+              const barrier = Math.round(hero.maxHPHero / (100 / factor));
+              hero.barrier += barrier;
+              hero.mageOnIceShield = true;
+            };
+          }
+        },
+      },
+      second: {
+        learn: false,
+        amount: 0,
+        init: function (hero) {
+          if (this.learn) {
+            let factorHealHp = 0;
+            let healMp = 0;
+            switch (this.amount) {
+              case 1:
+                factorHealHp = 12;
+                healMp = 15;
+                break;
+              case 2:
+                factorHealHp = 14;
+                healMp = 20;
+                break;
+              case 3:
+                factorHealHp = 16;
+                healMp = 25;
+                break;
+            }
+            hero.magePotionsCooking = function () {
+              let healHp = Math.round(hero.maxHPHero / (100 / factorHealHp));
+              if (hero.hp + healHp > hero.maxHPHero) {
+                healHp = hero.maxHPHero - hero.hp;
+              }
+              hero.hp += healHp;
+              hero.mana += healMp;
+
+              (0,_calc_hp__WEBPACK_IMPORTED_MODULE_1__["default"])(".hero_hp", hero.hp);
+              (0,_calc_mp__WEBPACK_IMPORTED_MODULE_2__["default"])(hero.mana);
+              (0,_text__WEBPACK_IMPORTED_MODULE_3__["default"])(
+                `Вы выпиваете сваренное зелье и восстанавливаете себе ${healHp} здоровья и ${healMp} ману`,
+                "aqua"
+              );
+            };
+          }
+        },
+      },
+    },
+  },
+
+  init(talent, hero) {
+    const level = talent.getAttribute("level-current");
+    const branch = talent.getAttribute("branch");
+    console.log(level, branch);
+    this.levels[level][branch].learn = true;
+    this.levels[level][branch].amount += 1;
+
+    this.hero = hero;
+
+    if (level == "level_1" && branch == "first") {
+      this.levels.level_1.first.init(hero);
+    }
+    if (level == "level_2" && branch == "first") {
+      this.levels.level_2.first.init(hero);
+    }
+    if (level == "level_3" && branch == "first") {
+      this.levels.level_3.first.init(hero);
+    }
+    if (level == "level_3" && branch == "second") {
+      this.levels.level_3.second.init(hero);
+    }
+
+    console.log(this.levels);
+  },
+};
+
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (talentMage);
+
+
+/***/ }),
+
 /***/ "./src/js/modules/talents/talentsHeroes/mechanic.js":
 /*!**********************************************************!*\
   !*** ./src/js/modules/talents/talentsHeroes/mechanic.js ***!
@@ -3890,17 +4523,17 @@ const talentMechanic = {
             let decDef = 0;
             switch (this.amount) {
               case 1: {
-                chance = 15;
+                chance = 17;
                 decDef = 3;
                 break;
               }
               case 2: {
-                chance = 18;
+                chance = 20;
                 decDef = 4;
                 break;
               }
               case 3: {
-                chance = 21;
+                chance = 23;
                 decDef = 5;
                 break;
               }
@@ -3936,7 +4569,7 @@ const talentMechanic = {
         amount: 0,
         init: function () {
           if (this.learn) {
-            return 35;
+            return 40;
           } else {
             return 0;
           }
@@ -4618,13 +5251,13 @@ const talentWitchmag = {
             let factorDmg = 1;
             switch (this.amount) {
               case 1:
-                factorDmg = 1.15;
+                factorDmg = 1.17;
                 break;
               case 2:
-                factorDmg = 1.2;
+                factorDmg = 1.23;
                 break;
               case 3:
-                factorDmg = 1.25;
+                factorDmg = 1.3;
                 break;
             }
             return factorDmg;
@@ -4671,12 +5304,12 @@ const talentWitchmag = {
                 bonusAttack = 6;
                 break;
               case 2:
-                buffAttack = 2;
-                bonusAttack = 8;
+                buffAttack = 3;
+                bonusAttack = 9;
                 break;
               case 3:
-                buffAttack = 2;
-                bonusAttack = 10;
+                buffAttack = 3;
+                bonusAttack = 12;
                 break;
             }
             hero.attack[0] += buffAttack;
@@ -4926,6 +5559,11 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _modules_shop__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./modules/shop */ "./src/js/modules/shop.js");
 /* harmony import */ var _modules_talents_accordion__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./modules/talents/accordion */ "./src/js/modules/talents/accordion.js");
 /* harmony import */ var _modules_talents_core_talents__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ./modules/talents/core-talents */ "./src/js/modules/talents/core-talents.js");
+/* harmony import */ var _modules_changeBg__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ./modules/changeBg */ "./src/js/modules/changeBg.js");
+/* harmony import */ var _modules_audio_audio__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! ./modules/audio/audio */ "./src/js/modules/audio/audio.js");
+
+
+
 
 
 
@@ -4943,6 +5581,7 @@ window.addEventListener("DOMContentLoaded", () => {
   let maxHpHero;
   let maxMpHero;
   let enemy;
+  let sex = "man";
 
   //
   const btnStart = document.querySelector(".btn__start");
@@ -4951,6 +5590,9 @@ window.addEventListener("DOMContentLoaded", () => {
   btnStart.addEventListener("click", () => {
     content.classList.add("show", "fade");
     btnStart.remove();
+
+    (0,_modules_audio_audio__WEBPACK_IMPORTED_MODULE_10__["default"])("background", "loop");
+    (0,_modules_audio_audio__WEBPACK_IMPORTED_MODULE_10__["default"])("background");
   });
 
   //
@@ -4995,6 +5637,7 @@ window.addEventListener("DOMContentLoaded", () => {
     btn.addEventListener("click", (e) => {
       e.stopPropagation();
       const atr = e.target.closest(".base__container_hero").getAttribute("data");
+      sex = e.target.closest(".base__container_hero").getAttribute("sex");
       bars.classList.remove("hidden");
       allHeroes.forEach((item) => {
         item.classList.add("hidden");
@@ -5020,6 +5663,7 @@ window.addEventListener("DOMContentLoaded", () => {
       (0,_modules_calc_hp__WEBPACK_IMPORTED_MODULE_3__["default"])(".hero_hp", maxHpHero);
 
       hero.boss = 0;
+      hero.sex = sex;
 
       mpHero.setAttribute("data-mp", hero.mp);
       maxMpHero = mpHero.getAttribute("data-mp");
@@ -5027,6 +5671,14 @@ window.addEventListener("DOMContentLoaded", () => {
 
       _modules_talents_core_talents__WEBPACK_IMPORTED_MODULE_8__["default"].init(hero);
 
+      //
+
+      (0,_modules_audio_audio__WEBPACK_IMPORTED_MODULE_10__["default"])("heroChosen");
+      (0,_modules_audio_audio__WEBPACK_IMPORTED_MODULE_10__["default"])("background", "stop");
+
+      (0,_modules_audio_audio__WEBPACK_IMPORTED_MODULE_10__.setAudioToHero)(hero);
+
+      //
       // buff();
     });
   });
@@ -5042,7 +5694,10 @@ window.addEventListener("DOMContentLoaded", () => {
   const btnSkill = document.querySelector(".btn__skill");
   btnGo.addEventListener("click", () => {
     enemy = (0,_modules_enemy__WEBPACK_IMPORTED_MODULE_2__["default"])(hero.luck);
+
     createEnemy();
+
+    (0,_modules_changeBg__WEBPACK_IMPORTED_MODULE_9__["default"])(enemy.name);
   });
 
   btnFight.addEventListener("click", () => {
@@ -5141,6 +5796,8 @@ window.addEventListener("DOMContentLoaded", () => {
           .closest(".base__container_hero")
           .querySelector(".img__hero")
           .setAttribute("src", `${src.slice(0, -9)}.png`);
+
+        btn.closest(".base__container_hero").setAttribute("sex", "man");
       }
       if (sex == "woman" && src.substring(src.length - 9) !== "Woman.png") {
         // src = btn.closest(".base__container_hero").querySelector(".img__hero").getAttribute("src");
@@ -5148,7 +5805,10 @@ window.addEventListener("DOMContentLoaded", () => {
           .closest(".base__container_hero")
           .querySelector(".img__hero")
           .setAttribute("src", `${src.slice(0, -4)}Woman.png`);
+
+        btn.closest(".base__container_hero").setAttribute("sex", "woman");
       }
+      console.log(sex);
     });
   });
 });

@@ -16,13 +16,13 @@ const talentWitchmag = {
             let factorDmg = 1;
             switch (this.amount) {
               case 1:
-                factorDmg = 1.15;
+                factorDmg = 1.17;
                 break;
               case 2:
-                factorDmg = 1.2;
+                factorDmg = 1.23;
                 break;
               case 3:
-                factorDmg = 1.25;
+                factorDmg = 1.3;
                 break;
             }
             return factorDmg;
@@ -69,12 +69,12 @@ const talentWitchmag = {
                 bonusAttack = 6;
                 break;
               case 2:
-                buffAttack = 2;
-                bonusAttack = 8;
+                buffAttack = 3;
+                bonusAttack = 9;
                 break;
               case 3:
-                buffAttack = 2;
-                bonusAttack = 10;
+                buffAttack = 3;
+                bonusAttack = 12;
                 break;
             }
             hero.attack[0] += buffAttack;

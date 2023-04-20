@@ -1,6 +1,7 @@
 function calcHp(selector, numHp) {
   const hpBar = document.querySelector(selector);
   const hpBarShadow = hpBar.parentNode.querySelector(".bar__hp-f-shadow");
+  const barrierBar = hpBar.parentNode.querySelector(".bar__hp-f-barrier");
 
   let hpAtr = +hpBar.getAttribute("data-hp");
   const factor = hpBar.parentNode.clientWidth / hpAtr;
