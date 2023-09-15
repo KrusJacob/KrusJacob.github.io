@@ -5,74 +5,145 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Portfolio</title>
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet" />
     <link rel="stylesheet" href="assets/main.css" />
   </head>
   <body>
-    <div class="content">
-      <div class="container">
-        <h1 class="title">Training project:</h1>
-        <div class="wrapper">
-          <div class="projects html+css">
-            <h2 class="title">HTML + CSS</h2>
-            <div class="project">
-              <a href="https://krusjacob.github.io/projects/project_uber/">Project_uber</a>
-              <img src="assets/img/pop-up_uber.png" alt="project_uber" />
-            </div>
-            <div class="project">
-              <a href="https://krusjacob.github.io/projects/project_pulse/">Project_pulse</a>
-              <img src="assets/img/pop-up_pulse.png" alt="project_pulse" />
-            </div>
-            <div class="project">
-              <a href="https://krusjacob.github.io/projects/project_portfolio/">Project_portfolio</a>
-              <img src="assets/img/pop-up_portfolio.png" alt="project_portfolio" />
-            </div>
-          </div>
-          <div class="projects js">
-            <h2 class="title">JavaScript</h2>
-            <div class="project">
-              <a href="https://krusjacob.github.io/projects/windows/">Windows</a>
-              <img src="assets/img/pop-up_windwos.png" alt="windwos" />
-            </div>
-            <div class="project">
-              <a href="https://krusjacob.github.io/projects/bringitup/">BringItUp</a>
-              <img src="assets/img/pop-up_bringtiup.png" alt="bringtiup" />
-            </div>
-            <div class="project">
-              <a href="https://krusjacob.github.io/projects/picture_Art/">Picture_Art</a>
-              <img src="assets/img/pop-up_pictureArt.png" alt="pictureArt" />
-            </div>
-          </div>
-          <div class="projects libraries">
-            <h2 class="title">at using other libraries</h2>
-            <div class="project">
-              <a href="https://krusjacob.github.io/projects/parallaxForest/">ParallaxForest</a>
-              <img src="assets/img/pop-up_parallaxForest.png" alt="parallaxForest" />
-            </div>
-            <div class="project">
-              <a href="https://krusjacob.github.io/projects/parallaxWindow/">ParallaxWindow</a>
-              <img src="assets/img/pop-up_parallaxWindow.png" alt="parallaxWindow" />
-            </div>
-            <div class="project">
-              <a href="https://krusjacob.github.io/projects/parallaxGallery/">ParallaxGallery</a>
-              <img src="assets/img/pop-up_parallaxGallery.png" alt="parallaxGallery" />
-            </div>
-            <div class="project">
-              <a href="https://krusjacob.github.io/projects/scroll3dSite">ScrollSite3D</a>
-              <img src="assets/img/pop-up_scrollSite3D.png" alt="parallaxGallery" />
-            </div>
-          </div>
-          <div class="projects react">
-            <h2 class="title">React App</h2>
-            <div class="project">
-              <a href="https://krusjacob.github.io/projects/marvel/">Marvel</a>
-              <img src="assets/img/pop-up_marvel.png.png" alt="parallaxForest" />
-            </div>
-          </div>
+    <main>
+      <aside class="aside">
+        <div class="logo">
+          <span>KrusJacob</span>
         </div>
+        <nav>
+          <ul>
+            <li>
+              <a href="#home">Home</a>
+            </li>
+            <li>
+              <a href="#about">About</a>
+            </li>
+
+            <li>
+              <a href="#portfolio">Portfolio</a>
+            </li>
+          </ul>
+        </nav>
+      </aside>
+      <div class="content">
+        <section id="home" class="home">
+          <div class="menu">
+            <nav>
+              <ul>
+                <li>
+                  <a href="#home">Home</a>
+                </li>
+                <li>
+                  <a href="#about">About</a>
+                </li>
+                <li>
+                  <a href="#portfolio">Portfolio</a>
+                </li>
+              </ul>
+            </nav>
+          </div>
+
+          <div class="wrapper">
+            <div class="home__grid">
+              <div class="home__grid_left">
+                <h2 class="title text">Hello, my name is <span>Jacob Ogrodnik</span> I am a Frontend Developer</h2>
+                <p class="descr text">
+                  Lorem ipsum, dolor sit amet consectetur adipisicing elit. Quidem culpa non magnam vitae dolor
+                  laborum obcaecati vero. Libero facilis corrupti hic beatae cupiditate dolore mollitia.
+                </p>
+                <a href="#about" class="button">More About Me</a>
+              </div>
+              <div class="home__grid_right">
+                <img
+                  src="https://kartinkof.club/uploads/posts/2022-04/1649911692_2-kartinkof-club-p-rzhachnie-kartinki-na-avu-dlya-patsanov-2.jpg"
+                  alt="photo"
+                />
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section id="about" class="about">
+          <div class="wrapper">
+            <h3 class="about__title title">About Me</h3>
+            <div class="about__content">
+              <div class="about__head">
+                <p class="about__descr">
+                  Lorem, ipsum dolor sit amet consectetur adipisicing elit. Consectetur a perferendis, quas
+                  dignissimos neque nostrum praesentium autem, cumque animi, pariatur veritatis quos quam ad
+                  molestias temporibus sint ex veniam sed. Lorem ipsum dolor sit, amet consectetur adipisicing
+                  elit. Expedita, impedit. Inventore numquam labore blanditiis ratione qui obcaecati illum.
+                </p>
+              </div>
+              <div class="about__footer">
+                <div class="info">
+                  <h5 class="subtitle">Info</h5>
+                  <ul>
+                    <li>Birthday : <span>4 Jule 1996</span></li>
+                    <li>Age : <span>27</span></li>
+                    <li>City : <span>Minsk</span></li>
+                    <li>Email : <span>coneter@mail.com</span></li>
+                  </ul>
+                </div>
+                <div class="skills">
+                  <h5 class="subtitle">Skills</h5>
+                  <ul>
+                    <li>HTML</li>
+                    <li>CSS</li>
+                    <li>Tailwind</li>
+                    <li>JavaScript</li>
+                    <li>React</li>
+                    <li>Redux</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+        <section id="portfolio" class="portfolio">
+          <div class="wrapper">
+            <h3 class="portfolio__title title">Portfolio</h3>
+            <div class="portfolio__content">
+              <div class="portfolio__item">
+                <a href="projects/bringitup/"><img src="assets/img/pop-up_bringtiup.png" alt="" /></a>
+              </div>
+              <div class="portfolio__item">
+                <a href="projects/marvel/"> <img src="assets/img/pop-up_marvel.png.png" alt="" /></a>
+              </div>
+              <div class="portfolio__item">
+                <a href="projects/parallaxForest/"><img src="assets/img/pop-up_parallaxForest.png" alt="" /></a>
+              </div>
+              <div class="portfolio__item">
+                <a href="projects/parallaxGallery/"><img src="assets/img/pop-up_parallaxGallery.png" alt="" /></a>
+              </div>
+              <div class="portfolio__item">
+                <a href="projects/parallaxWindow/"> <img src="assets/img/pop-up_parallaxWindow.png" alt="" /></a>
+              </div>
+              <div class="portfolio__item">
+                <a href="projects/picture_Art/"><img src="assets/img/pop-up_pictureArt.png" alt="" /></a>
+              </div>
+              <div class="portfolio__item">
+                <a href="projects/project_pulse/"><img src="assets/img/pop-up_pulse.png" alt="" /></a>
+              </div>
+              <div class="portfolio__item">
+                <a href="projects/scroll3dSite/"><img src="assets/img/pop-up_scrollSite3D.png" alt="" /></a>
+              </div>
+              <div class="portfolio__item">
+                <a href="projects/windows/"><img src="assets/img/pop-up_windwos.png" alt="" /></a>
+              </div>
+            </div>
+          </div>
+        </section>
       </div>
-      <div class="footer">
-        <p>© krusJacob</p>
-      </div>
-    </div>
+    </main>
+    <footer class="footer">
+      <p>© KrusJacob</p>
+    </footer>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.6.0/gsap.min.js"></script>
+    <script src="assets/index.js"></script>
   </body>
 </html>
