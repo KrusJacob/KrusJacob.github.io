@@ -3,9 +3,10 @@ function accordion(
   contentActive = "talents__accordion-content--active",
   paddings = 280
 ) {
-  const container = document.querySelector(".talents__container");
+  // const container = document.querySelector(".talents__container");
   const head = document.querySelector(".talents__accordion-head");
   head.addEventListener("click", () => {
+    console.log("sss");
     head.classList.toggle(headActive);
     head.previousElementSibling.classList.toggle(contentActive);
 
@@ -18,7 +19,5 @@ function accordion(
     }
   });
 }
-
-accordion();
 
 export default accordion;

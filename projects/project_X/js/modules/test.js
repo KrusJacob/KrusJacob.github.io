@@ -38,3 +38,37 @@
 // } else {
 //   console.log("net");
 // }
+const hero = {
+  name: "war",
+  arg: true,
+  arg2: true,
+  arg3: "",
+};
+function res() {
+  console.log("res");
+}
+
+ff("war", res, [hero.arg, hero.arg3]);
+
+function ff(name, fn, [...trigers]) {
+  if (
+    hero.name === name &&
+    !([...trigers].includes(false) || [...trigers].includes(undefined) || [...trigers].includes(""))
+  ) {
+    fn();
+  } else {
+    console.log("no");
+  }
+}
+
+const sss = {
+  stun: 0,
+};
+
+sss.stun++;
+console.log(sss.stun);
+
+sss.stun ? sss.stun-- : null;
+console.log(sss.stun);
+sss.stun ? sss.stun-- : null;
+console.log(sss.stun);

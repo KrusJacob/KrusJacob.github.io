@@ -45,7 +45,7 @@ const talentMage = {
         init: function (hero) {
           if (this.learn) {
             hero.mageShieldReflect = function () {
-              return Math.round(hero.magicPower / 2);
+              return Math.round(hero.magicPower / (100 / 40));
             };
           }
         },
@@ -57,14 +57,14 @@ const talentMage = {
           if (this.learn) {
             const duration = 3;
             let count = 0;
-            let dmg = Math.floor(10 + hero.magicPower / 2);
+            let dmg = Math.floor(5 + hero.magicPower / 2);
             const dot = setInterval(() => {
               if (count >= duration || enemy.hp <= 0 || hero.hp < 0) {
                 clearInterval(dot);
               } else {
                 enemy.hp -= dmg;
                 count++;
-                addText(`Враг горит и получает ${dmg} урона,`, "cyan");
+                addText(`Враг горит и получает ${dmg} урона,`, "magenta");
                 calcHp(".enemy_hp", enemy.hp);
               }
             }, 2000);
@@ -83,18 +83,19 @@ const talentMage = {
             let factor = 0;
             switch (this.amount) {
               case 1:
-                factor = 12;
+                factor = 8;
                 break;
               case 2:
-                factor = 15;
+                factor = 11;
                 break;
               case 3:
-                factor = 18;
+                factor = 14;
                 break;
             }
             hero.mageSkillMage = function () {
               const barrier = Math.round(hero.maxHPHero / (100 / factor));
               hero.barrier += barrier;
+
               hero.mageOnIceShield = true;
             };
           }
@@ -140,6 +141,84 @@ const talentMage = {
         },
       },
     },
+    level_4: {
+      first: {
+        learn: false,
+        amount: 0,
+        init: function (hero, enemy) {
+          if (this.learn) {
+            let factor = 0,
+              chance = 0;
+            switch (this.amount) {
+              case 1:
+                factor = 10;
+                chance = 40;
+                break;
+              case 2:
+                factor = 13;
+                chance = 50;
+                break;
+              case 3:
+                factor = 16;
+                chance = 60;
+                break;
+            }
+            const bonusBarrier = Math.round(hero.maxHPHero / (100 / factor));
+            hero.barrier += bonusBarrier;
+            const chanceTotal = Math.random() * 100 + 1;
+            if (chance > chanceTotal) {
+              enemy.stun++;
+            }
+          }
+        },
+      },
+      second: {
+        learn: false,
+        amount: 0,
+        init: function (hero) {
+          if (this.learn) {
+            let duration = 6000;
+            let absorb = 0;
+            let reflectFactor = 0;
+            let timeout;
+            switch (this.amount) {
+              case 1:
+                hero.mageFireShield = {};
+                hero.mageFireShield.active = false;
+                absorb = 25;
+                reflectFactor = 0.3;
+                break;
+              case 2:
+                absorb = 35;
+                reflectFactor = 0.4;
+                break;
+              case 3:
+                absorb = 45;
+                reflectFactor = 0.5;
+                break;
+            }
+            hero.mageFireShield.use = function () {
+              !hero.mageFireShield.active ? (hero.absorbDamage += absorb) : null;
+              hero.mageFireShield.active = true;
+
+              clearTimeout(timeout);
+              timeout = setTimeout(() => {
+                hero.absorbDamage -= absorb;
+                hero.mageFireShield.active = false;
+              }, duration);
+            };
+            hero.mageFireShield.takeDmg = function (enemy) {
+              if (hero.mageFireShield.active) {
+                const dmg = Math.round(hero.magicPower * reflectFactor);
+                addText(`Огненный щит наносит врагу ${dmg} урона`, "magenta");
+                enemy.hp -= dmg;
+                calcHp(".enemy_hp", enemy.hp);
+              }
+            };
+          }
+        },
+      },
+    },
   },
 
   init(talent, hero) {
@@ -162,6 +241,9 @@ const talentMage = {
     }
     if (level == "level_3" && branch == "second") {
       this.levels.level_3.second.init(hero);
+    }
+    if (level == "level_4" && branch == "second") {
+      this.levels.level_4.second.init(hero);
     }
 
     console.log(this.levels);

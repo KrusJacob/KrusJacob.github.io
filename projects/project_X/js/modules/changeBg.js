@@ -1,4 +1,4 @@
-let mainBg = document.body;
+const mainBg = document.body;
 const changeBg = (enemyName) => {
   switch (enemyName) {
     case "greenMonster":
@@ -10,6 +10,7 @@ const changeBg = (enemyName) => {
       mainBg.classList.add("hell");
       break;
     case "angelFighter":
+    case "whiteDragon":
       mainBg.classList.add("paradise");
       break;
     default:

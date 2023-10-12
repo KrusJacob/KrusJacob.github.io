@@ -1,7 +1,7 @@
 import updateStats from "../../update_stats";
 import calcHp from "../../calc_hp";
 // import calcMp from "../../calc_mp";
-// import addText from "../../text";
+import addText from "../../text";
 import { manaCost, initDescrBtn } from "../../skills";
 
 const talentDryad = {
@@ -18,15 +18,15 @@ const talentDryad = {
             let count = 0;
             switch (this.amount) {
               case 1: {
-                healProcent = 3;
-                break;
-              }
-              case 2: {
                 healProcent = 4;
                 break;
               }
-              case 3: {
+              case 2: {
                 healProcent = 5;
+                break;
+              }
+              case 3: {
+                healProcent = 6;
                 break;
               }
               default:
@@ -34,7 +34,7 @@ const talentDryad = {
             }
             setTimeout(() => {
               const healing = setInterval(() => {
-                if (count >= 3 || hero.hp < 0) {
+                if (count >= 2 || hero.hp < 0) {
                   clearInterval(healing);
                 } else {
                   hero.hp += Math.round(maxHp / (100 / healProcent));
@@ -81,23 +81,23 @@ const talentDryad = {
       first: {
         learn: false,
         amount: 0,
-        init: function (enemy) {
+        init: function (hero) {
           if (this.learn) {
-            let factorDmg = 1;
+            let absorbDmg = 0;
             switch (this.amount) {
               case 1:
-                factorDmg = 0.6;
+                absorbDmg = 40;
                 break;
               case 2:
-                factorDmg = 0.5;
+                absorbDmg = 55;
                 break;
               case 3:
-                factorDmg = 0.4;
+                absorbDmg = 70;
                 break;
             }
-            enemy.multiplierDmg = factorDmg;
+            hero.absorbDamage += absorbDmg;
             setTimeout(() => {
-              enemy.multiplierDmg = 1;
+              hero.absorbDamage -= absorbDmg;
             }, 4000);
           }
         },
@@ -130,6 +130,79 @@ const talentDryad = {
         },
       },
     },
+    level_4: {
+      first: {
+        learn: false,
+        amount: 0,
+        init: function (hero) {
+          if (this.learn) {
+            let bonusHp = 0,
+              bonusDef = 0,
+              reduceDodge = 0;
+            switch (this.amount) {
+              case 1:
+                bonusHp = 70;
+                bonusDef = 3;
+                reduceDodge = 3;
+                break;
+              case 2:
+                bonusHp = 35;
+                bonusDef = 2;
+                reduceDodge = 2;
+                break;
+              case 3:
+                bonusHp = 35;
+                bonusDef = 2;
+                reduceDodge = 2;
+                break;
+            }
+            hero.maxHPHero += bonusHp;
+            updateStats(".hpMax", bonusHp);
+            document.querySelector(".hero_hp").setAttribute("data-hp", +hero.maxHPHero);
+            calcHp(".hero_hp", hero.hp);
+            hero.def += bonusDef;
+            hero.dodge -= reduceDodge;
+            updateStats(".def", hero.def, true);
+            updateStats(".dodge", hero.dodge, true);
+          }
+        },
+      },
+      second: {
+        learn: false,
+        amount: 0,
+        init: function (hero) {
+          if (this.learn) {
+            let chance = 0,
+              factorDmg = 0;
+
+            switch (this.amount) {
+              case 1:
+                chance = 16;
+                factorDmg = 0.8;
+                break;
+              case 2:
+                chance = 20;
+                factorDmg = 1;
+                break;
+              case 3:
+                chance = 24;
+                factorDmg = 1.2;
+                break;
+            }
+            hero.dryadMoonlight = function (hero, enemy) {
+              const chanceTotal = Math.random() * 100 + 1;
+              if (chance > chanceTotal) {
+                if (enemy.hp > 0) {
+                  const dmg = Math.round(hero.magicPower * factorDmg);
+                  enemy.hp -= dmg;
+                  addText(`Лунный огонь наносит врагу ${dmg} урона`, "magenta");
+                }
+              }
+            };
+          }
+        },
+      },
+    },
   },
 
   init(talent, hero) {
@@ -149,6 +222,12 @@ const talentDryad = {
     }
     if (level == "level_3" && branch == "second") {
       this.levels.level_3.second.init(hero);
+    }
+    if (level == "level_4" && branch == "first") {
+      this.levels.level_4.first.init(hero);
+    }
+    if (level == "level_4" && branch == "second") {
+      this.levels.level_4.second.init(hero);
     }
 
     console.log(this.levels);

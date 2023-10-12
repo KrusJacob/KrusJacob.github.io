@@ -245,7 +245,7 @@ section {
 }
 .portfolio__item {
     border: 4px solid var(--gray);
-    width: 380px;
+    width: 410px;
     margin: 20px 20px 0 0;
     height: 200px;
     transition: 0.3s all;
@@ -253,7 +253,7 @@ section {
 }
 .portfolio__item:hover {
     box-shadow: 0 0 15px var(--yellow);
-    transform: scale(1.02);
+    transform: scale(1.03);
 }
 .portfolio__item img {
     height: 100%;

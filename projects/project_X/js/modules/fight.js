@@ -6,7 +6,16 @@ import goldCoin from "./gold_coin";
 import updateStats from "./update_stats";
 import skill from "./skills";
 import buff from "./buff";
-import { critPowerMod, critСhanceMod, dodgeMod, defMod, adaptMod } from "./mods/mods";
+import { critPowerMod, critСhanceMod, dodgeMod, defMod, adaptMod, vampiricMod } from "./mods/mods";
+import {
+  warriorSpecificity,
+  monkSpecificity,
+  jesterSpecificity,
+  witchmagSpecificity,
+  mechanicSpecificity,
+  mageSpecificity,
+} from "./specificity/heroes_specificity";
+// import monkSpecificity from "./specificity/monk_specificity";
 
 import AudioAction from "./audio/audio";
 
@@ -14,38 +23,31 @@ import AudioAction from "./audio/audio";
 
 //
 
-import changeBg from "./changeBg";
-
-let mana = 0;
-
-let berserk = false;
 let regenDryad = 5;
-let comboMechanic;
+// let comboMechanic;
+
 let manaRegen = 5;
 
 const textRaidLvl = document.querySelector(".text__raid span");
 
 let enemyCount = 0;
 
-// const critPowerMod = (critPower) => Math.round(critPower * 0.85);
-// const critСhanceMod = (critChance) => Math.round(critChance * 0.85);
-// const dodgeMod = (dodge) => Math.round(dodge * 0.85);
-// const defMod = (def) => Math.round(def * 0.8);
-// const adaptMod = (adapt) => Math.round(adapt * 0.35);
-
 function fight(target, assaulter, btnsHidden, btnReload, btnDisplay) {
   let maxHPHero = +document.querySelector(".hero_hp").getAttribute("data-hp");
   let maxHPEnemy = +document.querySelector(".enemy_hp").getAttribute("data-hp");
   target.maxHPEnemy = maxHPEnemy;
   assaulter.maxHPHero = maxHPHero;
-  let maxMP = assaulter.mp;
-  comboMechanic = 0;
+  let maxMP = assaulter.maxMPHero;
+  // comboMechanic = 0;
   let buffAttack = 0;
   let buffDodge = 0;
   let bloodOrkTrigger = false;
   let darknessStep;
   let staffOmbalStep = 0;
   let sphereDMStep = false;
+  mechanicSpecificity.use();
+
+  assaulter.stun = 0;
 
   function battle(target, assaulter) {
     // Вычисление атаки
@@ -100,175 +102,226 @@ function fight(target, assaulter, btnsHidden, btnReload, btnDisplay) {
       finishFight();
       return;
     }
-    if (ObjDmg === "Промах") {
-      // AudioAction("missAttack");
-      assaulter.audio.miss();
-      addText("Промах!", "orange");
-      comboMechanic = 0;
-
-      assaulter.swordKingHell ? swordKingHell(assaulter, target) : null;
+    if (assaulter.stun) {
+      addText(`Вы оглушены (${assaulter.stun} ход)`, "orange");
+      assaulter.stun--;
     } else {
-      // ObjDmg.crit ? AudioAction("swordCrit") : AudioAction("swordStrike");
-      ObjDmg.crit ? assaulter.audio.crit() : assaulter.audio.attack();
-      // musicAction("warriorStrike");
-      let dmgHeroNum = ObjDmg.dmg;
-      dmgHeroNum += redDagger(assaulter.redDagger, target.def);
-      dmgHeroNum = CountComboMechanic(assaulter.name, dmgHeroNum) + buffAttack;
+      if (ObjDmg === "Промах") {
+        // AudioAction("missAttack");
+        assaulter.audio.miss();
+        addText("Промах!", "orange");
+        mechanicSpecificity.use();
 
-      // monk level_2 second
-      assaulter.name == "monk" && assaulter.monkTiger && ObjDmg.crit ? monkTiger(assaulter, target) : null;
-      // monk level_3 first
-      assaulter.name == "monk" && assaulter.monkLotus ? monkLotus(assaulter, target) : null;
-      // mechanic level_1 first
-      assaulter.name == "mechanic" && assaulter.mechanicMaster
-        ? assaulter.mechanicMaster(assaulter, target)
-        : null;
+        assaulter.arts.swordKingHell ? swordKingHell(assaulter, target) : null;
+      } else {
+        // ObjDmg.crit ? AudioAction("swordCrit") : AudioAction("swordStrike");
+        ObjDmg.crit ? assaulter.audio.crit() : assaulter.audio.attack();
 
-      target.hp -= dmgHeroNum;
-      touchOfDeath(assaulter, target);
-      staffOmbal(assaulter, maxHPHero, target, staffOmbalStep);
-      thunderHammer(assaulter, target);
+        let dmgHeroNum = ObjDmg.dmg + buffAttack;
 
-      ObjDmg.crit && assaulter.handKingHell ? handKingHell(target, maxHPEnemy) : null;
+        dmgHeroNum += redDagger(assaulter.arts.redDagger, target.def);
+        // mechanic specificify
+        useUtilityByHeroName("mechanic", () => (dmgHeroNum = mechanicSpecificity.use(dmgHeroNum, target)), []);
+        // jester specificify
+        useUtilityByHeroName(
+          "jester",
+          () => (dmgHeroNum = jesterSpecificity(assaulter, dmgHeroNum, target.def)),
+          []
+        );
+        // witchmag specificify
+        useUtilityByHeroName(
+          "witchmag",
+          () => (dmgHeroNum = dmgHeroNum + witchmagSpecificity(assaulter.magicPower)),
+          []
+        );
+        // monk level_2 second
+        useUtilityByHeroName("monk", () => monkTiger(assaulter, target), [assaulter.monkTiger, ObjDmg.crit]);
+        // monk level_3 first
+        useUtilityByHeroName("monk", () => monkLotus(assaulter, target), [assaulter.monkLotus]);
+        // monk specificity
+        useUtilityByHeroName("monk", () => monkSpecificity.use(target), []);
+        // mechanic level_1 first
+        useUtilityByHeroName("mechanic", () => assaulter.mechanicMaster(assaulter, target), [
+          assaulter.mechanicMaster,
+        ]);
+        // dryad level_4 second
+        useUtilityByHeroName("dryad", () => assaulter.dryadMoonlight(assaulter, target), [
+          assaulter.dryadMoonlight,
+        ]);
+        // witchmag level_4 first
+        useUtilityByHeroName("witchmag", () => assaulter.witchmagThirstBlade(assaulter, target), [
+          assaulter.witchmagThirstBlade,
+        ]);
 
-      calcHp(".enemy_hp", target.hp);
+        target.hp -= dmgHeroNum;
+        blackRaven(assaulter, target);
+        staffOmbal(assaulter, maxHPHero, target, staffOmbalStep);
+        thunderHammer(assaulter, target);
+        emblemWolf(assaulter, target);
 
-      // vampiric
-      if (assaulter.vampiric) {
-        assaulter.hp += vampiric(assaulter, dmgHeroNum);
-        if (assaulter.hp > +maxHPHero) {
-          assaulter.hp = +maxHPHero;
+        ObjDmg.crit && assaulter.arts.handKingHell ? handKingHell(target, maxHPEnemy) : null;
+
+        calcHp(".enemy_hp", target.hp);
+
+        // vampiric
+        if (assaulter.vampiric) {
+          assaulter.hp += vampiric(assaulter, dmgHeroNum);
+          if (assaulter.hp > +maxHPHero) {
+            assaulter.hp = +maxHPHero;
+          }
+          calcHp(".hero_hp", assaulter.hp);
         }
-        calcHp(".hero_hp", assaulter.hp);
-      }
 
-      // MANA
+        // MANA
 
-      if (assaulter.mana < maxMP) {
-        assaulter.bonusMP ? (assaulter.mana += manaRegen + assaulter.bonusMP) : (assaulter.mana += manaRegen);
-        ObjDmg.crit && assaulter.frostsword ? (assaulter.mana += 2) : null;
-        // assaulter.name == "mage" ? (assaulter.mana += 1) : null;
+        if (assaulter.mana < maxMP) {
+          assaulter.bonusMP ? (assaulter.mana += manaRegen + assaulter.bonusMP) : (assaulter.mana += manaRegen);
+          ObjDmg.crit && assaulter.arts.frostsword ? (assaulter.mana += 2) : null;
+          // assaulter.name == "mage" ? (assaulter.mana += 1) : null;
 
-        // monk level_1 first
-        if (assaulter.name == "monk" && assaulter.monkSnakeStrikes) {
-          assaulter.mana += assaulter.monkSnakeStrikes();
+          // monk level_1 first
+          // if (assaulter.name == "monk" && assaulter.monkSnakeStrikes) {
+          //   assaulter.mana += assaulter.monkSnakeStrikes();
+          // }
+
+          useUtilityByHeroName("monk", () => assaulter.monkSnakeStrikes(), [assaulter.monkSnakeStrikes]);
+
+          if (assaulter.mana > maxMP) {
+            assaulter.mana = maxMP;
+          }
+          calcMp(assaulter.mana);
         }
-        if (assaulter.mana > maxMP) {
-          assaulter.mana = maxMP;
-        }
-        calcMp(assaulter.mana);
-      }
 
-      //
-
-      if (target.hp <= 0) {
-        clearInterval(battleSetInterval);
-        addText(`Вы нанесли${ObjDmg.crit} ${dmgHeroNum} урона и убили противника`, "white");
         //
-        finishFight();
-        return;
+
+        if (target.hp <= 0) {
+          clearInterval(battleSetInterval);
+          addText(`Вы нанесли${ObjDmg.crit} ${dmgHeroNum} урона и убили противника`, "white");
+          useUtilityByHeroName("rogue", () => assaulter.rogueRewardKill(assaulter, maxHPHero, maxHPEnemy), [
+            assaulter.rogueRewardKill,
+          ]);
+          //
+          finishFight();
+          return;
+        }
+        addText(`Вы нанесли${ObjDmg.crit} ${dmgHeroNum} урона`, "yellow");
       }
-      addText(`Вы нанесли${ObjDmg.crit} ${dmgHeroNum} урона`, "yellow");
     }
 
     // specificity mage
     if (assaulter.mana < maxMP && assaulter.name == "mage") {
-      assaulter.mana += 1;
+      assaulter.mana += mageSpecificity();
       calcMp(assaulter.mana);
     }
     staffOmbalStep++;
 
     setTimeout(() => {
-      // target.hp = checkAttrHP(".enemy_hp");
       if (target.hp <= 0) {
         return;
       }
       if (target.stun) {
-        addText("Враг оглушен", "dodgerblue");
-        target.stun = false;
+        addText(`Враг оглушен (${target.stun} ход)`, "dodgerblue");
+        target.stun--;
         return;
       }
       if (ObjDmgEnemy === "Промах") {
-        musicAction("missAttack");
+        AudioAction("missAttack");
         addText("Вы увернулись", "green");
 
-        assaulter.robberyCloak ? robberyCloak(assaulter) : null;
+        assaulter.arts.robberyCloak ? robberyCloak(assaulter) : null;
         // monk level_2 first
-        assaulter.name == "monk" && assaulter.monkMantis ? monkMantis(assaulter, target) : null;
+        useUtilityByHeroName("monk", () => monkMantis(assaulter, target), [assaulter.monkMantis]);
         // mage level_3 first
-        assaulter.name == "mage" && assaulter.mageSkillMage ? mageSkillMage(assaulter) : null;
+        useUtilityByHeroName("mage", () => mageSkillMage(assaulter), [assaulter.mageSkillMage]);
       } else {
-        ObjDmgEnemy.crit ? assaulter.audio.getCrit() : assaulter.audio.getDemage();
-
         let dmgEnemyNum = Math.round(ObjDmgEnemy.dmg * target.multiplierDmg);
 
-        if (assaulter.block) {
+        if (assaulter.arts.gnomeShield) {
           dmgEnemyNum = gnomeShield(dmgEnemyNum);
         }
 
-        assaulter.magicshield ? magicShield(assaulter) : null;
+        assaulter.arts.magicshield ? magicShield(assaulter) : null;
 
-        assaulter.potion_Hp_Mp ? potion_Hp_Mp(assaulter, maxHPHero) : null;
+        assaulter.arts.potion_Hp_Mp ? potion_Hp_Mp(assaulter, maxHPHero) : null;
 
-        if (assaulter.sphereDM) {
+        if (assaulter.arts.sphereDM) {
           dmgEnemyNum = sphereDM(assaulter, dmgEnemyNum);
         }
 
+        // warrior specificity
+        // assaulter.name == "warrior" && ObjDmgEnemy.crit ? (dmgEnemyNum = warriorSpecificity(dmgEnemyNum)) : null;
+        useUtilityByHeroName("warrior", () => (dmgEnemyNum = warriorSpecificity.use(dmgEnemyNum)), [
+          ObjDmgEnemy.crit,
+        ]);
+        // monk level_4 first
+        useUtilityByHeroName("monk", () => (dmgEnemyNum = assaulter.monkPainSuppression(dmgEnemyNum)), [
+          assaulter.monkPainSuppression,
+        ]);
+        // level_4 second
+        useUtilityByHeroName("mage", () => assaulter.mageFireShield.takeDmg(target), [assaulter.mageFireShield]);
+
         // barrier
 
-        if (assaulter.barrier) {
-          if (assaulter.barrier - dmgEnemyNum > 0) {
-            assaulter.barrier -= dmgEnemyNum;
-            addText(`Ледяной щит поглотил ${dmgEnemyNum} урона. Прочность: ${assaulter.barrier}`, "aqua");
+        function barrier(hero) {
+          dmgEnemyNum = Math.round(dmgEnemyNum * 0.75);
+          if (hero.barrier - dmgEnemyNum > 0) {
+            hero.barrier -= dmgEnemyNum;
+            addText(`Ледяной щит поглотил ${dmgEnemyNum} урона. Прочность: ${hero.barrier}`, "aqua");
             dmgEnemyNum = 0;
+            hero.audio.skill.iceBlock();
           } else {
-            dmgEnemyNum = -(assaulter.barrier - dmgEnemyNum);
-            assaulter.hp -= dmgEnemyNum;
-            calcHp(".hero_hp", assaulter.hp);
-            addText(`Ледяной щит поглотил ${assaulter.barrier} урона и был разбит`, "aqua");
-            assaulter.barrier = 0;
-            assaulter.absorbDamage = 0;
-            assaulter.mageOnIceShield = false;
+            dmgEnemyNum = -(hero.barrier - dmgEnemyNum);
+            hero.hp -= dmgEnemyNum;
+            calcHp(".hero_hp", hero.hp);
+            addText(`Ледяной щит поглотил ${hero.barrier} урона и был разбит`, "aqua");
+            hero.barrier = 0;
+
+            hero.mageOnIceShield = false;
+            hero.audio.skill.iceDestr();
           }
           // mage level_2 first
-          if (assaulter.name == "mage" && assaulter.mageShieldReflect) {
-            target.hp -= assaulter.mageShieldReflect();
+          if (hero.name == "mage" && hero.mageShieldReflect) {
+            target.hp -= hero.mageShieldReflect();
             calcHp(".enemy_hp", target.hp);
           }
+        }
+
+        if (assaulter.barrier) {
+          barrier(assaulter);
         } else {
           assaulter.hp -= dmgEnemyNum;
           calcHp(".hero_hp", assaulter.hp);
         }
 
+        if (dmgEnemyNum > 0) {
+          ObjDmgEnemy.crit ? assaulter.audio.getCrit() : assaulter.audio.getDemage();
+        }
+
         // mage level_3 first
         ObjDmgEnemy.crit && assaulter.name == "mage" && assaulter.mageSkillMage ? mageSkillMage(assaulter) : null;
 
-        ObjDmgEnemy.crit && assaulter.emblemDragon ? emblemDragon(assaulter) : null;
+        ObjDmgEnemy.crit && assaulter.arts.emblemDragon ? emblemDragon(assaulter) : null;
 
         // assaulter.hp -= dmgEnemyNum;
         // calcHp(".hero_hp", assaulter.hp);
 
-        if (assaulter.reflect) {
+        if (assaulter.arts.fieryHand) {
           target.hp -= fieryHand(dmgEnemyNum);
           calcHp(".enemy_hp", target.hp);
         }
 
-        if (assaulter.bloodOrk && !bloodOrkTrigger) {
-          bloodOrk(assaulter, maxHPHero, target);
-        }
+        assaulter.arts.bloodOrk && !bloodOrkTrigger ? bloodOrk(assaulter, maxHPHero, target) : null;
 
-        if (assaulter.fieryFist) {
-          buffAttack = fieryFist(assaulter, maxHPHero);
-        }
+        assaulter.arts.fieryFist ? (buffAttack = fieryFist(assaulter, maxHPHero)) : null;
 
         if (assaulter.hp <= 0) {
-          if (assaulter.phoenix) {
+          if (assaulter.arts.phoenix) {
             assaulter.hp = +maxHPHero;
             addText(
               `Противник убивает вас, ненеся${ObjDmgEnemy.crit} ${dmgEnemyNum}... но вы крылья феника возрождают вас`,
               "green"
             );
-            assaulter.phoenix = false;
+            assaulter.arts.phoenix = false;
           } else {
             if (target.name === "boss") {
               assaulter.hp = Math.floor(+maxHPHero / 2);
@@ -289,10 +342,15 @@ function fight(target, assaulter, btnsHidden, btnReload, btnDisplay) {
           }
         } else {
           addText(`Противник нанес вам${ObjDmgEnemy.crit} ${dmgEnemyNum} урона`, "orange");
+          // warrior level_4 second
+          useUtilityByHeroName("warrior", () => assaulter.warriorRevenge(assaulter, target), [
+            assaulter.warriorRevenge,
+            ObjDmgEnemy.crit,
+          ]);
         }
         calcHp(".hero_hp", assaulter.hp);
       }
-      if (assaulter.darknessMimic) {
+      if (assaulter.arts.darknessMimic) {
         darknessMimic(assaulter, maxHPHero);
       }
     }, 700);
@@ -308,9 +366,9 @@ function fight(target, assaulter, btnsHidden, btnReload, btnDisplay) {
       calcHp(".hero_hp", assaulter.hp);
 
       // jester level_1 first
-      if (assaulter.name == "jester" && assaulter.jesterShifflDeck) {
-        assaulter.mana += assaulter.jesterShifflDeck();
-      }
+      useUtilityByHeroName("jester", () => (assaulter.mana += assaulter.jesterShifflDeck()), [
+        assaulter.jesterShifflDeck,
+      ]);
       if (assaulter.mana > maxMP) {
         assaulter.mana = maxMP;
       }
@@ -318,9 +376,7 @@ function fight(target, assaulter, btnsHidden, btnReload, btnDisplay) {
     }, 900);
 
     // mage level_3 second
-    if (assaulter.name == "mage" && assaulter.magePotionsCooking) {
-      assaulter.magePotionsCooking();
-    }
+    useUtilityByHeroName("mage", () => assaulter.magePotionsCooking(), [assaulter.magePotionsCooking]);
 
     checkNameEnemy(target, assaulter);
     setTimeout(() => {
@@ -339,7 +395,7 @@ function fight(target, assaulter, btnsHidden, btnReload, btnDisplay) {
       !hero.traderMeeting ? (hero.traderMeeting = 1) : hero.traderMeeting++;
     } else if (enemy.name === "boss") {
       getXp(hero, false, true);
-      !hero.goldMod ? (hero.goldMod = 0.1) : (hero.goldMod += 0.1);
+      hero.goldMod += 0.1;
       textRaidLvl.textContent = +textRaidLvl.textContent + 5;
       hero.boss += 1;
     } else if (enemy.name === "unicorn" && !(hero.unicornMeeting == 2)) {
@@ -361,20 +417,13 @@ function fight(target, assaulter, btnsHidden, btnReload, btnDisplay) {
     goldCoin(enemy.gold, hero.goldMod);
   }
 
-  // Комбо механика
-  function CountComboMechanic(name, dmg) {
-    if (name === "mechanic") {
-      comboMechanic++;
-
-      if (comboMechanic == 4) {
-        comboMechanic = 0;
-        // addText(`комбо ${Math.floor(dmg * 1.5)} от обычного ${dmg}`, "gold");
-        return Math.floor(dmg * 1.5);
-      } else {
-        return dmg;
-      }
+  function useUtilityByHeroName(name, callback, [...trigers]) {
+    if (
+      assaulter.name === name &&
+      !([...trigers].includes(false) || [...trigers].includes(undefined) || [...trigers].includes(""))
+    ) {
+      callback();
     }
-    return dmg;
   }
 
   // mage level_3 first
@@ -409,7 +458,7 @@ function fight(target, assaulter, btnsHidden, btnReload, btnDisplay) {
       const dmg = hero.monkLotus(enemy);
       if (dmg > 0) {
         enemy.hp -= dmg;
-        enemy.stun = true;
+        enemy.stun++;
         addText(`Вы используете технику лотоса, нанося ${dmg} урона, оглушив его`, "magenta");
         calcHp(".enemy_hp", enemy.hp);
       }
@@ -422,7 +471,7 @@ function fight(target, assaulter, btnsHidden, btnReload, btnDisplay) {
       extraHP += hero.regeneration;
     }
     if (hero.name === "dryad") {
-      regenDryad += 1;
+      regenDryad += 1.25;
       extraHP += regenDryad;
       if (hero.hp <= 60) {
         extraHP += extraHP;
@@ -441,19 +490,30 @@ function fight(target, assaulter, btnsHidden, btnReload, btnDisplay) {
 
   // Артефакты
 
+  function emblemWolf(hero, enemy) {
+    if (hero.emblemWolf) {
+      let chance = Math.floor(Math.random() * 100) + 1;
+      if (chance <= 20) {
+        const dmg = Math.floor(10 + (maxHPEnemy / 100) * 3);
+        enemy.hp -= dmg;
+        addText(`Противник получает дополнительный урон: ${dmg} `, "aqua");
+      }
+    }
+  }
+
   function emblemDragon(hero) {
     hero.attack[0] += 5;
     hero.attack[1] += 5;
     hero.def += 5;
-    updateStats(".attackMin", hero.attackMin, true);
-    updateStats(".attackMax", hero.attackMax, true);
+    updateStats(".attackMin", hero.attack[0], true);
+    updateStats(".attackMax", hero.attack[1], true);
     updateStats(".def", hero.def, true);
     setTimeout(() => {
       hero.attack[0] -= 5;
       hero.attack[1] -= 5;
       hero.def -= 5;
-      updateStats(".attackMin", hero.attackMin, true);
-      updateStats(".attackMax", hero.attackMax, true);
+      updateStats(".attackMin", hero.attack[0], true);
+      updateStats(".attackMax", hero.attack[1], true);
       updateStats(".def", hero.def, true);
     }, 6000);
   }
@@ -461,7 +521,7 @@ function fight(target, assaulter, btnsHidden, btnReload, btnDisplay) {
   function thunderHammer(hero, enemy) {
     if (hero.thunderHammer) {
       let chance = Math.floor(Math.random() * 100) + 1;
-      chance < 9 ? (enemy.stun = true) : null;
+      chance < 9 ? enemy.stun++ : null;
     }
   }
 
@@ -536,7 +596,7 @@ function fight(target, assaulter, btnsHidden, btnReload, btnDisplay) {
   }
 
   function staffOmbal(hero, maxHPHero, enemy, step) {
-    if (hero.staffOmbal) {
+    if (hero.arts.staffOmbal) {
       if (step >= 5 && enemy.hp >= 0) {
         setTimeout(() => {
           let dagon = Math.round(maxHPHero / (100 / 20));
@@ -616,8 +676,8 @@ function fight(target, assaulter, btnsHidden, btnReload, btnDisplay) {
     }
   }
 
-  function touchOfDeath(hero, enemy) {
-    if (hero.touchOfDeath) {
+  function blackRaven(hero, enemy) {
+    if (hero.arts.blackRaven) {
       let chance = Math.floor(Math.random() * 100) + 1;
       if (chance <= 4) {
         let dmgToHero;
@@ -640,7 +700,8 @@ function fight(target, assaulter, btnsHidden, btnReload, btnDisplay) {
   // console.log(Math.floor(Math.random() * 100) + 1);
 
   function vampiric(hero, dmg) {
-    let heal = Math.floor((dmg / (100 / hero.vampiric)) * 0.75);
+    // let heal = Math.floor((dmg / (100 / hero.vampiric)) * 0.75);
+    let heal = Math.floor(dmg * vampiricMod(hero.vampiric));
     // console.log(`Вампиризи = ${heal}`);
     return heal;
   }

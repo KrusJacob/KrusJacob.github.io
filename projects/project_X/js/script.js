@@ -7,10 +7,12 @@ import calcMp from "./modules/calc_mp";
 import sliderHero from "./modules/slider";
 import shop from "./modules/shop";
 import { updateHero } from "./modules/shop";
-import accordion from "./modules/talents/accordion";
+
 import coreTalents from "./modules/talents/core-talents";
 import changeBg from "./modules/changeBg";
-import playAudio from "./modules/audio/audio";
+
+import accordion from "./modules/talents/accordion";
+
 import AudioAction, { setAudioToHero } from "./modules/audio/audio";
 
 window.addEventListener("DOMContentLoaded", () => {
@@ -19,6 +21,8 @@ window.addEventListener("DOMContentLoaded", () => {
   let maxMpHero;
   let enemy;
   let sex = "man";
+
+  accordion();
 
   //
   const btnStart = document.querySelector(".btn__start");
@@ -102,25 +106,19 @@ window.addEventListener("DOMContentLoaded", () => {
       hero.boss = 0;
       hero.sex = sex;
 
-      mpHero.setAttribute("data-mp", hero.mp);
+      mpHero.setAttribute("data-mp", hero.maxMPHero);
       maxMpHero = mpHero.getAttribute("data-mp");
-      calcMp(0);
+      calcMp();
 
       coreTalents.init(hero);
-
-      //
 
       AudioAction("heroChosen");
       AudioAction("background", "stop");
 
       setAudioToHero(hero);
-
-      //
-      // buff();
     });
   });
 
-  // const barHpHero = document.querySelector(".bar__hp-f");
   const hpHero = document.querySelector(".hero_hp");
   const mpHero = document.querySelector(".hero_mp");
   const hpEnemy = document.querySelector(".enemy_hp");
@@ -228,7 +226,6 @@ window.addEventListener("DOMContentLoaded", () => {
       let src = btn.closest(".base__container_hero").querySelector(".img__hero").getAttribute("src");
 
       if (sex == "man" && src.substring(src.length - 9) === "Woman.png") {
-        // src = btn.closest(".base__container_hero").querySelector(".img__hero").getAttribute("src");
         btn
           .closest(".base__container_hero")
           .querySelector(".img__hero")
@@ -237,7 +234,6 @@ window.addEventListener("DOMContentLoaded", () => {
         btn.closest(".base__container_hero").setAttribute("sex", "man");
       }
       if (sex == "woman" && src.substring(src.length - 9) !== "Woman.png") {
-        // src = btn.closest(".base__container_hero").querySelector(".img__hero").getAttribute("src");
         btn
           .closest(".base__container_hero")
           .querySelector(".img__hero")
@@ -245,7 +241,6 @@ window.addEventListener("DOMContentLoaded", () => {
 
         btn.closest(".base__container_hero").setAttribute("sex", "woman");
       }
-      console.log(sex);
     });
   });
 });

@@ -37,6 +37,10 @@ const artifacts = [
   "magicBook",
   "staffOfHealing",
   "emblemDragon",
+  "boneDagger",
+  "giantHammer",
+  "spikedHorn",
+  "tigerMask",
 ];
 const artifactsLegends = [
   "goldSword",
@@ -53,6 +57,7 @@ const artifactsLegends = [
   "robberyCloak",
   "flameBook",
   "thunderHammer",
+  "emblemWolf",
 ];
 const artifactsBoss = [
   ["bloodOrk", "fangOrk"],
@@ -61,6 +66,7 @@ const artifactsBoss = [
   ["iceDM", "sphereDM"],
   ["swordKingHell", "handKingHell"],
 ];
+
 // bloodOrk - ярость
 // fangOrk - атака, крит.шанс
 // darknessMimic - отхил
@@ -74,12 +80,16 @@ const artifactsBoss = [
 const artContent = document.querySelector(".art__content");
 const artWindow = document.querySelector(".overlay__takeArt");
 
+const artItems = document.querySelectorAll(".art-item");
+const btnArtChoose = document.querySelector(".btn__chooseArt");
+
 let artLength;
 let xp = 0;
 let totalXp = 1;
 let arrArtifacts;
 let numBoss = 0;
-const staticChanceLegendArt = 4;
+
+const staticChanceLegendArt = 3;
 let upChanceLegendArt = staticChanceLegendArt;
 
 heroXp(1);
@@ -92,13 +102,13 @@ function getXp(hero, guarantLegendArt = false, boss = false) {
   if (xp % 2 == 0) {
     xp = 0;
     totalXp += 1;
-    if (totalXp % 4 == 0) {
+    if (totalXp % 3 == 0) {
       hero.talentsPoint += 1;
       talents.incTalent(hero.talentsPoint);
     }
 
     hero.lvl += 1;
-    hero.lvl % 15 == 0 ? buff(hero) : null;
+    hero.lvl % 20 == 0 ? buff(hero) : null;
 
     heroXp(totalXp);
     setTimeout(collectArt, 1000);
@@ -121,21 +131,89 @@ function getXp(hero, guarantLegendArt = false, boss = false) {
     //   let num = Math.floor(Math.random() * (0 - artLength + 1)) + artLength;
     let num = Math.floor(1 + Math.random() * (artLength + 1 - 1));
     let art = arrArtifacts.splice(num - 1, 1).join("");
-    // useArtifact(art, hero);
 
     return art;
   }
 
   //
-  async function collectArt() {
-    let first = await getSrcImgArt(mathArtifacts(guarantLegendArt, boss));
-    let second = await getSrcImgArt(mathArtifacts(guarantLegendArt, boss));
+  function collectArt() {
+    let firstArt = getDataArt(mathArtifacts(guarantLegendArt, boss));
+    let secondArt = getDataArt(mathArtifacts(guarantLegendArt, boss));
     if (boss) numBoss++;
-    chooseArt(first, second);
+    chooseArt(firstArt, secondArt);
   }
 
-  function getSrcImgArt(art) {
-    switch (art) {
+  function getDataArt(artName) {
+    switch (artName) {
+      case "emblemWolf":
+        return {
+          name: "emblemWolf",
+          src: "img/artifacts/emblemWolf.png",
+          rarity: "gold",
+          title: "Эмблема Волка",
+          descr:
+            "При атаке есть 20% шанс нанести противнику дополнительный урон, в размере 10 + 3% от его макс.здоровья",
+          useArt: function () {
+            hero.emblemWolf = true;
+            alert(`вы получили: ${this.title}`);
+          },
+        };
+      case "tigerMask":
+        return {
+          name: "tigerMask",
+          src: "img/artifacts/tigerMask.png",
+          rarity: "royalblue",
+          title: "Маска Тигра",
+          descr: "Увеличивает вампиризм на 5%, защиту на 1 и адаптацию на 5%",
+          useArt: function () {
+            incSecondaryStatHero("def", 1);
+            incSecondaryStatHero("adapt", 5);
+            hero.vampiric += 5;
+            alert(`вы получили: ${this.title}`);
+          },
+        };
+      case "spikedHorn":
+        return {
+          name: "spikedHorn",
+          src: "img/artifacts/spikedHorn.png",
+          rarity: "limegreen",
+          title: "Шипастый Рог",
+          descr: "Увеличивает адаптацию на 8%, уклонение на 3%, и регенерацию здоровья на 15",
+          useArt: function () {
+            incSecondaryStatHero("adapt", 8);
+            incSecondaryStatHero("dodge", 3);
+
+            hero.regeneration += 15;
+            alert(`вы получили: ${this.title}`);
+          },
+        };
+      case "giantHammer":
+        return {
+          name: "giantHammer",
+          src: "img/artifacts/giantHammer.png",
+          rarity: "limegreen",
+          title: "Гигантский Молот",
+          descr: "Повышает атаку на 6, и макс.запас здоровья на 25",
+          useArt: function () {
+            incMaxHPHero(25);
+            calcHp(".hero_hp", hero.hp);
+            incAttackHero(6, 6);
+            alert(`вы получили: ${this.title}`);
+          },
+        };
+      case "boneDagger":
+        return {
+          name: "boneDagger",
+          src: "img/artifacts/boneDagger.png",
+          rarity: "limegreen",
+          title: "Костяной кинжал",
+          descr: "Повышает крит.шанс на 4% и удачу на 4",
+          useArt: function () {
+            incSecondaryStatHero("critChance", 4);
+            incSecondaryStatHero("luck", 4);
+            alert(`вы получили: ${this.title}`);
+          },
+        };
       case "emblemDragon":
         return {
           name: "emblemDragon",
@@ -143,6 +221,10 @@ function getXp(hero, guarantLegendArt = false, boss = false) {
           rarity: "royalblue",
           title: "Эмблема Дракона",
           descr: "При получении крит.удара, увеличивает защиту и атаку на 5 в течении 3 ходов",
+          useArt: function () {
+            hero.arts.emblemDragon = true;
+            alert(`вы получили: ${this.title}`);
+          },
         };
       case "thunderHammer":
         return {
@@ -151,6 +233,12 @@ function getXp(hero, guarantLegendArt = false, boss = false) {
           rarity: "gold",
           title: "Громовой Молот",
           descr: "Увеличивает атаку и силу магии на 5, есть шанс, что ваша атака может оглушить врага на 1 ход",
+          useArt: function () {
+            incAttackHero(5, 5);
+            incSecondaryStatHero("magicPower", 5);
+            hero.arts.thunderHammer = true;
+            alert(`вы получили: ${this.title}`);
+          },
         };
       case "staffOfHealing":
         return {
@@ -158,7 +246,14 @@ function getXp(hero, guarantLegendArt = false, boss = false) {
           src: "img/artifacts/staffOfHealing.png",
           rarity: "royalblue",
           title: "Посох Исцеления",
-          descr: "Увеличивает силу магии на 5, макс.здоровье на 25 и повышает регенерацию здоровья после боя",
+          descr: "Увеличивает силу магии на 5, макс.здоровье на 25 и повышает регенерацию здоровья на 20",
+          useArt: function () {
+            incSecondaryStatHero("magicPower", 5);
+            incMaxHPHero(25);
+            calcHp(".hero_hp", hero.hp);
+            hero.regeneration += 20;
+            alert(`вы получили: ${this.title}`);
+          },
         };
       case "flameBook":
         return {
@@ -166,7 +261,11 @@ function getXp(hero, guarantLegendArt = false, boss = false) {
           src: "img/artifacts/flameBook.png",
           rarity: "gold",
           title: "Огненная Книга",
-          descr: "Увеличивает силу магии на 16",
+          descr: "Увеличивает силу магии на 15",
+          useArt: function () {
+            incSecondaryStatHero("magicPower", 15);
+            alert(`вы получили: ${this.title}`);
+          },
         };
       case "magicBook":
         return {
@@ -175,6 +274,11 @@ function getXp(hero, guarantLegendArt = false, boss = false) {
           rarity: "royalblue",
           title: "Книга Магии",
           descr: "Увеличивает силу магии на 10 и адаптацию на 5%",
+          useArt: function () {
+            incSecondaryStatHero("magicPower", 10);
+            incSecondaryStatHero("adapt", 5);
+            alert(`вы получили: ${this.title}`);
+          },
         };
       case "robberyCloak":
         return {
@@ -183,7 +287,13 @@ function getXp(hero, guarantLegendArt = false, boss = false) {
           rarity: "gold",
           title: "Плащ Разбойника",
           descr: "Увеличивает уклонение на 5%. При успешном уклонении повышает шанс крит.удара на 30% на 1 ход",
+          useArt: function () {
+            hero.arts.robberyCloak = true;
+            incSecondaryStatHero("dodge", 5);
+            alert(`вы получили: ${this.title}`);
+          },
         };
+
       case "handKingHell":
         return {
           name: "handKingHell",
@@ -192,6 +302,10 @@ function getXp(hero, guarantLegendArt = false, boss = false) {
           title: "Адские Когти",
           descr:
             "Ваши критические атаки могут поджечь противинка, от чего он будет терять здоровье в течении 4 ходов",
+          useArt: function () {
+            hero.arts.handKingHell = true;
+            alert(`вы получили: ${this.title}`);
+          },
         };
       case "swordKingHell":
         return {
@@ -199,7 +313,14 @@ function getXp(hero, guarantLegendArt = false, boss = false) {
           src: "img/artifacts/bossArts/swordKingHell.png",
           rarity: "blueviolet",
           title: "Меч Короля Ада",
-          descr: "Увеличивает атаку на 5. При промахе, огненный шлейф от взмаха меча наносит врагу 50% от атаки",
+          descr:
+            "Увеличивает атаку и силу магии на 5. При промахе, огненный шлейф от взмаха меча наносит врагу 50% от атаки",
+          useArt: function () {
+            incAttackHero(5, 5);
+            incSecondaryStatHero("magicPower", 5);
+            hero.arts.swordKingHell = true;
+            alert(`вы получили: ${this.title}`);
+          },
         };
       case "potion_Hp_Mp":
         return {
@@ -209,6 +330,10 @@ function getXp(hero, guarantLegendArt = false, boss = false) {
           title: "Зелье Регенерации",
           descr:
             "С некоторым шансом, при получении урона, вы можете выпить зелье, восстановив 5% здоровья и 10 маны",
+          useArt: function () {
+            hero.arts.potion_Hp_Mp = true;
+            alert(`вы получили: ${this.title}`);
+          },
         };
       case "magicShield":
         return {
@@ -217,7 +342,14 @@ function getXp(hero, guarantLegendArt = false, boss = false) {
           rarity: "royalblue",
           title: "Магический Щит",
           descr:
-            "Увеличивает защиту на 2 и макс.здоровье на 20, также при получении урона, есть шанс получить 1 к мане",
+            "Увеличивает защиту на 2 и макс.здоровье на 25, также при получении урона, есть шанс получить 1 к мане",
+          useArt: function () {
+            incSecondaryStatHero("def", 2);
+            incMaxHPHero(25);
+            calcHp(".hero_hp", hero.hp);
+            hero.arts.magicshield = true;
+            alert(`вы получили: ${this.title}`);
+          },
         };
       case "frostSword":
         return {
@@ -226,6 +358,11 @@ function getXp(hero, guarantLegendArt = false, boss = false) {
           rarity: "royalblue",
           title: "Ледяной Меч",
           descr: "Увеличивает атаку на 4, ваши критические удары генерируют 2 маны",
+          useArt: function () {
+            incAttackHero(4, 4);
+            hero.arts.frostsword = true;
+            alert(`вы получили: ${this.title}`);
+          },
         };
       case "leatherBracers":
         return {
@@ -234,6 +371,12 @@ function getXp(hero, guarantLegendArt = false, boss = false) {
           rarity: "limegreen",
           title: "Кожанные Наручи",
           descr: "Увеличивает защиту и уклонение на 1 и адаптацию на 10%",
+          useArt: function () {
+            incSecondaryStatHero("def", 1);
+            incSecondaryStatHero("dodge", 1);
+            incSecondaryStatHero("adapt", 10);
+            alert(`вы получили: ${this.title}`);
+          },
         };
       case "glassesMiner":
         return {
@@ -242,6 +385,12 @@ function getXp(hero, guarantLegendArt = false, boss = false) {
           rarity: "limegreen",
           title: "Очки Шахтера",
           descr: "Увеличивает защиту и удачу на 1 и адаптацию на 10%",
+          useArt: function () {
+            incSecondaryStatHero("def", 1);
+            incSecondaryStatHero("luck", 1);
+            incSecondaryStatHero("adapt", 10);
+            alert(`вы получили: ${this.title}`);
+          },
         };
       case "sphereOfPower":
         return {
@@ -249,7 +398,13 @@ function getXp(hero, guarantLegendArt = false, boss = false) {
           src: "img/artifacts/sphereOfPower.png",
           rarity: "gold",
           title: "Сфера Силы",
-          descr: "Увеличивает атаку и Силу магии на 2, а также получение маны за удар увеличено на 1",
+          descr: "Увеличивает атаку и силу магии на 2, а также получение маны за удар увеличено на 1",
+          useArt: function () {
+            incAttackHero(2, 2);
+            incSecondaryStatHero("magicPower", 2);
+            !hero.bonusMP ? (hero.bonusMP = 1) : (hero.bonusMP += 1);
+            alert(`вы получили: ${this.title}`);
+          },
         };
       case "spark":
         return {
@@ -257,7 +412,14 @@ function getXp(hero, guarantLegendArt = false, boss = false) {
           src: "img/artifacts/spark.png",
           rarity: "limegreen",
           title: "Волшебная Искра",
-          descr: "Увеличивает ваше максимальное здоровье и ману на 35",
+          descr: "Увеличивает ваше максимальное здоровье и ману на 35, и сразу исцеляет вас на 70",
+          useArt: function () {
+            incMaxHPHero(35);
+            changeHpHero(70);
+            calcHp(".hero_hp", hero.hp);
+            incMaxMPHero(35);
+            alert(`вы получили: ${this.title}`);
+          },
         };
       case "sphereDM":
         return {
@@ -266,6 +428,11 @@ function getXp(hero, guarantLegendArt = false, boss = false) {
           rarity: "blueviolet",
           title: "Сердце алмазного гиганта",
           descr: "При получении смертельного урона, наделяет неуязвимостью на 2 хода",
+          useArt: function () {
+            incSecondaryStatHero("adapt", 10);
+            hero.arts.sphereDM = true;
+            alert(`вы получили: ${this.title}`);
+          },
         };
       case "iceDM":
         return {
@@ -274,6 +441,11 @@ function getXp(hero, guarantLegendArt = false, boss = false) {
           rarity: "blueviolet",
           title: "Первородный Алмаз",
           descr: "Увеличивает вашу защиту на 7 и удачу на 3%",
+          useArt: function () {
+            incSecondaryStatHero("def", 7);
+            incSecondaryStatHero("luck", 3);
+            alert(`вы получили: ${this.title}`);
+          },
         };
       case "staffOmbal":
         return {
@@ -283,6 +455,11 @@ function getXp(hero, guarantLegendArt = false, boss = false) {
           title: "Жезл Омбала",
           descr:
             "Сила магии + 5. После каждых 5 ходов жезл выплескивает накопившуюся в себе волшебную силу и наносит врагу урон в размере 20% вашего макс.здоровья",
+          useArt: function () {
+            incSecondaryStatHero("magicPower", 5);
+            hero.arts.staffOmbal = true;
+            alert(`вы получили: ${this.title}`);
+          },
         };
       case "ringOmbal":
         return {
@@ -291,6 +468,11 @@ function getXp(hero, guarantLegendArt = false, boss = false) {
           rarity: "blueviolet",
           title: "Кольцо жизненной силы",
           descr: "Увеличивает максимальный запас здоровье на 110",
+          useArt: function () {
+            incMaxHPHero(110);
+            calcHp(".hero_hp", hero.hp);
+            alert(`вы получили: ${this.title}`);
+          },
         };
       case "pumpkinMimic":
         return {
@@ -300,6 +482,14 @@ function getXp(hero, guarantLegendArt = false, boss = false) {
           title: "Голова Мимика",
           descr:
             "Вы заключает сделку с предвестником апокалипсиса. Увеличивает вашу атаку на 12, и силу крит.удара на 20% - взамен уменьшая ваше максимальное здоровье на 60",
+          useArt: function () {
+            incMaxHPHero(-60);
+            changeHpHero(-60);
+            calcHp(".hero_hp", hero.hp);
+            incAttackHero(12, 12);
+            incSecondaryStatHero("critPower", 20);
+            alert(`вы получили: ${this.title}`);
+          },
         };
       case "darknessMimic":
         return {
@@ -309,6 +499,10 @@ function getXp(hero, guarantLegendArt = false, boss = false) {
           title: "Cфера Мрака",
           descr:
             "При получнии урона, сфера может погрузить мир во тьму, повышая ваше уклонение на 25% на 3 хода и исцеляя вам 3% здоровья каждый ваш ход.",
+          useArt: function () {
+            hero.arts.darknessMimic = true;
+            alert(`вы получили: ${this.title}`);
+          },
         };
       case "fangOrk":
         return {
@@ -317,6 +511,13 @@ function getXp(hero, guarantLegendArt = false, boss = false) {
           rarity: "blueviolet",
           title: "Клык вождя орков",
           descr: "Повышает атаку на 25% от текущей, и шанс крит.удара на 6%",
+          useArt: function () {
+            let buffAttack0 = Math.round(hero.attack[0] * 0.25);
+            let buffAttack1 = Math.round(hero.attack[1] * 0.25);
+            incAttackHero(buffAttack0, buffAttack1);
+            incSecondaryStatHero("critChance", 6);
+            alert(`вы получили: ${this.title}`);
+          },
         };
       case "bloodOrk":
         return {
@@ -326,6 +527,10 @@ function getXp(hero, guarantLegendArt = false, boss = false) {
           title: "Кровь вождя орков",
           descr:
             "Если здоровье падает ниже 25%, вы исцеляетесь на 10% от вашего макс.здоровья и наносите врагу столько же урона. Срабатывает один раз за бой",
+          useArt: function () {
+            hero.arts.bloodOrk = true;
+            alert(`вы получили: ${this.title}`);
+          },
         };
       case "apple":
         return {
@@ -333,7 +538,13 @@ function getXp(hero, guarantLegendArt = false, boss = false) {
           src: "img/artifacts/apple.png",
           rarity: "limegreen",
           title: "Яблочко",
-          descr: "Исцеляет на 150 очков здоровья и увеличивает удачу на 5",
+          descr: "Исцеляет на 175 очков здоровья и увеличивает удачу на 5",
+          useArt: function () {
+            changeHpHero(175);
+            calcHp(".hero_hp", hero.hp);
+            incSecondaryStatHero("luck", 5);
+            alert("вы получили Яблочко и скушали его");
+          },
         };
       case "goldBelt":
         return {
@@ -342,6 +553,12 @@ function getXp(hero, guarantLegendArt = false, boss = false) {
           rarity: "limegreen",
           title: "Золотой Пояс",
           descr: "Увеличивает максимальное здоровье на 50 и удачу на 4",
+          useArt: function () {
+            incMaxHPHero(50);
+            calcHp(".hero_hp", hero.hp);
+            incSecondaryStatHero("luck", 4);
+            alert(`вы получили: ${this.title}`);
+          },
         };
       case "dwarfHammer":
         return {
@@ -349,7 +566,14 @@ function getXp(hero, guarantLegendArt = false, boss = false) {
           src: "img/artifacts/dwarfHammer.png",
           rarity: "limegreen",
           title: "Молот Дворфов",
-          descr: "Увеличивает атаку на 6 и максимальное здоровье на 40, но снижает адаптацию на 8% ",
+          descr: "Увеличивает атаку на 4 и максимальное здоровье на 60, но снижает адаптацию на 8% ",
+          useArt: function () {
+            incMaxHPHero(60);
+            calcHp(".hero_hp", hero.hp);
+            incAttackHero(4, 4);
+            incSecondaryStatHero("adapt", -8);
+            alert(`вы получили: ${this.title}`);
+          },
         };
       case "iceAxe":
         return {
@@ -358,6 +582,11 @@ function getXp(hero, guarantLegendArt = false, boss = false) {
           rarity: "limegreen",
           title: "Топор Варвара",
           descr: "Увеличивает атаку на 5, а шанс крит.удара на 3%",
+          useArt: function () {
+            incAttackHero(5, 5);
+            incSecondaryStatHero("critChance", 3);
+            alert(`вы получили: ${this.title}`);
+          },
         };
       case "goldCrown":
         return {
@@ -366,6 +595,10 @@ function getXp(hero, guarantLegendArt = false, boss = false) {
           rarity: "royalblue",
           title: "Золотая Корона",
           descr: "Увеличивает получаемое золото на 20%",
+          useArt: function () {
+            hero.goldMod += 0.2;
+            alert(`вы получили: ${this.title}`);
+          },
         };
       case "redDagger":
         return {
@@ -374,6 +607,11 @@ function getXp(hero, guarantLegendArt = false, boss = false) {
           rarity: "gold",
           title: "Алый Кинжал",
           descr: "Увеличивает атаку на 7, также при атаке есть шанс проигнорировать защиту противника",
+          useArt: function () {
+            incAttackHero(7, 7);
+            hero.arts.redDagger = true;
+            alert(`вы получили: ${this.title}`);
+          },
         };
       case "gnomeShield":
         return {
@@ -382,6 +620,11 @@ function getXp(hero, guarantLegendArt = false, boss = false) {
           rarity: "gold",
           title: "Щит Гномов",
           descr: "Увеличивает защиту на 4, также дает шанс заблокировать атаку противника",
+          useArt: function () {
+            incSecondaryStatHero("def", 4);
+            hero.arts.gnomeShield = true;
+            alert(`вы получили: ${this.title}`);
+          },
         };
       case "blackRaven":
         return {
@@ -391,6 +634,10 @@ function getXp(hero, guarantLegendArt = false, boss = false) {
           title: "Ворон Смерти",
           descr:
             "С некоторой вероятностью при атаке ворон проклинает вашего врага, после чего он умирает, а вы получаете 20% ущерба от нанесенного урона вороном",
+          useArt: function () {
+            hero.arts.blackRaven = true;
+            alert(`вы получили: ${this.title}`);
+          },
         };
       case "boots":
         return {
@@ -399,6 +646,11 @@ function getXp(hero, guarantLegendArt = false, boss = false) {
           rarity: "limegreen",
           title: "Сапожки",
           descr: "Увеличивает защиту на 1 и повышает уклонение на 6%",
+          useArt: function () {
+            incSecondaryStatHero("def", 1);
+            incSecondaryStatHero("dodge", 6);
+            alert(`вы получили: ${this.title}`);
+          },
         };
       case "bronzeAxe":
         return {
@@ -407,6 +659,10 @@ function getXp(hero, guarantLegendArt = false, boss = false) {
           rarity: "limegreen",
           title: "Бронзовый Топор",
           descr: "Увеличивает максимальную aтаку на 4, а минимальную атаку на 9",
+          useArt: function () {
+            incAttackHero(9, 4);
+            alert(`вы получили: ${this.title}`);
+          },
         };
       case "fieryHand":
         return {
@@ -415,6 +671,11 @@ function getXp(hero, guarantLegendArt = false, boss = false) {
           rarity: "gold",
           title: "Огненная Кожа",
           descr: "Увеличивает защиту на 3, также при получении урона есть шанс вернуть часть урона в противника",
+          useArt: function () {
+            incSecondaryStatHero("def", 3);
+            hero.arts.fieryHand = true;
+            alert(`вы получили: ${this.title}`);
+          },
         };
       case "shieldAndSword":
         return {
@@ -423,6 +684,11 @@ function getXp(hero, guarantLegendArt = false, boss = false) {
           rarity: "limegreen",
           title: "Щит и Меч",
           descr: "Увеличивает защиту на 2, и атаку на 5",
+          useArt: function () {
+            incSecondaryStatHero("def", 2);
+            incAttackHero(5, 5);
+            alert(`вы получили: ${this.title}`);
+          },
         };
       case "cursedSkull":
         return {
@@ -432,6 +698,15 @@ function getXp(hero, guarantLegendArt = false, boss = false) {
           title: "Проклятый Череп",
           descr:
             "Вы разово теряете 80 здоровья на усиление атаки на 10 и силы крит.удара на 25%, а защита снижается на 3",
+          useArt: function () {
+            changeHpHero(-80);
+            hero.def -= 3;
+            incSecondaryStatHero("critPower", 25);
+            incSecondaryStatHero("def", -3);
+            incAttackHero(10, 10);
+            calcHp(".hero_hp", hero.hp);
+            alert(`вы получили: ${this.title}`);
+          },
         };
       case "fieryFist":
         return {
@@ -440,6 +715,11 @@ function getXp(hero, guarantLegendArt = false, boss = false) {
           rarity: "gold",
           title: "Кулак Ярости",
           descr: "Увеличивает атаку на 6, если здоровье в бою ниже 30%, то получаете еще дополнительно 30 атаки",
+          useArt: function () {
+            hero.arts.fieryFist = true;
+            incAttackHero(6, 6);
+            alert(`вы получили: ${this.title}`);
+          },
         };
       case "flacon":
         return {
@@ -447,7 +727,13 @@ function getXp(hero, guarantLegendArt = false, boss = false) {
           src: "img/artifacts/flacon.png",
           rarity: "royalblue",
           title: "Флакон Здоровья",
-          descr: "Полностью исцеляет при получении и пассивно увеличивает регенерацию здоровья после боя",
+          descr: "Полностью исцеляет при получении и пассивно увеличивает регенерацию здоровья на 20",
+          useArt: function () {
+            changeHpHero(hero.maxHPHero);
+            hero.regeneration += 20;
+            calcHp(".hero_hp", hero.hp);
+            alert(`вы получили: ${this.title}`);
+          },
         };
       case "spear":
         return {
@@ -456,6 +742,11 @@ function getXp(hero, guarantLegendArt = false, boss = false) {
           rarity: "limegreen",
           title: "Копьё Рыцаря",
           descr: "Увеличивает максимальную атаку на 7 и силу крит.удара на 20%",
+          useArt: function () {
+            updateStats(".attackMax", 7);
+            incSecondaryStatHero("critPower", 20);
+            alert(`вы получили: ${this.title}`);
+          },
         };
       case "ironArmor":
         return {
@@ -463,7 +754,13 @@ function getXp(hero, guarantLegendArt = false, boss = false) {
           src: "img/artifacts/ironArmor.png",
           rarity: "limegreen",
           title: "Железная Кираса",
-          descr: "Увеличивает защиту на 3 и максимальное здоровье на 30",
+          descr: "Увеличивает защиту на 3 и максимальное здоровье на 25",
+          useArt: function () {
+            incMaxHPHero(25);
+            calcHp(".hero_hp", hero.hp);
+            incSecondaryStatHero("def", 3);
+            alert(`вы получили: ${this.title}`);
+          },
         };
       case "clover":
         return {
@@ -472,6 +769,10 @@ function getXp(hero, guarantLegendArt = false, boss = false) {
           rarity: "limegreen",
           title: "Клевер",
           descr: "Увеличивает удачу на 8",
+          useArt: function () {
+            incSecondaryStatHero("luck", 8);
+            alert(`вы получили: ${this.title}`);
+          },
         };
       case "amulet":
         return {
@@ -479,8 +780,14 @@ function getXp(hero, guarantLegendArt = false, boss = false) {
           src: "img/artifacts/amulet.png",
           rarity: "limegreen",
           title: "Aмулет Жизни",
-          descr:
-            "Увеличивает максимальный запас здоровья на 35, силу магии на 4 и регенерацию здоровья после боя.",
+          descr: "Увеличивает максимальный запас здоровья на 40, силу магии на 4 и регенерацию здоровья на 10",
+          useArt: function () {
+            incSecondaryStatHero("magicPower", 4);
+            incMaxHPHero(40);
+            calcHp(".hero_hp", hero.hp);
+            hero.regeneration += 10;
+            alert(`вы получили: ${this.title}`);
+          },
         };
       case "dagger":
         return {
@@ -489,6 +796,10 @@ function getXp(hero, guarantLegendArt = false, boss = false) {
           rarity: "limegreen",
           title: "Кинжал",
           descr: "Увеличивает шанс крит.удара на 7%",
+          useArt: function () {
+            incSecondaryStatHero("critChance", 7);
+            alert(`вы получили: ${this.title}`);
+          },
         };
       case "heart":
         return {
@@ -496,7 +807,13 @@ function getXp(hero, guarantLegendArt = false, boss = false) {
           src: "img/artifacts/heart.png",
           rarity: "limegreen",
           title: "Сердце",
-          descr: "Увеличивает максимальное здоровье на 65",
+          descr: "Увеличивает максимальное здоровье на 70, и сразу же исцеляет на 70",
+          useArt: function () {
+            changeHpHero(70);
+            incMaxHPHero(70);
+            calcHp(".hero_hp", hero.hp);
+            alert(`вы получили: ${this.title}`);
+          },
         };
       case "phoenix":
         return {
@@ -505,6 +822,10 @@ function getXp(hero, guarantLegendArt = false, boss = false) {
           rarity: "royalblue",
           title: "Крылья Феника",
           descr: "Возрождает вас единожды после смерти",
+          useArt: function () {
+            hero.arts.phoenix = true;
+            alert(`вы получили: ${this.title}`);
+          },
         };
       case "sword":
         return {
@@ -513,6 +834,10 @@ function getXp(hero, guarantLegendArt = false, boss = false) {
           rarity: "limegreen",
           title: "Меч",
           descr: "Увеличивает атаку на 7",
+          useArt: function () {
+            incAttackHero(7, 7);
+            alert(`вы получили: ${this.title}`);
+          },
         };
       case "mace":
         return {
@@ -521,6 +846,10 @@ function getXp(hero, guarantLegendArt = false, boss = false) {
           rarity: "limegreen",
           title: "Булава",
           descr: "Увеличивает максимальную атаку на 13",
+          useArt: function () {
+            updateStats(".attackMax", 13);
+            alert(`вы получили: ${this.title}`);
+          },
         };
       case "magicBall":
         return {
@@ -529,6 +858,12 @@ function getXp(hero, guarantLegendArt = false, boss = false) {
           rarity: "limegreen",
           title: "Магический Шар",
           descr: "Увеличивает уклонение, адаптацию на 5%, и силу магии на 5",
+          useArt: function () {
+            incSecondaryStatHero("magicPower", 5);
+            incSecondaryStatHero("dodge", 5);
+            incSecondaryStatHero("adapt", 5);
+            alert(`вы получили: ${this.title}`);
+          },
         };
       case "vampiric":
         return {
@@ -536,7 +871,11 @@ function getXp(hero, guarantLegendArt = false, boss = false) {
           src: "img/artifacts/vampiric.png",
           rarity: "royalblue",
           title: "Клыки Вампира",
-          descr: "Восстанавливает здоровье при атаке в размере 8%",
+          descr: "Увеличивает вампиризм на 8%",
+          useArt: function () {
+            hero.vampiric += 8;
+            alert(`вы получили: ${this.title}`);
+          },
         };
       case "goldSword":
         return {
@@ -545,6 +884,10 @@ function getXp(hero, guarantLegendArt = false, boss = false) {
           rarity: "gold",
           title: "Золотой Меч",
           descr: "Увеличивает атаку на 12",
+          useArt: function () {
+            incAttackHero(12, 12);
+            alert(`вы получили: ${this.title}`);
+          },
         };
       case "helmet":
         return {
@@ -552,7 +895,12 @@ function getXp(hero, guarantLegendArt = false, boss = false) {
           src: "img/artifacts/helmet.png",
           rarity: "gold",
           title: "Шлем Варвара",
-          descr: "Увеличивает защиту на 2 и вампиризм +10%",
+          descr: "Увеличивает защиту на 3 и вампиризм на 9%",
+          useArt: function () {
+            hero.vampiric += 9;
+            incSecondaryStatHero("def", 3);
+            alert(`вы получили: ${this.title}`);
+          },
         };
       case "eyeFirst":
         return {
@@ -561,6 +909,12 @@ function getXp(hero, guarantLegendArt = false, boss = false) {
           rarity: "gold",
           title: "Левый глаз демона",
           descr: "Увеличивает максимальное здоровье на 75 и адаптацию на 15%",
+          useArt: function () {
+            incMaxHPHero(75);
+            calcHp(".hero_hp", hero.hp);
+            incSecondaryStatHero("adapt", 15);
+            alert(`вы получили: ${this.title}`);
+          },
         };
       case "eyeSecond":
         return {
@@ -569,6 +923,11 @@ function getXp(hero, guarantLegendArt = false, boss = false) {
           rarity: "gold",
           title: "Правый глаз демона",
           descr: "Увеличивает шанс крит. удара на 9% и адаптацию на 15%",
+          useArt: function () {
+            incSecondaryStatHero("critChance", 9);
+            incSecondaryStatHero("adapt", 15);
+            alert(`вы получили: ${this.title}`);
+          },
         };
       case "knightArmor":
         return {
@@ -577,6 +936,11 @@ function getXp(hero, guarantLegendArt = false, boss = false) {
           rarity: "royalblue",
           title: "Доспех Рыцаря",
           descr: "Увеличивает защиту на 4 и удачу на 2",
+          useArt: function () {
+            incSecondaryStatHero("def", 4);
+            incSecondaryStatHero("luck", 2);
+            alert(`вы получили: ${this.title}`);
+          },
         };
       case "leatherArmor":
         return {
@@ -585,6 +949,11 @@ function getXp(hero, guarantLegendArt = false, boss = false) {
           rarity: "limegreen",
           title: "Кожаный Доспех",
           descr: "Увеличивает защиту на 2 и уклонение на 4%",
+          useArt: function () {
+            incSecondaryStatHero("def", 2);
+            incSecondaryStatHero("dodge", 4);
+            alert(`вы получили: ${this.title}`);
+          },
         };
       case "gauntletGloves":
         return {
@@ -593,20 +962,27 @@ function getXp(hero, guarantLegendArt = false, boss = false) {
           rarity: "limegreen",
           title: "Железные Перчатки",
           descr: "Увеличивает защиту на 2 и адаптацию на 8%",
+          useArt: function () {
+            incSecondaryStatHero("def", 2);
+            incSecondaryStatHero("adapt", 8);
+            alert(`вы получили: ${this.title}`);
+          },
         };
       default:
         console.log("что-то не так");
     }
-  }
 
-  function useArtifact(art, hero) {
-    let hpMax = +document.querySelector(".hero_hp").getAttribute("data-hp");
-    let mpMax = +document.querySelector(".hero_mp").getAttribute("data-mp");
-
-    function icnMaxHPHero(hpMax, value) {
+    function incMaxHPHero(value) {
+      let hpMax = hero.maxHPHero;
       hpMax = +hpMax + value;
       updateStats(".hpMax", value);
       document.querySelector(".hero_hp").setAttribute("data-hp", hpMax);
+    }
+
+    function incMaxMPHero(value) {
+      hero.MaxMPHero = +hero.maxMPHero + +value;
+      document.querySelector(".hero_mp").setAttribute("data-mp", hero.MaxMPHero);
+      calcMp(hero.mana);
     }
 
     function incAttackHero(minAttack, maxAttack) {
@@ -621,392 +997,36 @@ function getXp(hero, guarantLegendArt = false, boss = false) {
       updateStats(`.${stat}`, value);
     }
 
-    switch (art) {
-      case "emblemDragon":
-        hero.emblemDragon = true;
-        alert("вы получили Эмблему Дракона");
-        break;
-      case "thunderHammer":
-        incAttackHero(5, 5);
-        incSecondaryStatHero("magicPower", 5);
-        hero.thunderHammer = true;
-        alert("вы получили Громовой Молот");
-        break;
-      case "staffOfHealing":
-        incSecondaryStatHero("magicPower", 5);
-        icnMaxHPHero(hpMax, 25);
-        hero.hp += 25;
-        calcHp(".hero_hp", hero.hp);
-        hero.regeneration += 20;
-        alert("вы получили Посох Исцеления");
-        break;
-      case "flameBook":
-        incSecondaryStatHero("magicPower", 16);
-        alert("вы получили Огненную Книгу");
-        break;
-      case "magicBook":
-        incSecondaryStatHero("magicPower", 10);
-        incSecondaryStatHero("adapt", 5);
-
-        alert("вы получили Книгу Магии");
-        break;
-      case "robberyCloak":
-        hero.robberyCloak = true;
-        incSecondaryStatHero("dodge", 5);
-        alert("вы получили Плащ Разбойника");
-        break;
-      case "handKingHell":
-        hero.handKingHell = true;
-        alert("вы получили Адские когти");
-        break;
-      case "swordKingHell":
-        incAttackHero(5, 5);
-        hero.swordKingHell = true;
-        alert("вы получили Меч Короля Ада");
-        break;
-      case "potion_Hp_Mp":
-        hero.potion_Hp_Mp = true;
-        alert("вы получили Зелье Регенерации");
-        break;
-      case "magicShield":
-        incSecondaryStatHero("def", 2);
-        icnMaxHPHero(hpMax, 20);
-        hero.hp += 20;
-        calcHp(".hero_hp", hero.hp);
-        hero.magicshield = true;
-        alert("вы получили Магический Щит");
-        break;
-      case "frostSword":
-        incAttackHero(4, 4);
-        hero.frostsword = true;
-        alert("вы получили Ледяной меч");
-        break;
-
-      case "leatherBracers":
-        incSecondaryStatHero("def", 1);
-        incSecondaryStatHero("dodge", 1);
-        incSecondaryStatHero("adapt", 10);
-        alert("вы получили Кожанные Наручи");
-        break;
-
-      case "glassesMiner":
-        incSecondaryStatHero("def", 1);
-        incSecondaryStatHero("luck", 1);
-        incSecondaryStatHero("adapt", 10);
-        alert("вы получили Очки Пилота");
-        break;
-
-      case "sphereOfPower":
-        incAttackHero(2, 2);
-        incSecondaryStatHero("magicPower", 2);
-        !hero.bonusMP ? (hero.bonusMP = 1) : (hero.bonusMP += 1);
-        alert("Вы получили Cферу Силы");
-        break;
-
-      case "spark":
-        icnMaxHPHero(hpMax, 35);
-        hero.hp += 35;
-        calcHp(".hero_hp", hero.hp);
-        hero.mp += 35;
-        mpMax = +mpMax + 35;
-        document.querySelector(".hero_mp").setAttribute("data-mp", mpMax);
-        calcMp(+document.querySelector(".current_mp").textContent);
-        alert("Вы получили Волшебную Исрку");
-        break;
-      case "dwarfHammer":
-        icnMaxHPHero(hpMax, 40);
-        hero.hp += 40;
-        calcHp(".hero_hp", hero.hp);
-        incAttackHero(6, 6);
-        incSecondaryStatHero("adapt", -8);
-        alert("вы получили Молот Дворфов");
-        break;
-      case "sphereDM":
-        incSecondaryStatHero("adapt", 10);
-        hero.sphereDM = true;
-        alert("вы получили Сердце Алмазного Гиганта");
-        break;
-      case "iceDM":
-        incSecondaryStatHero("def", 7);
-        incSecondaryStatHero("luck", 3);
-        calcHp(".hero_hp", hero.hp);
-        alert("вы получили Первородный Алмаз");
-        break;
-      case "staffOmbal":
-        incSecondaryStatHero("magicPower", 5);
-        hero.staffOmbal = true;
-        alert("вы получили Жезл Омбала");
-        break;
-      case "ringOmbal":
-        icnMaxHPHero(hpMax, 110);
-        hero.hp += 110;
-        calcHp(".hero_hp", hero.hp);
-        alert("вы получили Кольцо Жизненной Силы");
-        break;
-      case "pumpkinMimic":
-        icnMaxHPHero(hpMax, -60);
-        hero.hp -= 60;
-        calcHp(".hero_hp", hero.hp);
-        incAttackHero(12, 12);
-        incSecondaryStatHero("critPower", 20);
-        alert("вы получили Голову Мимика");
-        break;
-      case "darknessMimic":
-        hero.darknessMimic = true;
-        alert("вы получили Сферу Мрака");
-        break;
-      case "fangOrk":
-        let buffAttack0 = Math.round(hero.attack[0] * 0.25);
-        let buffAttack1 = Math.round(hero.attack[1] * 0.25);
-
-        incAttackHero(buffAttack0, buffAttack1);
-        incSecondaryStatHero("critChance", 6);
-
-        alert("вы получили Клык Вождя Орков");
-
-        break;
-      case "bloodOrk":
-        hero.bloodOrk = true;
-        alert("вы получили Кровь Вождя Орков");
-        break;
-      case "apple":
-        hero.hp += 175;
-        calcHp(".hero_hp", hero.hp);
-        incSecondaryStatHero("luck", 5);
-        alert("вы получили Яблочко и скушали его");
-        break;
-      case "goldBelt":
-        icnMaxHPHero(hpMax, 50);
-        hero.hp += 50;
-        calcHp(".hero_hp", hero.hp);
-        incSecondaryStatHero("luck", 4);
-        alert("вы получили Золотой Пояс");
-        break;
-      case "iceAxe":
-        incAttackHero(5, 5);
-        incSecondaryStatHero("critChance", 3);
-        alert("вы получили Топор Варвара");
-        break;
-      case "gauntletGloves":
-        incSecondaryStatHero("def", 2);
-        incSecondaryStatHero("adapt", 8);
-        alert("вы получили Железные Перчатки");
-        break;
-      case "goldCrown":
-        !hero.goldMod ? (hero.goldMod = 0.2) : (hero.goldMod += 0.2);
-        alert("вы получили Золотую Корону");
-        break;
-      case "redDagger":
-        incAttackHero(7, 7);
-        hero.redDagger = true;
-        alert("вы получили Алый Кинжал");
-        break;
-      case "gnomeShield":
-        incSecondaryStatHero("def", 4);
-        hero.block = true;
-        alert("вы получили Щит Гномов");
-        break;
-      case "blackRaven":
-        hero.touchOfDeath = true;
-        alert("вы получили Ворона Смерти");
-        break;
-      case "boots":
-        incSecondaryStatHero("def", 1);
-        incSecondaryStatHero("dodge", 6);
-        alert("вы получили Сапожки");
-        break;
-      case "leatherArmor":
-        incSecondaryStatHero("def", 2);
-        incSecondaryStatHero("dodge", 4);
-        alert("вы получили Кожаный Доспех");
-        break;
-      case "bronzeAxe":
-        incAttackHero(9, 4);
-        alert("вы получили Бронзовый Топор");
-        break;
-
-      case "fieryHand":
-        incSecondaryStatHero("def", 3);
-        hero.reflect = true;
-        alert("вы получили Огненную Кожу");
-
-        break;
-      case "shieldAndSword":
-        incSecondaryStatHero("def", 2);
-        incAttackHero(5, 5);
-        alert("вы получили Щит и Mеч");
-
-        break;
-      case "cursedSkull":
-        hero.hp -= 80;
-        hero.def -= 3;
-        incSecondaryStatHero("critPower", 25);
-        incSecondaryStatHero("def", -3);
-        incAttackHero(10, 10);
-        calcHp(".hero_hp", hero.hp);
-        alert("вы получили Проклятый Череп");
-
-        break;
-      case "amulet":
-        incSecondaryStatHero("magicPower", 4);
-        icnMaxHPHero(hpMax, 35);
-        hero.hp += 35;
-        calcHp(".hero_hp", hero.hp);
-        hero.regeneration += 10;
-        alert("вы получили Амулет Жизни");
-
-        break;
-      case "flacon":
-        hero.hp = +hpMax;
-        hero.regeneration += 20;
-        calcHp(".hero_hp", hero.hp);
-        alert("вы получили Флакон Здоровья");
-
-        break;
-      case "fieryFist":
-        hero.fieryFist = true;
-        incAttackHero(6, 6);
-        alert("вы получили Кулак Ярости");
-
-        break;
-      case "goldSword":
-        incAttackHero(12, 12);
-        alert("вы получили Золотой Меч");
-
-        break;
-      case "helmet":
-        !hero.vampiric ? (hero.vampiric = 10) : (hero.vampiric += 10);
-        incSecondaryStatHero("def", 2);
-        alert("вы получили Шлем Варвара");
-
-        break;
-      case "eyeFirst":
-        icnMaxHPHero(hpMax, 75);
-        hero.hp += 75;
-        calcHp(".hero_hp", hero.hp);
-        incSecondaryStatHero("adapt", 15);
-        alert("вы получили Левый Глаз Демона");
-
-        break;
-      case "eyeSecond":
-        incSecondaryStatHero("critChance", 9);
-        incSecondaryStatHero("adapt", 15);
-        alert("вы получили Правый Глаз Демона");
-
-        break;
-      case "spear":
-        hero.attack[1] += 7;
-        updateStats(".attackMax", 7);
-        incSecondaryStatHero("critPower", 20);
-        alert("вы получили Копьё Рыцаря");
-
-        break;
-      case "ironArmor":
-        icnMaxHPHero(hpMax, 30);
-        hero.hp += 30;
-        calcHp(".hero_hp", hero.hp);
-        incSecondaryStatHero("def", 3);
-        alert("вы получили Железную Кирасу");
-        break;
-      case "knightArmor":
-        incSecondaryStatHero("def", 4);
-        incSecondaryStatHero("luck", 2);
-        alert("вы получили Доспех Рыцаря");
-        break;
-      case "clover":
-        incSecondaryStatHero("luck", 8);
-        alert("вы получили Клевер");
-
-        break;
-      case "dagger":
-        incSecondaryStatHero("critChance", 7);
-        alert("вы получили Кинжал");
-
-        break;
-      case "heart":
-        icnMaxHPHero(hpMax, 65);
-        hero.hp += 65;
-        alert("вы получили Сердце");
-        calcHp(".hero_hp", hero.hp);
-
-        break;
-      case "phoenix":
-        hero.phoenix = true;
-        alert("вы получили Крылья Феника");
-
-        break;
-      case "sword":
-        incAttackHero(7, 7);
-        alert("вы получили Меч");
-
-        break;
-      case "mace":
-        hero.attack[1] += 13;
-        updateStats(".attackMax", 13);
-        alert("вы получили Булаву");
-
-        break;
-      case "magicBall":
-        incSecondaryStatHero("magicPower", 5);
-        incSecondaryStatHero("dodge", 5);
-        incSecondaryStatHero("adapt", 5);
-        alert("вы получили Магический Шар");
-
-        break;
-      case "vampiric":
-        !hero.vampiric ? (hero.vampiric = 8) : (hero.vampiric += 8);
-        alert("вы получили Клыки Вампира");
-
-        break;
+    function changeHpHero(value) {
+      hero.hp + value > hero.maxHPHero ? (hero.hp = hero.maxHPHero) : (hero.hp += value);
     }
   }
 
-  // Окно выбора артефакта
-  // function artsGetStyle(art, ImgArt) {
-  //   art.append(ImgArt);
-  // }
-
   function chooseArt(firstArtObject, secondArtObject) {
-    let artItems = document.querySelectorAll(".art-item");
-    const btnArtChoose = document.querySelector(".btn__chooseArt");
-
     //// тут
-    function artsGetStyle(art, artObject) {
-      art.setAttribute("art-name", artObject.name);
-      art.style.backgroundColor = artObject.rarity;
-      getArt(artObject, art);
+
+    function artsGetStyle(artObject, artWpapper) {
+      artWpapper.setAttribute("art-name", artObject.name);
+
+      artWpapper.style.backgroundColor = artObject.rarity;
+      appendArt(artObject, artWpapper);
     }
 
-    artsGetStyle(artItems[0], firstArtObject);
-    artsGetStyle(artItems[1], secondArtObject);
+    artsGetStyle(firstArtObject, artItems[0]);
+    artsGetStyle(secondArtObject, artItems[1]);
 
     artWindow.style.display = "block";
-    document.body.style.overflow = "hidden";
-    artItems.forEach((item) => {
-      item.addEventListener("click", (e) => {
-        e.stopPropagation();
-
-        btnArtChoose.style.display = "block";
-        artItems.forEach((art) => {
-          art.setAttribute("data-art", 0);
-          art.style.border = "2px solid";
-          art.style.boxShadow = "none";
-        });
-
-        item.setAttribute("data-art", 1);
-        item.style.border = "4px solid red";
-        item.style.boxShadow = "0 0 20px red";
-      });
-    });
+    // document.body.style.overflow = "hidden";
 
     btnArtChoose.addEventListener(
       "click",
-      (e) => {
+      () => {
         artItems.forEach((item) => {
           if (item.getAttribute("data-art") == 1) {
-            let art = item.getAttribute("art-name");
+            let artName = item.getAttribute("art-name");
             artContent.appendChild(item.firstChild);
-            useArtifact(art, hero);
+            // useArtifact(artName, hero);
+            getDataArt(artName).useArt();
           } else {
             if (item.style.backgroundColor === "gold") {
               artifactsLegends.push(item.getAttribute("art-name"));
@@ -1025,29 +1045,27 @@ function getXp(hero, guarantLegendArt = false, boss = false) {
       { once: true }
     );
   }
-
-  // Получение артефакта
-  // function getArt(img, title, descr, content = artContent) {
-  //   const artElem = document.createElement("div"),
-  //     artImg = document.createElement("img"),
-  //     artDescr = document.createElement("span"),
-  //     artTitle = document.createElement("p");
-
-  //   artElem.classList.add("art__item");
-  //   artImg.setAttribute("src", img);
-  //   artDescr.classList.add("art__text");
-
-  //   content.append(artElem);
-  //   artElem.append(artImg);
-
-  //   artTitle.textContent = title;
-  //   artDescr.textContent = descr;
-  //   artElem.append(artDescr);
-  //   artDescr.prepend(artTitle);
-  // }
 }
 
-function getArt(artObj, content = artContent) {
+artItems.forEach((item) => {
+  item.addEventListener("click", (e) => {
+    e.stopPropagation();
+    console.log(item);
+
+    btnArtChoose.style.display = "block";
+    artItems.forEach((art) => {
+      art.setAttribute("data-art", 0);
+      art.style.border = "2px solid";
+      art.style.boxShadow = "none";
+    });
+
+    item.setAttribute("data-art", 1);
+    item.style.border = "4px solid red";
+    item.style.boxShadow = "0 0 20px red";
+  });
+});
+
+function appendArt(artObj, content = artContent) {
   const artElem = document.createElement("div"),
     artImg = document.createElement("img"),
     artDescr = document.createElement("span"),
@@ -1066,10 +1084,5 @@ function getArt(artObj, content = artContent) {
   artElem.append(artDescr);
   artDescr.prepend(artTitle);
 }
-// name: "eyeSecond",
-//           src: "img/artifacts/eye_second.png",
-//           rarity: "gold",
-//           title: "Левый глаз демона",
-//           descr: "Увеличивает максимальное здоровье на 100 и уклонение на 10%",
 
 export default getXp;

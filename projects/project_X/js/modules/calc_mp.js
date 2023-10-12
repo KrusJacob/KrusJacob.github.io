@@ -1,4 +1,4 @@
-function calcMp(numMp) {
+function calcMp(numMp = 0) {
   const mpBar = document.querySelector(".hero_mp");
   let mpAtr = +mpBar.getAttribute("data-mp");
   const factor = mpBar.parentNode.clientWidth / mpAtr;

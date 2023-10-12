@@ -4,50 +4,77 @@ import talentMonk from "./talentsHeroes/monk";
 import talentJester from "./talentsHeroes/jester";
 import talentDryad from "./talentsHeroes/dryad";
 import talentMechanic from "./talentsHeroes/mechanic";
-import talentWitchmag from "./talentsHeroes/witchmage";
+import talentWitchmag from "./talentsHeroes/witchmag";
 import talentMage from "./talentsHeroes/mage";
 
 const coreTalents = {
   hero: {},
 
-  setDescr: function (objTalent) {
-    const level_1_First = document.querySelector(".talents-item.level-1.first"),
-      level_2_First = document.querySelector(".talents-item.level-2.first"),
-      level_2_Second = document.querySelector(".talents-item.level-2.second"),
-      level_3_First = document.querySelector(".talents-item.level-3.first"),
-      level_3_Second = document.querySelector(".talents-item.level-3.second");
+  setText: function (objTalent) {
+    // const level_1_First = document.querySelector(".talents-item.level_1.first"),
+    //   level_2_First = document.querySelector(".talents-item.level_2.first"),
+    //   level_2_Second = document.querySelector(".talents-item.level_2.second"),
+    //   level_3_First = document.querySelector(".talents-item.level_3.first"),
+    //   level_3_Second = document.querySelector(".talents-item.level_3.second"),
+    //   level_4_First = document.querySelector(".talents-item.level_4.first"),
+    //   level_4_Second = document.querySelector(".talents-item.level_4.second");
 
-    const descr_1_1 = level_1_First.querySelectorAll(".descr .text"),
-      descr_2_1 = level_2_First.querySelectorAll(".descr .text"),
-      descr_2_2 = level_2_Second.querySelectorAll(".descr .text"),
-      descr_3_1 = level_3_First.querySelectorAll(".descr .text"),
-      descr_3_2 = level_3_Second.querySelectorAll(".descr .text");
-
-    const descrArrs = [descr_1_1, descr_2_1, descr_2_2, descr_3_1, descr_3_2];
-
-    level_1_First.style.backgroundImage = objTalent.level_1.first.img;
-    level_2_First.style.backgroundImage = objTalent.level_2.first.img;
-    level_2_Second.style.backgroundImage = objTalent.level_2.second.img;
-    level_3_First.style.backgroundImage = objTalent.level_3.first.img;
-    level_3_Second.style.backgroundImage = objTalent.level_3.second.img;
-
-    level_1_First.querySelector(".talents__title").textContent = objTalent.level_1.first.title;
-    level_2_First.querySelector(".talents__title").textContent = objTalent.level_2.first.title;
-    level_2_Second.querySelector(".talents__title").textContent = objTalent.level_2.second.title;
-    level_3_First.querySelector(".talents__title").textContent = objTalent.level_3.first.title;
-    level_3_Second.querySelector(".talents__title").textContent = objTalent.level_3.second.title;
-
-    descrArrs.forEach((arr) => {
-      let count = 0;
-
-      arr.forEach((descr) => {
-        const talantLevel = descr.getAttribute("data-talent-level");
-        const talantNum = descr.getAttribute("data-talent");
-        descr.textContent = objTalent[talantLevel][talantNum].descr[count++];
+    let descrArr = [];
+    function getItems() {
+      const arrItems = document.querySelectorAll(".talents-item");
+      arrItems.forEach((item) => {
+        const level = item.getAttribute("level-current");
+        const branch = item.getAttribute("branch");
+        item.style.backgroundImage = objTalent[level][branch].img;
+        item.querySelector(".talents__title").textContent = objTalent[level][branch].title;
+        descrArr.push(item.querySelectorAll(".descr .text"));
       });
-    });
+      setDescr();
+      return arrItems;
+    }
 
-    this.setEvent([level_1_First, level_2_First, level_2_Second, level_3_First, level_3_Second]);
+    // const descr_1_1 = level_1_First.querySelectorAll(".descr .text"),
+    //   descr_2_1 = level_2_First.querySelectorAll(".descr .text"),
+    //   descr_2_2 = level_2_Second.querySelectorAll(".descr .text"),
+    //   descr_3_1 = level_3_First.querySelectorAll(".descr .text"),
+    //   descr_3_2 = level_3_Second.querySelectorAll(".descr .text"),
+    //   descr_4_1 = level_4_First.querySelectorAll(".descr .text"),
+    //   descr_4_2 = level_4_Second.querySelectorAll(".descr .text");
+
+    // const descrArrs = [descr_1_1, descr_2_1, descr_2_2, descr_3_1, descr_3_2, descr_4_1, descr_4_2];
+    // console.log(descrArrs);
+
+    // level_1_First.style.backgroundImage = objTalent.level_1.first.img;
+    // level_2_First.style.backgroundImage = objTalent.level_2.first.img;
+    // level_2_Second.style.backgroundImage = objTalent.level_2.second.img;
+    // level_3_First.style.backgroundImage = objTalent.level_3.first.img;
+    // level_3_Second.style.backgroundImage = objTalent.level_3.second.img;
+    // level_4_First.style.backgroundImage = objTalent.level_4.first.img;
+    // level_4_Second.style.backgroundImage = objTalent.level_4.second.img;
+
+    // level_1_First.querySelector(".talents__title").textContent = objTalent.level_1.first.title;
+    // level_2_First.querySelector(".talents__title").textContent = objTalent.level_2.first.title;
+    // level_2_Second.querySelector(".talents__title").textContent = objTalent.level_2.second.title;
+    // level_3_First.querySelector(".talents__title").textContent = objTalent.level_3.first.title;
+    // level_3_Second.querySelector(".talents__title").textContent = objTalent.level_3.second.title;
+    // level_4_First.querySelector(".talents__title").textContent = objTalent.level_4.first.title;
+    // level_4_Second.querySelector(".talents__title").textContent = objTalent.level_4.second.title;
+
+    // console.log(descrArrs);
+
+    function setDescr() {
+      descrArr.forEach((arr) => {
+        let count = 0;
+
+        arr.forEach((descr) => {
+          const talantLevel = descr.getAttribute("data-talent-level");
+          const talantNum = descr.getAttribute("data-talent");
+          descr.textContent = objTalent[talantLevel][talantNum].descr[count++];
+        });
+      });
+    }
+
+    this.setEvent(getItems());
   },
 
   setEvent: function (items) {
@@ -87,7 +114,7 @@ const coreTalents = {
               const branch = item.getAttribute("branch");
 
               document.querySelectorAll(`.${level}`).forEach((item) => {
-                if (level == "level-2") {
+                if (level == "level_2") {
                   item.removeAttribute("disabled");
                 } else {
                   if (item.classList.contains(`${branch}`)) {
@@ -149,14 +176,14 @@ const coreTalents = {
     this.hero = hero;
     switch (hero.name) {
       case "warrior":
-        this.setDescr({
+        this.setText({
           level_1: {
             first: {
-              title: "Адский крик",
+              title: "Тежёлый металл",
               descr: [
-                "1: Увеличивает урон от Боевого крика на 15%",
-                "2: Увеличивает урон от Боевого крика на 20%",
-                "3: Увеличивает урон от Боевого крика на 25%",
+                "1: Увеличивает урон от Удара щитом на 20%",
+                "2: Увеличивает урон от Удара щитом на 28%",
+                "3: Увеличивает урон от Удара щитом на 36%",
               ],
               img: "url(./img/icons/talents/warrior/talent_warrior_1_1.png)",
             },
@@ -164,13 +191,13 @@ const coreTalents = {
 
           level_2: {
             first: {
-              title: "Оглушающий рев",
-              descr: ["Боевой Крик оглушает противника на 1 ход и навсегда снижает его уклонение на 15%"],
+              title: "Сотрясение",
+              descr: ["Удар щитом оглушает противника на 1 ход и навсегда снижает его уклонение на 20%"],
               img: "url(./img/icons/talents/warrior/talent_warrior_2_1.png)",
             },
             second: {
               title: "Защитная стойка",
-              descr: ["Блок после Боевого Крика дополнительно уменьшает получаемый урон на 25%"],
+              descr: ["Блок после Удара щитом дополнительно уменьшает получаемый урон на 25%"],
               img: "url(./img/icons/talents/warrior/talent_warrior_2_2.png)",
             },
           },
@@ -179,9 +206,9 @@ const coreTalents = {
             first: {
               title: "Ни шагу назад",
               descr: [
-                "1: Боевой Крик восстанавливает 10% от макс.запаса здоровья ",
-                "2: Боевой Крик восстанавливает 12.5% от макс.запаса здоровья ",
-                "3: Боевой Крик восстанавливает 15% от макс.запаса здоровья ",
+                "1: Удар щитом восстанавливает 10% от макс.запаса здоровья ",
+                "2: Удар щитом восстанавливает 13% от макс.запаса здоровья ",
+                "3: Удар щитом восстанавливает 16% от макс.запаса здоровья ",
               ],
               img: "url(./img/icons/talents/warrior/talent_warrior_3_1.png)",
             },
@@ -191,10 +218,31 @@ const coreTalents = {
               img: "url(./img/icons/talents/warrior/talent_warrior_3_2.png)",
             },
           },
+
+          level_4: {
+            first: {
+              title: "Стойкость берсерка",
+              descr: [
+                "1: Снижает получаемый урон на 6%, Стойкость к боли снижает критичексий урон на ещё 5% ",
+                "2: Снижает получаемый урон на 9%, Стойкость к боли снижает критичексий урон на ещё 10% ",
+                "3: Снижает получаемый урон на 12%, Стойкость к боли снижает критичексий урон на ещё 15% ",
+              ],
+              img: "url(./img/icons/talents/warrior/talent_warrior_4_1.png)",
+            },
+            second: {
+              title: "Реванш",
+              descr: [
+                "1: При получении критического урона есть 50% шанс нанести врагу удар в размере 100% от атаки героя",
+                "2: При получении критического урона есть 60% шанс нанести врагу удар в размере 130% от атаки героя",
+                "3: При получении критического урона есть 70% шанс нанести врагу удар в размере 160% от атаки героя",
+              ],
+              img: "url(./img/icons/talents/warrior/talent_warrior_4_2.png)",
+            },
+          },
         });
         break;
       case "rogue":
-        this.setDescr({
+        this.setText({
           level_1: {
             first: {
               title: "Острый кинжал",
@@ -215,13 +263,14 @@ const coreTalents = {
             },
             second: {
               title: "Удар в сердце",
-              descr: ["Двойной удар наносит дополнительно 12%(боссу: 6%) от макс.здоровья врага"],
+              descr: ["Двойной удар наносит дополнительно 14%(боссу: 7%) от макс.здоровья врага"],
               img: "url(./img/icons/talents/rogue/talent_rogue_2_2.png)",
             },
           },
 
           level_3: {
             first: {
+              title: "Кровавый пир",
               descr: [
                 "1: Двойной удар исцеляет на 25% от нанесенного урона",
                 "2: Двойной удар исцеляет на 30% от нанесенного урона",
@@ -230,6 +279,7 @@ const coreTalents = {
               img: "url(./img/icons/talents/rogue/talent_rogue_3_1.png)",
             },
             second: {
+              title: "Уход в тень",
               descr: [
                 "1: После Двойного удара уклонение повышается на 40% на 6 секунд",
                 "2: После Двойного удара уклонение повышается на 55% на 6 секунд",
@@ -238,17 +288,38 @@ const coreTalents = {
               img: "url(./img/icons/talents/rogue/talent_rogue_3_2.png)",
             },
           },
+
+          level_4: {
+            first: {
+              title: "Серия ударов",
+              descr: [
+                "1: Снижает стоимость маны на Двойной удар на 10",
+                "2: Снижает стоимость маны на Двойной удар на 15",
+                "3: Снижает стоимость маны на Двойной удар на 20",
+              ],
+              img: "url(./img/icons/talents/rogue/talent_rogue_4_1.png)",
+            },
+            second: {
+              title: "Награда за расправу",
+              descr: [
+                "1: Убивая противника, вы исцеляетесь на 8% от его макс.здоровья",
+                "2: Убивая противника, вы исцеляетесь на 12% от его макс.здоровья",
+                "3: Убивая противника, вы исцеляетесь на 16% от его макс.здоровья",
+              ],
+              img: "url(./img/icons/talents/rogue/talent_rogue_4_2.png)",
+            },
+          },
         });
         break;
       case "monk":
-        this.setDescr({
+        this.setText({
           level_1: {
             first: {
               title: "Удары змеи",
               descr: [
-                "1: Увеличивает атаку на 2. Даёт 30% шанс получить единицу маны при атаке",
-                "2: Увеличивает атаку на 4. Даёт 40% шанс получить единицу маны при атаке",
-                "3: Увеличивает атаку на 6. Даёт 50% шанс получить единицу маны при атаке",
+                "1: Увеличивает атаку на 3. Даёт 30% шанс получить единицу маны при атаке",
+                "2: Увеличивает атаку на 5. Даёт 40% шанс получить единицу маны при атаке",
+                "3: Увеличивает атаку на 7. Даёт 50% шанс получить единицу маны при атаке",
               ],
               img: "url(./img/icons/talents/monk/talent_monk_1_1.png)",
             },
@@ -282,18 +353,38 @@ const coreTalents = {
             second: {
               title: "Синергия чакр",
               descr: [
-                "1: Увеличивает макс.запас здоровья и маны на 35, и регенерацию после боя на 15",
-                "2: Увеличивает макс.запас здоровья и маны на 50, и регенерацию после боя на 20",
-                "3: Увеличивает макс.запас здоровья и маны на 65, и регенерацию после боя на 25",
+                "1: Увеличивает макс.запас здоровья и маны на 40, и регенерацию после боя на 15",
+                "2: Увеличивает макс.запас здоровья и маны на 60, и регенерацию после боя на 25",
+                "3: Увеличивает макс.запас здоровья и маны на 80, и регенерацию после боя на 35",
               ],
               img: "url(./img/icons/talents/monk/talent_monk_3_2.png)",
+            },
+          },
+          level_4: {
+            first: {
+              title: "Подавление боли",
+              descr: [
+                "1: С шансом 18% при получении удара, вы получаете на 20% меньше урона",
+                "2: С шансом 22% при получении удара, вы получаете на 25% меньше урона",
+                "3: С шансом 26% при получении удара, вы получаете на 30% меньше урона",
+              ],
+              img: "url(./img/icons/talents/monk/talent_monk_4_1.png)",
+            },
+            second: {
+              title: "Уязвимое место",
+              descr: [
+                "1: Увеличивает шанс оглушения от Удара по почкам на 2%",
+                "2: Увеличивает шанс оглушения от Удара по почкам на 3%",
+                "3: Увеличивает шанс оглушения от Удара по почкам на 4%",
+              ],
+              img: "url(./img/icons/talents/monk/talent_monk_4_2.png)",
             },
           },
         });
         break;
 
       case "jester":
-        this.setDescr({
+        this.setText({
           level_1: {
             first: {
               title: "Перетасовка колоды",
@@ -339,17 +430,37 @@ const coreTalents = {
               img: "url(./img/icons/talents/jester/talent_jester_3_2.png)",
             },
           },
+          level_4: {
+            first: {
+              title: "Взрывной подарок",
+              descr: [
+                "1: С шансом 23% при использовании способности вы наносите врагу 16%(боссу: 8%) от его макс.здоровья",
+                "2: С шансом 28% при использовании способности вы наносите врагу 18%(боссу: 9%) от его макс.здоровья",
+                "3: С шансом 33% при использовании способности вы наносите врагу 20%(боссу: 10%) от его макс.здоровья",
+              ],
+              img: "url(./img/icons/talents/jester/talent_jester_4_1.png)",
+            },
+            second: {
+              title: "Изворотливость",
+              descr: [
+                "1: Увеличивает уклонение и адаптацию на 6% ",
+                "2: Увеличивает уклонение и адаптацию на 9% ",
+                "3: Увеличивает уклонение и адаптацию на 12% ",
+              ],
+              img: "url(./img/icons/talents/jester/talent_jester_4_2.png)",
+            },
+          },
         });
         break;
       case "dryad":
-        this.setDescr({
+        this.setText({
           level_1: {
             first: {
               title: "Целительное прикосновение",
               descr: [
-                "1: После использования способности, герой восстанавливает каждый ход 3% макс.запаса здоровья в течении 6 секунд",
-                "2: После использования способности, герой восстанавливает каждый ход 4% макс.запаса здоровья в течении 6 секунд",
-                "3: После использования способности, герой восстанавливает каждый ход 5% макс.запаса здоровья в течении 6 секунд",
+                "1: После использования способности, герой восстанавливает каждый ход 4% макс.запаса здоровья в течении 2 ходов",
+                "2: После использования способности, герой восстанавливает каждый ход 5% макс.запаса здоровья в течении 2 ходов",
+                "3: После использования способности, герой восстанавливает каждый ход 6% макс.запаса здоровья в течении 2 ходов",
               ],
               img: "url(./img/icons/talents/dryad/talent_dryad_1_1.png)",
             },
@@ -373,8 +484,8 @@ const coreTalents = {
               title: "Дубовая кожа",
               descr: [
                 "1: Вмешательства природы уменьшает получаемый урон на 40% на 2 хода",
-                "2: Вмешательства природы уменьшает получаемый урон на 50% на 2 хода",
-                "3: Вмешательства природы уменьшает получаемый урон на 60% на 2 хода",
+                "2: Вмешательства природы уменьшает получаемый урон на 55% на 2 хода",
+                "3: Вмешательства природы уменьшает получаемый урон на 70% на 2 хода",
               ],
               img: "url(./img/icons/talents/dryad/talent_dryad_3_1.png)",
             },
@@ -388,17 +499,37 @@ const coreTalents = {
               img: "url(./img/icons/talents/dryad/talent_dryad_3_2.png)",
             },
           },
+          level_4: {
+            first: {
+              title: "Облик медведя",
+              descr: [
+                "1: Увеличивает ваш макс.запас здоровья на 70 и защиту на 3, но уменьшает уклонение на 3%",
+                "2: Увеличивает ваш макс.запас здоровья на 105 и защиту на 5, но уменьшает уклонение на 5%",
+                "3: Увеличивает ваш макс.запас здоровья на 140 и защиту на 7, но уменьшает уклонение на 7%",
+              ],
+              img: "url(./img/icons/talents/dryad/talent_dryad_4_1.png)",
+            },
+            second: {
+              title: "Лунный огонь",
+              descr: [
+                "1: С шансом 16% перед атакой вы наносите дополнительно 80% урона от вашей силы магии",
+                "2: С шансом 20% перед атакой вы наносите дополнительно 100% урона от вашей силы магии",
+                "3: С шансом 24% перед атакой вы наносите дополнительно 120% урона от вашей силы магии",
+              ],
+              img: "url(./img/icons/talents/dryad/talent_dryad_4_2.png)",
+            },
+          },
         });
         break;
       case "mechanic":
-        this.setDescr({
+        this.setText({
           level_1: {
             first: {
               title: "Мастер-ломастер",
               descr: [
-                "1: С 17% шансом ваши атаки уменьшают защиту противника на 3, увеличивая вашу, на 2 хода",
-                "2: С 20% шансом ваши атаки уменьшают защиту противника на 4, увеличивая вашу, на 2 хода",
-                "3: С 23% шансом ваши атаки уменьшают защиту противника на 5, увеличивая вашу, на 2 хода",
+                "1: С 17% шансом ваши атаки уменьшают защиту противника на 4, увеличивая вашу, на 2 хода",
+                "2: С 20% шансом ваши атаки уменьшают защиту противника на 5, увеличивая вашу, на 2 хода",
+                "3: С 23% шансом ваши атаки уменьшают защиту противника на 6, увеличивая вашу, на 2 хода",
               ],
               img: "url(./img/icons/talents/mechanic/talent_mechanic_1_1.png)",
             },
@@ -412,7 +543,7 @@ const coreTalents = {
             },
             second: {
               title: "Экономия энергии",
-              descr: ["Продлевает длительность Режима Турбо на 3 секунды"],
+              descr: ["Продлевает длительность Режима Турбо на 4 секунды"],
               img: "url(./img/icons/talents/mechanic/talent_mechanic_2_2.png)",
             },
           },
@@ -421,34 +552,54 @@ const coreTalents = {
             first: {
               title: "Усовершенственные нейроны",
               descr: [
-                "1: Увеличивает уклонение на 6% и макс.запас здоровья на 30",
-                "2: Увеличивает уклонение на 8% и макс.запас здоровья на 40",
-                "3: Увеличивает уклонение на 10% и макс.запас здоровья на 50",
+                "1: Увеличивает уклонение на 6% и макс.запас здоровья на 45",
+                "2: Увеличивает уклонение на 8% и макс.запас здоровья на 60",
+                "3: Увеличивает уклонение на 10% и макс.запас здоровья на 75",
               ],
               img: "url(./img/icons/talents/mechanic/talent_mechanic_3_1.png)",
             },
             second: {
               title: "Броне-пластины",
               descr: [
-                "1: Режим Турбо дополнительно увеличивает защиту на 6",
-                "2: Режим Турбо дополнительно увеличивает защиту на 9",
-                "3: Режим Турбо дополнительно увеличивает защиту на 12",
+                "1: Режим Турбо дополнительно увеличивает защиту на 7",
+                "2: Режим Турбо дополнительно увеличивает защиту на 10",
+                "3: Режим Турбо дополнительно увеличивает защиту на 13",
               ],
               img: "url(./img/icons/talents/mechanic/talent_mechanic_3_2.png)",
+            },
+          },
+          level_4: {
+            first: {
+              title: "Мощный бум",
+              descr: [
+                "1: Комбо-удар наносит дополнительно 20% урона и с шансом 18% оглушает врага на 1 ход",
+                "2: Комбо-удар наносит дополнительно 30% урона и с шансом 23% оглушает врага на 1 ход",
+                "3: Комбо-удар наносит дополнительно 40% урона и с шансом 28% оглушает врага на 1 ход",
+              ],
+              img: "url(./img/icons/talents/mechanic/talent_mechanic_4_1.png)",
+            },
+            second: {
+              title: "На полную мощность",
+              descr: [
+                "1: Активация Режима Турбо исцеляет вас на 10% от макс.здоровья, а после завершения наносит врагу столько же урона, оглушая вас на 1 ход ",
+                "2: Активация Режима Турбо исцеляет вас на 14% от макс.здоровья, а после завершения наносит врагу столько же урона, оглушая вас на 1 ход ",
+                "3: Активация Режима Турбо исцеляет вас на 18% от макс.здоровья, а после завершения наносит врагу столько же урона, оглушая вас на 1 ход ",
+              ],
+              img: "url(./img/icons/talents/mechanic/talent_mechanic_4_2.png)",
             },
           },
         });
 
         break;
       case "witchmag":
-        this.setDescr({
+        this.setText({
           level_1: {
             first: {
               title: "Усиленные чары",
               descr: [
-                "1: Усиливает урон Чароплетсво на 17%",
-                "2: Усиливает урон Чароплетсво на 23%",
-                "3: Усиливает урон Чароплетсво на 30%",
+                "1: Усиливает урон Чароплетсво на 18%",
+                "2: Усиливает урон Чароплетсво на 25%",
+                "3: Усиливает урон Чароплетсво на 32%",
               ],
               img: "url(./img/icons/talents/witchmag/talent_witchmag_1_1.png)",
             },
@@ -487,10 +638,30 @@ const coreTalents = {
               img: "url(./img/icons/talents/witchmag/talent_witchmag_3_2.png)",
             },
           },
+          level_4: {
+            first: {
+              title: "Жажда клинка",
+              descr: [
+                "1: С шансом 8% при атаке вы наносите дополнительный удар в размере 50% от атаки и исцеляетсь на такое же значение ",
+                "2: С шансом 10% при атаке вы наносите дополнительный удар в размере 65% от атаки и исцеляетсь на такое же значение",
+                "3: С шансом 12% при атаке вы наносите дополнительный удар в размере 80% от атаки и исцеляетсь на такое же значение",
+              ],
+              img: "url(./img/icons/talents/witchmag/talent_witchmag_4_1.png)",
+            },
+            second: {
+              title: "Проклятие слабости",
+              descr: [
+                "1: Чароплетство уменьшает атаку и защиту противника на 22%",
+                "2: Чароплетство уменьшает атаку и защиту противника на 28%",
+                "3: Чароплетство уменьшает атаку и защиту противника на 34%",
+              ],
+              img: "url(./img/icons/talents/witchmag/talent_witchmag_4_2.png)",
+            },
+          },
         });
         break;
       case "mage":
-        this.setDescr({
+        this.setText({
           level_1: {
             first: {
               title: "Сконцентрированный взмах",
@@ -507,7 +678,7 @@ const coreTalents = {
             first: {
               title: "Школа магии льда",
               descr: [
-                "Пока активен ледяной щит, атакующий вас враг получает урон в размере 50% от вашей силы магии",
+                "Пока активен ледяной щит, атакующий вас враг получает урон в размере 40% от вашей силы магии",
               ],
               img: "url(./img/icons/talents/mage/talent_mage_2_1.png)",
             },
@@ -522,9 +693,9 @@ const coreTalents = {
             first: {
               title: "Искусный волшебник",
               descr: [
-                "1: При уклонении или при получении крит.урона, вы получаете ледяной щит, поглощающий 12% от макс.здоровья героя, суммируется",
-                "2: При уклонении или при получении крит.урона, вы получаете ледяной щит, поглощающий 15% от макс.здоровья героя, суммируется",
-                "3: При уклонении или при получении крит.урона, вы получаете ледяной щит, поглощающий 18% от макс.здоровья героя, суммируется",
+                "1: При уклонении или при получении крит.урона, вы получаете ледяной щит, поглощающий 8% от макс.здоровья героя, суммируется",
+                "2: При уклонении или при получении крит.урона, вы получаете ледяной щит, поглощающий 11% от макс.здоровья героя, суммируется",
+                "3: При уклонении или при получении крит.урона, вы получаете ледяной щит, поглощающий 14% от макс.здоровья героя, суммируется",
               ],
               img: "url(./img/icons/talents/mage/talent_mage_3_1.png)",
             },
@@ -536,6 +707,26 @@ const coreTalents = {
                 "3: После каждого боя вы варите зелье и восстанавливаете 16% здровья и 25 маны.",
               ],
               img: "url(./img/icons/talents/mage/talent_mage_3_2.png)",
+            },
+          },
+          level_4: {
+            first: {
+              title: "Громовой раскат",
+              descr: [
+                "1: Удар молнии добавляет 10% от макс.здоровья к прочности ледяного щита и с шансом 40% может оглушить на 2 хода",
+                "2: Удар молнии добавляет 13% от макс.здоровья к прочности ледяного щита и с шансом 50% может оглушить на 2 хода",
+                "3: Удар молнии добавляет 16% от макс.здоровья к прочности ледяного щита и с шансом 60% может оглушить на 2 хода",
+              ],
+              img: "url(./img/icons/talents/mage/talent_mage_4_1.png)",
+            },
+            second: {
+              title: "Огненная защита",
+              descr: [
+                "1: Огненный шар окружает вас огнем на 3 хода, поглощая 25% входящего урона и наносит атакующему 30% урона от силы магии",
+                "2: Огненный шар окружает вас огнем на 3 хода, поглощая 35% входящего урона и наносит атакующему 40% урона от силы магии ",
+                "3: Огненный шар окружает вас огнем на 3 хода, поглощая 45% входящего урона и наносит атакующему 50% урона от силы магии ",
+              ],
+              img: "url(./img/icons/talents/mage/talent_mage_4_2.png)",
             },
           },
         });

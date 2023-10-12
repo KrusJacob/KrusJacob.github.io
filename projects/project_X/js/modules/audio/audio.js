@@ -1,6 +1,6 @@
 // Main
 const AudioBackground = new Audio("./audio/background.mp3");
-decVolume(AudioBackground, 0.2);
+decVolume(AudioBackground, 0.1);
 const AudioClickSliderArrows = new Audio("./audio/click_slider-arrows.mp3");
 decVolume(AudioClickSliderArrows, 0.5);
 const AudioHeroChosen = new Audio("./audio/hero_chosen.mp3");
@@ -53,6 +53,32 @@ const AudioGetDemageWoman3 = new Audio("./audio/get_demage_woman_3.mp3");
 decVolume(AudioGetDemageWoman3, 0.1);
 const AudioGetDemageWoman4 = new Audio("./audio/get_demage_woman_4.mp3");
 decVolume(AudioGetDemageWoman4, 0.1);
+// skills
+const AudioSkillWarrior = new Audio("./audio/skills/skill_warrior.mp3");
+decVolume(AudioSkillWarrior, 0.3);
+const AudioSkillRogue = new Audio("./audio/skills/skill_rogue.mp3");
+decVolume(AudioSkillRogue, 0.7);
+const AudioSkillMonk = new Audio("./audio/skills/skill_monk.mp3");
+decVolume(AudioSkillMonk, 0.3);
+const AudioSkillJester = new Audio("./audio/skills/skill_jester.mp3");
+decVolume(AudioSkillJester, 0.9);
+const AudioSkillDryad = new Audio("./audio/skills/skill_dryad.mp3");
+decVolume(AudioSkillDryad, 0.4);
+const AudioSkillMechanic = new Audio("./audio/skills/skill_mechanic.mp3");
+decVolume(AudioSkillMechanic, 0.5);
+const AudioSkillWitchmag = new Audio("./audio/skills/skill_witchmag.mp3");
+decVolume(AudioSkillWitchmag, 0.5);
+
+const AudioSkillMageFire = new Audio("./audio/skills/skill_mage_fire.mp3");
+decVolume(AudioSkillMageFire, 0.5);
+const AudioSkillMageIceBlock = new Audio("./audio/skills/skill_mage_ice_block.mp3");
+decVolume(AudioSkillMageIceBlock, 0.3);
+const AudioSkillMageIceDestr = new Audio("./audio/skills/skill_mage_ice_destr.mp3");
+decVolume(AudioSkillMageIceDestr, 0.5);
+const AudioSkillMageIceCreate = new Audio("./audio/skills/skill_mage_ice_create.mp3");
+decVolume(AudioSkillMageIceCreate, 0.3);
+const AudioSkillMageLightning = new Audio("./audio/skills/skill_mage_lightning.mp3");
+decVolume(AudioSkillMageLightning, 0.5);
 
 function decVolume(audio, volume) {
   audio.volume = volume;
@@ -107,6 +133,30 @@ function AudioAction(audio, action) {
         return AudioGetDemageWoman4;
       case "missAttack":
         return AudioMissAttack;
+      case "skillWARRIOR":
+        return AudioSkillWarrior;
+      case "skillROGUE":
+        return AudioSkillRogue;
+      case "skillMONK":
+        return AudioSkillMonk;
+      case "skillJESTER":
+        return AudioSkillJester;
+      case "skillDRYAD":
+        return AudioSkillDryad;
+      case "skillMECHANIC":
+        return AudioSkillMechanic;
+      case "skillWITCHMAG":
+        return AudioSkillWitchmag;
+      case "skillMAGE_fire":
+        return AudioSkillMageFire;
+      case "skillMAGE_iceCreate":
+        return AudioSkillMageIceCreate;
+      case "skillMAGE_iceBlock":
+        return AudioSkillMageIceBlock;
+      case "skillMAGE_iceDestr":
+        return AudioSkillMageIceDestr;
+      case "skillMAGE_lightning":
+        return AudioSkillMageLightning;
     }
   }
 }
@@ -135,12 +185,10 @@ function setAudioToHero(hero) {
 
   switch (hero.sex) {
     case "man":
-      console.log("man");
       hero.audio.getDemage = () => AudioAction("getDemageMan");
       hero.audio.getCrit = () => AudioAction("getCritDemageMan");
       break;
     case "woman":
-      console.log("woman");
       hero.audio.getDemage = () => AudioAction("getDemageWoman");
       hero.audio.getCrit = () => AudioAction("getCritDemageWoman");
       break;
@@ -148,7 +196,25 @@ function setAudioToHero(hero) {
 
   hero.audio.miss = () => AudioAction("missAttack");
 
-  console.log(hero);
+  switch (hero.name) {
+    case "warrior":
+    case "rogue":
+    case "monk":
+    case "jester":
+    case "dryad":
+    case "mechanic":
+    case "witchmag":
+      hero.audio.skill = () => AudioAction(`skill${hero.name.toUpperCase()}`);
+      break;
+    case "mage":
+      hero.audio.skill = {};
+      hero.audio.skill.iceCreate = () => AudioAction("skillMAGE_iceCreate");
+      hero.audio.skill.iceBlock = () => AudioAction("skillMAGE_iceBlock");
+      hero.audio.skill.iceDestr = () => AudioAction("skillMAGE_iceDestr");
+      hero.audio.skill.fire = () => AudioAction("skillMAGE_fire");
+      hero.audio.skill.lightning = () => AudioAction("skillMAGE_lightning");
+      break;
+  }
 }
 
 export default AudioAction;

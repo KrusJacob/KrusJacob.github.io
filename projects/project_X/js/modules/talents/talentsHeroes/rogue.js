@@ -1,6 +1,7 @@
 import updateStats from "../../update_stats";
 import calcHp from "../../calc_hp";
 import addText from "../../text";
+import { manaCost, initDescrBtn } from "../../skills";
 
 const talentRogue = {
   hero: {},
@@ -58,10 +59,11 @@ const talentRogue = {
         amount: 0,
         init: function (enemy) {
           if (this.learn) {
-            let mod = 1;
-            enemy.name == "boss" ? (mod = 0.5) : null;
-            console.log(enemy.maxHPEnemy / (100 / (12 * mod)));
-            return enemy.maxHPEnemy / (100 / (12 * mod));
+            let modBoss = 1;
+            let modDmg = 14;
+            enemy.name == "boss" ? (modBoss = 0.5) : null;
+
+            return Math.round(enemy.maxHPEnemy / (100 / (modDmg * modBoss)));
           } else {
             return 0;
           }
@@ -120,6 +122,56 @@ const talentRogue = {
         },
       },
     },
+    level_4: {
+      first: {
+        learn: false,
+        amount: 0,
+        init: function (hero) {
+          if (this.learn) {
+            const changeDescr = initDescrBtn.bind({ manaCost });
+            switch (this.amount) {
+              case 1:
+                manaCost.rogue -= 10;
+                break;
+              case 2:
+                manaCost.rogue -= 5;
+                break;
+              case 3:
+                manaCost.rogue -= 5;
+                break;
+            }
+            changeDescr(hero.name);
+          }
+        },
+      },
+      second: {
+        learn: false,
+        amount: 0,
+        init: function (hero) {
+          if (this.learn) {
+            let modHeal = 0;
+            switch (this.amount) {
+              case 1:
+                modHeal = 8;
+                break;
+              case 2:
+                modHeal = 12;
+                break;
+              case 3:
+                modHeal = 16;
+                break;
+            }
+            hero.rogueRewardKill = function (hero, maxHPHero, maxHPEnemy) {
+              console.log(maxHPHero, maxHPEnemy);
+              const heal = Math.round(maxHPEnemy / (100 / modHeal));
+              hero.hp + heal > maxHPHero ? (hero.hp = maxHPHero) : (hero.hp += heal);
+              calcHp(".hero_hp", hero.hp);
+              addText(`исцеление от Награды за расправу: ${heal} здоровья`, "cyan");
+            };
+          }
+        },
+      },
+    },
   },
 
   init(talent, hero) {
@@ -132,8 +184,13 @@ const talentRogue = {
     this.hero = hero;
 
     if (level == "level_1" && branch == "first") {
-      // this.incStat(hero);
       this.levels.level_1.first.init(hero);
+    }
+    if (level == "level_4" && branch == "first") {
+      this.levels.level_4.first.init(hero);
+    }
+    if (level == "level_4" && branch == "second") {
+      this.levels.level_4.second.init(hero);
     }
 
     console.log(this.levels);

@@ -3,97 +3,97 @@ import calcHp from "./calc_hp";
 
 const arrBuffs = [
   {
-    name: "attack",
+    name: "hawk",
     title: "Метка Ястреба",
     descr: "Атака + 14%",
     value: { inc: 14, percent: true, buff: ["attack"], selector: [".attackMin", ".attackMax"] },
   },
   {
-    name: "def",
+    name: "turtle",
     title: "Метка Черепахи",
-    descr: "Защита + 16%",
-    value: { inc: 16, percent: true, buff: ["def"], selector: [".def"] },
+    descr: "Защита + 15%",
+    value: { inc: 15, percent: true, buff: ["def"], selector: [".def"] },
   },
   {
-    name: "maxHp",
+    name: "bear",
     title: "Метка Медведя",
     descr: "Запас Здоровья + 14%",
     value: { inc: 14, percent: true, buff: ["hp"], selector: [".hpMax"] },
   },
   {
-    name: "dodge",
+    name: "monkey",
     title: "Метка Обезьяны",
     descr: "Уклонение + 16%",
     value: { inc: 16, percent: true, buff: ["dodge"], selector: [".dodge"] },
   },
   {
-    name: "сrit",
+    name: "tiger",
     title: "Метка Тигра",
     descr: "Шанс крит.удара и Сила крит.удара + 7%",
     value: { inc: 7, percent: true, buff: ["critChance", "critPower"], selector: [".critChance", ".critPower"] },
   },
   {
-    name: "adapt",
+    name: "raccoon",
     title: "Метка Eнота",
     descr: "Адаптация + 16%",
     value: { inc: 16, percent: true, buff: ["adapt"], selector: [".adapt"] },
   },
   {
-    name: "luck",
+    name: "frog",
     title: "Метка Лягушки",
     descr: "Удача + 16%",
     value: { inc: 16, percent: true, buff: ["luck"], selector: [".luck"] },
   },
   {
-    name: "attack-def",
+    name: "rhino",
     title: "Метка Носорога",
     descr: "Атака + 8% <br> Защита + 8%",
     value: { inc: 8, percent: true, buff: ["attack", "def"], selector: [".attackMin", ".attackMax", ".def"] },
   },
   {
-    name: "attack-adapt",
+    name: "hyena",
     title: "Метка Гиены",
     descr: "Атака + 8% <br> Адаптация + 8%",
     value: { inc: 8, percent: true, buff: ["attack", "adapt"], selector: [".attackMin", ".attackMax", ".adapt"] },
   },
   {
-    name: "def-maxHp",
+    name: "lion",
     title: "Метка Льва",
     descr: "Запас Здоровья + 8% <br> Защита + 8%",
     value: { inc: 8, percent: true, buff: ["hp", "def"], selector: [".hpMax", ".def"] },
   },
   {
-    name: "dodge-maxHp",
+    name: "wolf",
     title: "Метка Волка",
     descr: "Запас Здоровья + 8% <br> Уклонение + 8%",
     value: { inc: 8, percent: true, buff: ["hp", "dodge"], selector: [".hpMax", ".dodge"] },
   },
   {
-    name: "luck-maxHp",
-    title: "Метка Eжа",
+    name: "crab",
+    title: "Метка Краба",
     descr: "Запас Здоровья + 8% <br> Удача + 8%",
     value: { inc: 8, percent: true, buff: ["hp", "luck"], selector: [".hpMax", ".luck"] },
   },
   {
-    name: "luck-dodge",
+    name: "dolphin",
     title: "Метка Дельфина",
     descr: "Уклонение + 9% <br> Удача + 9%",
     value: { inc: 9, percent: true, buff: ["dodge", "luck"], selector: [".dodge", ".luck"] },
   },
   {
-    name: "attack-dodge",
+    name: "fox",
     title: "Метка Лисы",
     descr: "Aтака + 8% <br> Уклонение + 8%",
     value: { inc: 8, percent: true, buff: ["attack", "dodge"], selector: [".attackMin", ".attackMax", ".dodge"] },
   },
   {
-    name: "def-adapt",
-    title: "Метка Зубра",
+    name: "shark",
+    title: "Метка Акулы",
     descr: `Защита + 9% <br> Адаптация + 9%`,
     value: { inc: 9, percent: true, buff: ["def", "adapt"], selector: [".def", ".adapt"] },
   },
   {
-    name: "attack-magicPower",
+    name: "snake",
     title: "Метка Змеи",
     descr: `Атака + 8% <br> Сила Магии + 8%`,
     value: {
@@ -104,13 +104,13 @@ const arrBuffs = [
     },
   },
   {
-    name: "adapt-magicPower",
-    title: "Метка Хамелеона",
+    name: "lizard",
+    title: "Метка Ящера",
     descr: `Адаптация + 9% <br> Сила Магии + 9%`,
     value: { inc: 9, percent: true, buff: ["adapt", "magicPower"], selector: [".adapt", ".magicPower"] },
   },
   {
-    name: "luck-magicPower",
+    name: "crane",
     title: "Метка Журавля",
     descr: `Удача + 9% <br> Сила Магии + 9%`,
     value: { inc: 9, percent: true, buff: ["luck", "magicPower"], selector: [".luck", ".magicPower"] },
@@ -236,7 +236,7 @@ function buff(hero) {
 
     buffElem.classList.add("buff__container");
     // buffElem.style.backgroundColor = artObj.rarity;
-    buffImg.setAttribute("src", "img/icons/buffs/mark_buff.png");
+    buffImg.setAttribute("src", `img/icons/buffs/buff-${buff.name}.png`);
     buffText.classList.add("buff__text");
 
     item.setAttribute("buff-name", buff.title);

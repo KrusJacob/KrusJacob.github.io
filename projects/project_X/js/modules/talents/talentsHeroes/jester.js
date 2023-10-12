@@ -16,11 +16,11 @@ const talentJester = {
             let bonusMana = 0;
             switch (this.amount) {
               case 1: {
-                bonusMana = 20;
+                bonusMana = 16;
                 break;
               }
               case 2: {
-                bonusMana = 24;
+                bonusMana = 21;
                 break;
               }
               case 3: {
@@ -123,10 +123,74 @@ const talentJester = {
             if (chance > chanceTotal) {
               setTimeout(() => {
                 hero.mana += bonusMana;
-                addText(`Враг смухлевали и восстановили ${bonusMana} маны`, "magenta");
+                addText(`Вы смухлевали и восстановили ${bonusMana} маны`, "magenta");
                 calcMp(hero.mana);
               }, 400);
             }
+          }
+        },
+      },
+    },
+    level_4: {
+      first: {
+        learn: false,
+        amount: 0,
+        init: function (enemy) {
+          if (this.learn) {
+            let chance = 0;
+            let factorDmg = 0;
+            switch (this.amount) {
+              case 1:
+                chance = 23;
+                factorDmg = 16;
+                break;
+              case 2:
+                chance = 28;
+                factorDmg = 18;
+                break;
+              case 3:
+                chance = 33;
+                factorDmg = 20;
+                break;
+            }
+            const chanceTotal = Math.random() * 100 + 1;
+            if (chance > chanceTotal) {
+              let mod = 1;
+              enemy.name == "boss" ? (mod = 0.5) : null;
+              if (enemy.hp > 0) {
+                const dmg = Math.round(enemy.maxHPEnemy / (100 / (factorDmg * mod)));
+                enemy.hp -= dmg;
+                addText(`Подсунув Взрывной подарок вы наносите ${dmg} урона`, "magenta");
+              }
+            }
+          }
+        },
+      },
+      second: {
+        learn: false,
+        amount: 0,
+        init: function (hero) {
+          if (this.learn) {
+            let bonusDodge = 0,
+              bonusAdapt = 0;
+            switch (this.amount) {
+              case 1:
+                bonusDodge = 6;
+                bonusAdapt = 6;
+                break;
+              case 2:
+                bonusDodge = 3;
+                bonusAdapt = 3;
+                break;
+              case 3:
+                bonusDodge = 3;
+                bonusAdapt = 3;
+                break;
+            }
+            hero.dodge += bonusDodge;
+            hero.adapt += bonusAdapt;
+            updateStats(".dodge", hero.dodge, true);
+            updateStats(".adapt", hero.adapt, true);
           }
         },
       },
@@ -150,6 +214,9 @@ const talentJester = {
     }
     if (level == "level_2" && branch == "second") {
       this.levels.level_2.second.init(hero);
+    }
+    if (level == "level_4" && branch == "second") {
+      this.levels.level_4.second.init(hero);
     }
 
     console.log(this.levels);

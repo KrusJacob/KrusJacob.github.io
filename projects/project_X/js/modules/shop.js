@@ -57,7 +57,7 @@ function getParameter(selector, cardParametr) {
 
       goldHero -= price.textContent;
 
-      price.textContent = +price.textContent + 6;
+      price.textContent = +price.textContent + 7;
       document.querySelector(".bar__coin span").textContent = goldHero;
     } else {
       alert("Не хватает золота");

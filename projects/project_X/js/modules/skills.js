@@ -6,7 +6,7 @@ import talentRogue from "./talents/talentsHeroes/rogue";
 import talentJester from "./talents/talentsHeroes/jester";
 import talentDryad from "./talents/talentsHeroes/dryad";
 import talentMechanic from "./talents/talentsHeroes/mechanic";
-import talentWitchmag from "./talents/talentsHeroes/witchmage";
+import talentWitchmag from "./talents/talentsHeroes/witchmag";
 import talentMage from "./talents/talentsHeroes/mage";
 
 import { critPowerMod, critСhanceMod, adaptMod } from "./mods/mods";
@@ -45,6 +45,7 @@ const skill = {
     mage: 30,
   },
 
+  active: false,
   enemy: {},
   maxHPHero: 0,
   monkGates: 0,
@@ -55,9 +56,9 @@ const skill = {
     switch (hero.name) {
       case "warrior":
         if (hero.hp > 0 && this.enemy.hp > 0 && mana >= this.manaCost.warrior) {
-          let buffmagicPower = hero.magicPower * 0.012 + 1;
+          let buffmagicPower = hero.magicPower * 0.0115 + 1;
           // level_1 first
-          let dmg = Math.round(45 + hero.def * 2.75 * buffmagicPower * talentWarrior.levels.level_1.first.init());
+          let dmg = Math.round(50 + hero.def * 2.6 * buffmagicPower * talentWarrior.levels.level_1.first.init());
           // level_2 first
           talentWarrior.levels.level_2.first.init(this.enemy);
 
@@ -65,11 +66,12 @@ const skill = {
           addText(`Вы наносите удар щитом: ${dmg} урона, и ставите блок`, "cyan");
 
           if (this.enemy.hp > 0) {
-            let buffdef = Math.round(hero.def * 0.8 * buffmagicPower) + 8;
+            let buffdef = Math.round(hero.def * 0.8 * buffmagicPower) + 10;
             hero.def += buffdef;
 
             // level_2 second
-            hero.absorbDamage = talentWarrior.levels.level_2.second.init();
+            let absorbDmg = talentWarrior.levels.level_2.second.init();
+            hero.absorbDamage += absorbDmg;
 
             // level_3 first
             talentWarrior.levels.level_3.first.init(hero, this.maxHPHero);
@@ -79,10 +81,11 @@ const skill = {
               hero.def -= buffdef;
               updateStats(".def", hero.def, true);
 
-              hero.absorbDamage = 0;
+              hero.absorbDamage -= absorbDmg;
             }, 8000);
           }
           mana -= this.manaCost.warrior;
+          hero.audio.skill();
           // mana = 0;
           // this.mana = 0;
         }
@@ -97,10 +100,10 @@ const skill = {
           dmg += talentRogue.levels.level_2.second.init(this.enemy);
 
           this.enemy.hp -= dmg;
-          const enemyDef = this.enemy.def;
-          const enemyName = this.enemy.name;
           // level_2 first
-          this.enemy.def -= Math.round(this.enemy.def / talentRogue.levels.level_2.first.init());
+          const decDef = Math.round(this.enemy.def / talentRogue.levels.level_2.first.init());
+          const enemyName = this.enemy.name;
+          this.enemy.def -= decDef;
           addText(`Вы совершаете быстрый, двойной удар: ${dmg} урона`, "cyan");
 
           // level_3 first
@@ -110,10 +113,11 @@ const skill = {
 
           setTimeout(() => {
             if (enemyName == this.enemy.name) {
-              this.enemy.def = enemyDef;
+              this.enemy.def += decDef;
             }
           }, 6000);
           mana -= this.manaCost.rogue;
+          hero.audio.skill();
         }
         return [mana, this.enemy.hp];
 
@@ -170,16 +174,17 @@ const skill = {
           }, 12000);
 
           mana -= this.manaCost.monk;
+          hero.audio.skill();
         }
         return [mana, this.enemy.hp];
 
       case "jester":
         if (hero.hp > 0 && this.enemy.hp > 0 && mana >= this.manaCost.jester) {
-          let buffmagicPower = hero.magicPower * 0.012 + 1;
+          let buffmagicPower = hero.magicPower * 0.0115 + 1;
           let bonusChance = hero.luck * 0.2;
           let chance = Math.random() * 100 + 1 + bonusChance;
           if (chance <= 33) {
-            let bonus = hero.luck * 1.25;
+            let bonus = hero.luck * 1.2;
             let heal = 35 + Math.round((this.maxHPHero / 13 + bonus) * buffmagicPower);
             hero.hp + heal > this.maxHPHero ? (hero.hp = this.maxHPHero) : (hero.hp += heal);
             addText(`карта:Валет, вы исцеляетесь на ${heal}`, "cyan");
@@ -198,29 +203,28 @@ const skill = {
               hero.dodge -= 100;
               updateStats(".dodge", hero.dodge, true);
             }, duration);
-          } else if (chance > 77 && chance <= 95) {
+          } else if (chance > 77 && chance <= 97) {
             let bonus = hero.luck * 1.45;
             let dmgHeal = 45 + Math.round((this.enemy.hp / 17 + bonus) * buffmagicPower);
             hero.hp + dmgHeal > this.maxHPHero ? (hero.hp = this.maxHPHero) : (hero.hp += dmgHeal);
             this.enemy.hp -= dmgHeal;
             addText(`Карта:Туз, вы наносите врагу ${dmgHeal} урона и исцеляетесь`, "cyan");
-          } else if (chance > 95) {
+          } else if (chance > 97) {
             let bonus = hero.luck * 1.6;
-            let dmg = 40 + Math.round((this.maxHPHero / 14 + bonus) * buffmagicPower);
+            let dmg = 50 + Math.round((this.maxHPHero / 14 + bonus) * buffmagicPower);
             this.enemy.hp -= dmg;
-            if (this.enemy.hp <= 0) {
-              let heal = 40 + Math.round(this.maxHPHero / 14 + bonus);
-              hero.hp + heal > this.maxHPHero ? (hero.hp = this.maxHPHero) : (hero.hp += heal);
-              mana += 50;
-            }
-            addText(`Карта:Джокер, наносит ${dmg} урона, если враг убит исцеляетесь и получаете 50 маны`, "cyan");
+            this.enemy.stun += 2;
+            addText(`Карта:Джокер, наносит ${dmg} урона, и оглушает противника на 2 хода`, "cyan");
           }
           // level_3 first
           talentJester.levels.level_3.first.init(this.enemy);
           // level_3 second
           talentJester.levels.level_3.second.init(hero);
+          // level_4 first
+          talentJester.levels.level_4.first.init(this.enemy);
 
           mana -= this.manaCost.jester;
+          hero.audio.skill();
         }
         return [mana, this.enemy.hp];
 
@@ -229,9 +233,9 @@ const skill = {
           let heal;
           let buffmagicPower = hero.magicPower * 0.022 + 1;
           if (hero.hp <= this.maxHPHero / 5) {
-            heal = 70 + Math.round((this.maxHPHero / 13) * buffmagicPower);
+            heal = 60 + Math.round((this.maxHPHero / 13) * buffmagicPower);
           } else {
-            heal = 45 + Math.round((this.maxHPHero / 14) * buffmagicPower);
+            heal = 40 + Math.round((this.maxHPHero / 14) * buffmagicPower);
           }
           hero.hp + heal > this.maxHPHero ? (hero.hp = this.maxHPHero) : (hero.hp += heal);
           let dmg = Math.round(heal / 2);
@@ -244,14 +248,15 @@ const skill = {
           // level_1 first
           talentDryad.levels.level_1.first.init(hero, this.maxHPHero);
           // level_3 first
-          talentDryad.levels.level_3.first.init(this.enemy);
+          talentDryad.levels.level_3.first.init(hero);
 
           mana -= this.manaCost.dryad;
+          hero.audio.skill();
         }
         return [mana, this.enemy.hp];
 
       case "mechanic":
-        if (hero.hp > 0 && this.enemy.hp > 0 && mana >= this.manaCost.mechanic) {
+        if (hero.hp > 0 && this.enemy.hp > 0 && mana >= this.manaCost.mechanic && !this.active) {
           let buffmagicPower = hero.magicPower * 0.011 + 1;
           const buffAttack = Math.round(buffmagicPower * 21);
           const buffMinAttack = Math.round(hero.attack[0] * (buffAttack / 100));
@@ -260,6 +265,7 @@ const skill = {
           const buffDef = Math.round((hero.def * 0.2 + 6 + buffDefTalent) * buffmagicPower);
           const buffAdapt = 30 + talentMechanic.levels.level_2.first.init();
           const duration = Math.round(8000 + talentMechanic.levels.level_2.second.init());
+          this.active = true;
           hero.def += buffDef;
           hero.adapt += buffAdapt;
           hero.attack[0] += buffMinAttack;
@@ -274,6 +280,8 @@ const skill = {
           updateStats(".adapt", hero.adapt, true);
           updateStats(".attackMin", hero.attack[0], true);
           updateStats(".attackMax", hero.attack[1], true);
+          // level_4 second
+          hero.mechanicFullCapacity ? hero.mechanicFullCapacity.activate(this.maxHPHero) : null;
           setTimeout(() => {
             hero.def -= buffDef;
             hero.adapt -= buffAdapt;
@@ -283,8 +291,11 @@ const skill = {
             updateStats(".adapt", hero.adapt, true);
             updateStats(".attackMin", hero.attack[0], true);
             updateStats(".attackMax", hero.attack[1], true);
+            this.active = false;
+            hero.mechanicFullCapacity ? hero.mechanicFullCapacity.deactivate(this.maxHPHero, this.enemy) : null;
           }, duration);
           mana -= this.manaCost.mechanic;
+          hero.audio.skill();
         }
         return [mana, this.enemy.hp];
 
@@ -304,11 +315,12 @@ const skill = {
           setTimeout(() => {
             // level_3 first
             hero.witchmagEnchBlade ? hero.witchmagEnchBlade(true) : null;
+            hero.witchmagCurseWeakness ? hero.witchmagCurseWeakness.activate(this.enemy) : null;
 
             const dot = setInterval(() => {
               if (count >= duration || this.enemy.hp <= 0 || hero.hp < 0) {
                 clearInterval(dot);
-
+                hero.witchmagCurseWeakness ? hero.witchmagCurseWeakness.deactivate(this.enemy) : null;
                 hero.witchmagEnchBlade ? hero.witchmagEnchBlade(false) : null;
               } else {
                 this.enemy.hp -= dmg;
@@ -327,12 +339,13 @@ const skill = {
           }, 150);
 
           mana -= this.manaCost.witchmag;
+          hero.audio.skill();
         }
         return [mana, this.enemy.hp];
 
       case "mage":
         if (hero.hp > 0 && this.enemy.hp > 0 && mana >= this.manaCost.mage) {
-          let buffmagicPower = hero.magicPower * 0.026 + 1;
+          let buffmagicPower = hero.magicPower * 0.0255 + 1;
 
           const fireBoll = () => {
             let dmg = Math.round(5 + (35 + hero.lvl) * buffmagicPower);
@@ -347,16 +360,20 @@ const skill = {
             }
             // mage level_2 second
             talentMage.levels.level_2.second.init(hero, this.enemy);
+            // mage level_4 second
+            hero.mageFireShield ? hero.mageFireShield.use() : null;
+
+            hero.audio.skill.fire();
           };
           const iceShield = () => {
-            hero.absorbDamage = 25;
-            hero.barrier = Math.round(5 + (hero.magicPower + hero.lvl) * 1.1);
+            hero.barrier = Math.round(10 + (hero.magicPower + hero.lvl) * 1.1);
             hero.mageOnIceShield = true;
             addText(`Вы создаете ледяной щит. Прочность: ${hero.barrier}`, "cyan");
             // setTimeout(() => {
             //   hero.absorbDamage = 0;
             //   hero.mageOnIceShield = false;
             // }, 8000);
+            hero.audio.skill.iceCreate();
           };
           const thunderСlap = () => {
             const сheckCrit = Math.round(Math.random() * 100) + 1;
@@ -364,12 +381,15 @@ const skill = {
             if (сheckCrit <= critСhanceMod(hero.critChance) - adaptMod(this.enemy.adapt)) {
               dmg = Math.round(dmg * (critPowerMod(hero.critPower) / 100));
               this.enemy.hp -= dmg;
-              addText(`Вы паражаете врага серией ударов молнии, нанося ${dmg} урона и оглушая на 1 ход`, "cyan");
+              addText(`Вы паражаете врага серией ударов молнии, нанося ${dmg} урона и оглушая его`, "cyan");
             } else {
               this.enemy.hp -= dmg;
-              addText(`Вы паражаете врага ударом молнии, нанося ${dmg} урона и оглушая на 1 ход`, "cyan");
+              addText(`Вы паражаете врага ударом молнии, нанося ${dmg} урона и оглушая его`, "cyan");
             }
-            this.enemy.stun = true;
+            // mage level_4 first
+            talentMage.levels.level_4.first.init(hero, this.enemy);
+            this.enemy.stun++;
+            hero.audio.skill.lightning();
           };
 
           hero.hp > this.maxHPHero / 2 ? fireBoll() : hero.mageOnIceShield ? thunderСlap() : iceShield();

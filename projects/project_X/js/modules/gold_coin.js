@@ -1,12 +1,8 @@
-function goldCoin(value, modificator) {
+function goldCoin(value, goldMod) {
   const coinBar = document.querySelector(".bar__coin");
   const coinElement = coinBar.querySelector("span");
   let coin = +coinBar.querySelector("span").textContent;
-  let goldMod = 1;
 
-  if (modificator) {
-    goldMod += +modificator;
-  }
   getCoin(value);
 
   function getCoin(value) {

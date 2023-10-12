@@ -57,6 +57,10 @@ const artifacts = [
   "magicBook",
   "staffOfHealing",
   "emblemDragon",
+  "boneDagger",
+  "giantHammer",
+  "spikedHorn",
+  "tigerMask",
 ];
 const artifactsLegends = [
   "goldSword",
@@ -73,6 +77,7 @@ const artifactsLegends = [
   "robberyCloak",
   "flameBook",
   "thunderHammer",
+  "emblemWolf",
 ];
 const artifactsBoss = [
   ["bloodOrk", "fangOrk"],
@@ -81,6 +86,7 @@ const artifactsBoss = [
   ["iceDM", "sphereDM"],
   ["swordKingHell", "handKingHell"],
 ];
+
 // bloodOrk - ярость
 // fangOrk - атака, крит.шанс
 // darknessMimic - отхил
@@ -94,12 +100,16 @@ const artifactsBoss = [
 const artContent = document.querySelector(".art__content");
 const artWindow = document.querySelector(".overlay__takeArt");
 
+const artItems = document.querySelectorAll(".art-item");
+const btnArtChoose = document.querySelector(".btn__chooseArt");
+
 let artLength;
 let xp = 0;
 let totalXp = 1;
 let arrArtifacts;
 let numBoss = 0;
-const staticChanceLegendArt = 4;
+
+const staticChanceLegendArt = 3;
 let upChanceLegendArt = staticChanceLegendArt;
 
 (0,_xp__WEBPACK_IMPORTED_MODULE_3__["default"])(1);
@@ -112,13 +122,13 @@ function getXp(hero, guarantLegendArt = false, boss = false) {
   if (xp % 2 == 0) {
     xp = 0;
     totalXp += 1;
-    if (totalXp % 4 == 0) {
+    if (totalXp % 3 == 0) {
       hero.talentsPoint += 1;
       _talents_core_talents__WEBPACK_IMPORTED_MODULE_4__["default"].incTalent(hero.talentsPoint);
     }
 
     hero.lvl += 1;
-    hero.lvl % 15 == 0 ? (0,_buff__WEBPACK_IMPORTED_MODULE_5__["default"])(hero) : null;
+    hero.lvl % 20 == 0 ? (0,_buff__WEBPACK_IMPORTED_MODULE_5__["default"])(hero) : null;
 
     (0,_xp__WEBPACK_IMPORTED_MODULE_3__["default"])(totalXp);
     setTimeout(collectArt, 1000);
@@ -141,21 +151,89 @@ function getXp(hero, guarantLegendArt = false, boss = false) {
     //   let num = Math.floor(Math.random() * (0 - artLength + 1)) + artLength;
     let num = Math.floor(1 + Math.random() * (artLength + 1 - 1));
     let art = arrArtifacts.splice(num - 1, 1).join("");
-    // useArtifact(art, hero);
 
     return art;
   }
 
   //
-  async function collectArt() {
-    let first = await getSrcImgArt(mathArtifacts(guarantLegendArt, boss));
-    let second = await getSrcImgArt(mathArtifacts(guarantLegendArt, boss));
+  function collectArt() {
+    let firstArt = getDataArt(mathArtifacts(guarantLegendArt, boss));
+    let secondArt = getDataArt(mathArtifacts(guarantLegendArt, boss));
     if (boss) numBoss++;
-    chooseArt(first, second);
+    chooseArt(firstArt, secondArt);
   }
 
-  function getSrcImgArt(art) {
-    switch (art) {
+  function getDataArt(artName) {
+    switch (artName) {
+      case "emblemWolf":
+        return {
+          name: "emblemWolf",
+          src: "img/artifacts/emblemWolf.png",
+          rarity: "gold",
+          title: "Эмблема Волка",
+          descr:
+            "При атаке есть 20% шанс нанести противнику дополнительный урон, в размере 10 + 3% от его макс.здоровья",
+          useArt: function () {
+            hero.emblemWolf = true;
+            alert(`вы получили: ${this.title}`);
+          },
+        };
+      case "tigerMask":
+        return {
+          name: "tigerMask",
+          src: "img/artifacts/tigerMask.png",
+          rarity: "royalblue",
+          title: "Маска Тигра",
+          descr: "Увеличивает вампиризм на 5%, защиту на 1 и адаптацию на 5%",
+          useArt: function () {
+            incSecondaryStatHero("def", 1);
+            incSecondaryStatHero("adapt", 5);
+            hero.vampiric += 5;
+            alert(`вы получили: ${this.title}`);
+          },
+        };
+      case "spikedHorn":
+        return {
+          name: "spikedHorn",
+          src: "img/artifacts/spikedHorn.png",
+          rarity: "limegreen",
+          title: "Шипастый Рог",
+          descr: "Увеличивает адаптацию на 8%, уклонение на 3%, и регенерацию здоровья на 15",
+          useArt: function () {
+            incSecondaryStatHero("adapt", 8);
+            incSecondaryStatHero("dodge", 3);
+
+            hero.regeneration += 15;
+            alert(`вы получили: ${this.title}`);
+          },
+        };
+      case "giantHammer":
+        return {
+          name: "giantHammer",
+          src: "img/artifacts/giantHammer.png",
+          rarity: "limegreen",
+          title: "Гигантский Молот",
+          descr: "Повышает атаку на 6, и макс.запас здоровья на 25",
+          useArt: function () {
+            incMaxHPHero(25);
+            (0,_calc_hp__WEBPACK_IMPORTED_MODULE_0__["default"])(".hero_hp", hero.hp);
+            incAttackHero(6, 6);
+            alert(`вы получили: ${this.title}`);
+          },
+        };
+      case "boneDagger":
+        return {
+          name: "boneDagger",
+          src: "img/artifacts/boneDagger.png",
+          rarity: "limegreen",
+          title: "Костяной кинжал",
+          descr: "Повышает крит.шанс на 4% и удачу на 4",
+          useArt: function () {
+            incSecondaryStatHero("critChance", 4);
+            incSecondaryStatHero("luck", 4);
+            alert(`вы получили: ${this.title}`);
+          },
+        };
       case "emblemDragon":
         return {
           name: "emblemDragon",
@@ -163,6 +241,10 @@ function getXp(hero, guarantLegendArt = false, boss = false) {
           rarity: "royalblue",
           title: "Эмблема Дракона",
           descr: "При получении крит.удара, увеличивает защиту и атаку на 5 в течении 3 ходов",
+          useArt: function () {
+            hero.arts.emblemDragon = true;
+            alert(`вы получили: ${this.title}`);
+          },
         };
       case "thunderHammer":
         return {
@@ -171,6 +253,12 @@ function getXp(hero, guarantLegendArt = false, boss = false) {
           rarity: "gold",
           title: "Громовой Молот",
           descr: "Увеличивает атаку и силу магии на 5, есть шанс, что ваша атака может оглушить врага на 1 ход",
+          useArt: function () {
+            incAttackHero(5, 5);
+            incSecondaryStatHero("magicPower", 5);
+            hero.arts.thunderHammer = true;
+            alert(`вы получили: ${this.title}`);
+          },
         };
       case "staffOfHealing":
         return {
@@ -178,7 +266,14 @@ function getXp(hero, guarantLegendArt = false, boss = false) {
           src: "img/artifacts/staffOfHealing.png",
           rarity: "royalblue",
           title: "Посох Исцеления",
-          descr: "Увеличивает силу магии на 5, макс.здоровье на 25 и повышает регенерацию здоровья после боя",
+          descr: "Увеличивает силу магии на 5, макс.здоровье на 25 и повышает регенерацию здоровья на 20",
+          useArt: function () {
+            incSecondaryStatHero("magicPower", 5);
+            incMaxHPHero(25);
+            (0,_calc_hp__WEBPACK_IMPORTED_MODULE_0__["default"])(".hero_hp", hero.hp);
+            hero.regeneration += 20;
+            alert(`вы получили: ${this.title}`);
+          },
         };
       case "flameBook":
         return {
@@ -186,7 +281,11 @@ function getXp(hero, guarantLegendArt = false, boss = false) {
           src: "img/artifacts/flameBook.png",
           rarity: "gold",
           title: "Огненная Книга",
-          descr: "Увеличивает силу магии на 16",
+          descr: "Увеличивает силу магии на 15",
+          useArt: function () {
+            incSecondaryStatHero("magicPower", 15);
+            alert(`вы получили: ${this.title}`);
+          },
         };
       case "magicBook":
         return {
@@ -195,6 +294,11 @@ function getXp(hero, guarantLegendArt = false, boss = false) {
           rarity: "royalblue",
           title: "Книга Магии",
           descr: "Увеличивает силу магии на 10 и адаптацию на 5%",
+          useArt: function () {
+            incSecondaryStatHero("magicPower", 10);
+            incSecondaryStatHero("adapt", 5);
+            alert(`вы получили: ${this.title}`);
+          },
         };
       case "robberyCloak":
         return {
@@ -203,7 +307,13 @@ function getXp(hero, guarantLegendArt = false, boss = false) {
           rarity: "gold",
           title: "Плащ Разбойника",
           descr: "Увеличивает уклонение на 5%. При успешном уклонении повышает шанс крит.удара на 30% на 1 ход",
+          useArt: function () {
+            hero.arts.robberyCloak = true;
+            incSecondaryStatHero("dodge", 5);
+            alert(`вы получили: ${this.title}`);
+          },
         };
+
       case "handKingHell":
         return {
           name: "handKingHell",
@@ -212,6 +322,10 @@ function getXp(hero, guarantLegendArt = false, boss = false) {
           title: "Адские Когти",
           descr:
             "Ваши критические атаки могут поджечь противинка, от чего он будет терять здоровье в течении 4 ходов",
+          useArt: function () {
+            hero.arts.handKingHell = true;
+            alert(`вы получили: ${this.title}`);
+          },
         };
       case "swordKingHell":
         return {
@@ -219,7 +333,14 @@ function getXp(hero, guarantLegendArt = false, boss = false) {
           src: "img/artifacts/bossArts/swordKingHell.png",
           rarity: "blueviolet",
           title: "Меч Короля Ада",
-          descr: "Увеличивает атаку на 5. При промахе, огненный шлейф от взмаха меча наносит врагу 50% от атаки",
+          descr:
+            "Увеличивает атаку и силу магии на 5. При промахе, огненный шлейф от взмаха меча наносит врагу 50% от атаки",
+          useArt: function () {
+            incAttackHero(5, 5);
+            incSecondaryStatHero("magicPower", 5);
+            hero.arts.swordKingHell = true;
+            alert(`вы получили: ${this.title}`);
+          },
         };
       case "potion_Hp_Mp":
         return {
@@ -229,6 +350,10 @@ function getXp(hero, guarantLegendArt = false, boss = false) {
           title: "Зелье Регенерации",
           descr:
             "С некоторым шансом, при получении урона, вы можете выпить зелье, восстановив 5% здоровья и 10 маны",
+          useArt: function () {
+            hero.arts.potion_Hp_Mp = true;
+            alert(`вы получили: ${this.title}`);
+          },
         };
       case "magicShield":
         return {
@@ -237,7 +362,14 @@ function getXp(hero, guarantLegendArt = false, boss = false) {
           rarity: "royalblue",
           title: "Магический Щит",
           descr:
-            "Увеличивает защиту на 2 и макс.здоровье на 20, также при получении урона, есть шанс получить 1 к мане",
+            "Увеличивает защиту на 2 и макс.здоровье на 25, также при получении урона, есть шанс получить 1 к мане",
+          useArt: function () {
+            incSecondaryStatHero("def", 2);
+            incMaxHPHero(25);
+            (0,_calc_hp__WEBPACK_IMPORTED_MODULE_0__["default"])(".hero_hp", hero.hp);
+            hero.arts.magicshield = true;
+            alert(`вы получили: ${this.title}`);
+          },
         };
       case "frostSword":
         return {
@@ -246,6 +378,11 @@ function getXp(hero, guarantLegendArt = false, boss = false) {
           rarity: "royalblue",
           title: "Ледяной Меч",
           descr: "Увеличивает атаку на 4, ваши критические удары генерируют 2 маны",
+          useArt: function () {
+            incAttackHero(4, 4);
+            hero.arts.frostsword = true;
+            alert(`вы получили: ${this.title}`);
+          },
         };
       case "leatherBracers":
         return {
@@ -254,6 +391,12 @@ function getXp(hero, guarantLegendArt = false, boss = false) {
           rarity: "limegreen",
           title: "Кожанные Наручи",
           descr: "Увеличивает защиту и уклонение на 1 и адаптацию на 10%",
+          useArt: function () {
+            incSecondaryStatHero("def", 1);
+            incSecondaryStatHero("dodge", 1);
+            incSecondaryStatHero("adapt", 10);
+            alert(`вы получили: ${this.title}`);
+          },
         };
       case "glassesMiner":
         return {
@@ -262,6 +405,12 @@ function getXp(hero, guarantLegendArt = false, boss = false) {
           rarity: "limegreen",
           title: "Очки Шахтера",
           descr: "Увеличивает защиту и удачу на 1 и адаптацию на 10%",
+          useArt: function () {
+            incSecondaryStatHero("def", 1);
+            incSecondaryStatHero("luck", 1);
+            incSecondaryStatHero("adapt", 10);
+            alert(`вы получили: ${this.title}`);
+          },
         };
       case "sphereOfPower":
         return {
@@ -269,7 +418,13 @@ function getXp(hero, guarantLegendArt = false, boss = false) {
           src: "img/artifacts/sphereOfPower.png",
           rarity: "gold",
           title: "Сфера Силы",
-          descr: "Увеличивает атаку и Силу магии на 2, а также получение маны за удар увеличено на 1",
+          descr: "Увеличивает атаку и силу магии на 2, а также получение маны за удар увеличено на 1",
+          useArt: function () {
+            incAttackHero(2, 2);
+            incSecondaryStatHero("magicPower", 2);
+            !hero.bonusMP ? (hero.bonusMP = 1) : (hero.bonusMP += 1);
+            alert(`вы получили: ${this.title}`);
+          },
         };
       case "spark":
         return {
@@ -277,7 +432,14 @@ function getXp(hero, guarantLegendArt = false, boss = false) {
           src: "img/artifacts/spark.png",
           rarity: "limegreen",
           title: "Волшебная Искра",
-          descr: "Увеличивает ваше максимальное здоровье и ману на 35",
+          descr: "Увеличивает ваше максимальное здоровье и ману на 35, и сразу исцеляет вас на 70",
+          useArt: function () {
+            incMaxHPHero(35);
+            changeHpHero(70);
+            (0,_calc_hp__WEBPACK_IMPORTED_MODULE_0__["default"])(".hero_hp", hero.hp);
+            incMaxMPHero(35);
+            alert(`вы получили: ${this.title}`);
+          },
         };
       case "sphereDM":
         return {
@@ -286,6 +448,11 @@ function getXp(hero, guarantLegendArt = false, boss = false) {
           rarity: "blueviolet",
           title: "Сердце алмазного гиганта",
           descr: "При получении смертельного урона, наделяет неуязвимостью на 2 хода",
+          useArt: function () {
+            incSecondaryStatHero("adapt", 10);
+            hero.arts.sphereDM = true;
+            alert(`вы получили: ${this.title}`);
+          },
         };
       case "iceDM":
         return {
@@ -294,6 +461,11 @@ function getXp(hero, guarantLegendArt = false, boss = false) {
           rarity: "blueviolet",
           title: "Первородный Алмаз",
           descr: "Увеличивает вашу защиту на 7 и удачу на 3%",
+          useArt: function () {
+            incSecondaryStatHero("def", 7);
+            incSecondaryStatHero("luck", 3);
+            alert(`вы получили: ${this.title}`);
+          },
         };
       case "staffOmbal":
         return {
@@ -303,6 +475,11 @@ function getXp(hero, guarantLegendArt = false, boss = false) {
           title: "Жезл Омбала",
           descr:
             "Сила магии + 5. После каждых 5 ходов жезл выплескивает накопившуюся в себе волшебную силу и наносит врагу урон в размере 20% вашего макс.здоровья",
+          useArt: function () {
+            incSecondaryStatHero("magicPower", 5);
+            hero.arts.staffOmbal = true;
+            alert(`вы получили: ${this.title}`);
+          },
         };
       case "ringOmbal":
         return {
@@ -311,6 +488,11 @@ function getXp(hero, guarantLegendArt = false, boss = false) {
           rarity: "blueviolet",
           title: "Кольцо жизненной силы",
           descr: "Увеличивает максимальный запас здоровье на 110",
+          useArt: function () {
+            incMaxHPHero(110);
+            (0,_calc_hp__WEBPACK_IMPORTED_MODULE_0__["default"])(".hero_hp", hero.hp);
+            alert(`вы получили: ${this.title}`);
+          },
         };
       case "pumpkinMimic":
         return {
@@ -320,6 +502,14 @@ function getXp(hero, guarantLegendArt = false, boss = false) {
           title: "Голова Мимика",
           descr:
             "Вы заключает сделку с предвестником апокалипсиса. Увеличивает вашу атаку на 12, и силу крит.удара на 20% - взамен уменьшая ваше максимальное здоровье на 60",
+          useArt: function () {
+            incMaxHPHero(-60);
+            changeHpHero(-60);
+            (0,_calc_hp__WEBPACK_IMPORTED_MODULE_0__["default"])(".hero_hp", hero.hp);
+            incAttackHero(12, 12);
+            incSecondaryStatHero("critPower", 20);
+            alert(`вы получили: ${this.title}`);
+          },
         };
       case "darknessMimic":
         return {
@@ -329,6 +519,10 @@ function getXp(hero, guarantLegendArt = false, boss = false) {
           title: "Cфера Мрака",
           descr:
             "При получнии урона, сфера может погрузить мир во тьму, повышая ваше уклонение на 25% на 3 хода и исцеляя вам 3% здоровья каждый ваш ход.",
+          useArt: function () {
+            hero.arts.darknessMimic = true;
+            alert(`вы получили: ${this.title}`);
+          },
         };
       case "fangOrk":
         return {
@@ -337,6 +531,13 @@ function getXp(hero, guarantLegendArt = false, boss = false) {
           rarity: "blueviolet",
           title: "Клык вождя орков",
           descr: "Повышает атаку на 25% от текущей, и шанс крит.удара на 6%",
+          useArt: function () {
+            let buffAttack0 = Math.round(hero.attack[0] * 0.25);
+            let buffAttack1 = Math.round(hero.attack[1] * 0.25);
+            incAttackHero(buffAttack0, buffAttack1);
+            incSecondaryStatHero("critChance", 6);
+            alert(`вы получили: ${this.title}`);
+          },
         };
       case "bloodOrk":
         return {
@@ -346,6 +547,10 @@ function getXp(hero, guarantLegendArt = false, boss = false) {
           title: "Кровь вождя орков",
           descr:
             "Если здоровье падает ниже 25%, вы исцеляетесь на 10% от вашего макс.здоровья и наносите врагу столько же урона. Срабатывает один раз за бой",
+          useArt: function () {
+            hero.arts.bloodOrk = true;
+            alert(`вы получили: ${this.title}`);
+          },
         };
       case "apple":
         return {
@@ -353,7 +558,13 @@ function getXp(hero, guarantLegendArt = false, boss = false) {
           src: "img/artifacts/apple.png",
           rarity: "limegreen",
           title: "Яблочко",
-          descr: "Исцеляет на 150 очков здоровья и увеличивает удачу на 5",
+          descr: "Исцеляет на 175 очков здоровья и увеличивает удачу на 5",
+          useArt: function () {
+            changeHpHero(175);
+            (0,_calc_hp__WEBPACK_IMPORTED_MODULE_0__["default"])(".hero_hp", hero.hp);
+            incSecondaryStatHero("luck", 5);
+            alert("вы получили Яблочко и скушали его");
+          },
         };
       case "goldBelt":
         return {
@@ -362,6 +573,12 @@ function getXp(hero, guarantLegendArt = false, boss = false) {
           rarity: "limegreen",
           title: "Золотой Пояс",
           descr: "Увеличивает максимальное здоровье на 50 и удачу на 4",
+          useArt: function () {
+            incMaxHPHero(50);
+            (0,_calc_hp__WEBPACK_IMPORTED_MODULE_0__["default"])(".hero_hp", hero.hp);
+            incSecondaryStatHero("luck", 4);
+            alert(`вы получили: ${this.title}`);
+          },
         };
       case "dwarfHammer":
         return {
@@ -369,7 +586,14 @@ function getXp(hero, guarantLegendArt = false, boss = false) {
           src: "img/artifacts/dwarfHammer.png",
           rarity: "limegreen",
           title: "Молот Дворфов",
-          descr: "Увеличивает атаку на 6 и максимальное здоровье на 40, но снижает адаптацию на 8% ",
+          descr: "Увеличивает атаку на 4 и максимальное здоровье на 60, но снижает адаптацию на 8% ",
+          useArt: function () {
+            incMaxHPHero(60);
+            (0,_calc_hp__WEBPACK_IMPORTED_MODULE_0__["default"])(".hero_hp", hero.hp);
+            incAttackHero(4, 4);
+            incSecondaryStatHero("adapt", -8);
+            alert(`вы получили: ${this.title}`);
+          },
         };
       case "iceAxe":
         return {
@@ -378,6 +602,11 @@ function getXp(hero, guarantLegendArt = false, boss = false) {
           rarity: "limegreen",
           title: "Топор Варвара",
           descr: "Увеличивает атаку на 5, а шанс крит.удара на 3%",
+          useArt: function () {
+            incAttackHero(5, 5);
+            incSecondaryStatHero("critChance", 3);
+            alert(`вы получили: ${this.title}`);
+          },
         };
       case "goldCrown":
         return {
@@ -386,6 +615,10 @@ function getXp(hero, guarantLegendArt = false, boss = false) {
           rarity: "royalblue",
           title: "Золотая Корона",
           descr: "Увеличивает получаемое золото на 20%",
+          useArt: function () {
+            hero.goldMod += 0.2;
+            alert(`вы получили: ${this.title}`);
+          },
         };
       case "redDagger":
         return {
@@ -394,6 +627,11 @@ function getXp(hero, guarantLegendArt = false, boss = false) {
           rarity: "gold",
           title: "Алый Кинжал",
           descr: "Увеличивает атаку на 7, также при атаке есть шанс проигнорировать защиту противника",
+          useArt: function () {
+            incAttackHero(7, 7);
+            hero.arts.redDagger = true;
+            alert(`вы получили: ${this.title}`);
+          },
         };
       case "gnomeShield":
         return {
@@ -402,6 +640,11 @@ function getXp(hero, guarantLegendArt = false, boss = false) {
           rarity: "gold",
           title: "Щит Гномов",
           descr: "Увеличивает защиту на 4, также дает шанс заблокировать атаку противника",
+          useArt: function () {
+            incSecondaryStatHero("def", 4);
+            hero.arts.gnomeShield = true;
+            alert(`вы получили: ${this.title}`);
+          },
         };
       case "blackRaven":
         return {
@@ -411,6 +654,10 @@ function getXp(hero, guarantLegendArt = false, boss = false) {
           title: "Ворон Смерти",
           descr:
             "С некоторой вероятностью при атаке ворон проклинает вашего врага, после чего он умирает, а вы получаете 20% ущерба от нанесенного урона вороном",
+          useArt: function () {
+            hero.arts.blackRaven = true;
+            alert(`вы получили: ${this.title}`);
+          },
         };
       case "boots":
         return {
@@ -419,6 +666,11 @@ function getXp(hero, guarantLegendArt = false, boss = false) {
           rarity: "limegreen",
           title: "Сапожки",
           descr: "Увеличивает защиту на 1 и повышает уклонение на 6%",
+          useArt: function () {
+            incSecondaryStatHero("def", 1);
+            incSecondaryStatHero("dodge", 6);
+            alert(`вы получили: ${this.title}`);
+          },
         };
       case "bronzeAxe":
         return {
@@ -427,6 +679,10 @@ function getXp(hero, guarantLegendArt = false, boss = false) {
           rarity: "limegreen",
           title: "Бронзовый Топор",
           descr: "Увеличивает максимальную aтаку на 4, а минимальную атаку на 9",
+          useArt: function () {
+            incAttackHero(9, 4);
+            alert(`вы получили: ${this.title}`);
+          },
         };
       case "fieryHand":
         return {
@@ -435,6 +691,11 @@ function getXp(hero, guarantLegendArt = false, boss = false) {
           rarity: "gold",
           title: "Огненная Кожа",
           descr: "Увеличивает защиту на 3, также при получении урона есть шанс вернуть часть урона в противника",
+          useArt: function () {
+            incSecondaryStatHero("def", 3);
+            hero.arts.fieryHand = true;
+            alert(`вы получили: ${this.title}`);
+          },
         };
       case "shieldAndSword":
         return {
@@ -443,6 +704,11 @@ function getXp(hero, guarantLegendArt = false, boss = false) {
           rarity: "limegreen",
           title: "Щит и Меч",
           descr: "Увеличивает защиту на 2, и атаку на 5",
+          useArt: function () {
+            incSecondaryStatHero("def", 2);
+            incAttackHero(5, 5);
+            alert(`вы получили: ${this.title}`);
+          },
         };
       case "cursedSkull":
         return {
@@ -452,6 +718,15 @@ function getXp(hero, guarantLegendArt = false, boss = false) {
           title: "Проклятый Череп",
           descr:
             "Вы разово теряете 80 здоровья на усиление атаки на 10 и силы крит.удара на 25%, а защита снижается на 3",
+          useArt: function () {
+            changeHpHero(-80);
+            hero.def -= 3;
+            incSecondaryStatHero("critPower", 25);
+            incSecondaryStatHero("def", -3);
+            incAttackHero(10, 10);
+            (0,_calc_hp__WEBPACK_IMPORTED_MODULE_0__["default"])(".hero_hp", hero.hp);
+            alert(`вы получили: ${this.title}`);
+          },
         };
       case "fieryFist":
         return {
@@ -460,6 +735,11 @@ function getXp(hero, guarantLegendArt = false, boss = false) {
           rarity: "gold",
           title: "Кулак Ярости",
           descr: "Увеличивает атаку на 6, если здоровье в бою ниже 30%, то получаете еще дополнительно 30 атаки",
+          useArt: function () {
+            hero.arts.fieryFist = true;
+            incAttackHero(6, 6);
+            alert(`вы получили: ${this.title}`);
+          },
         };
       case "flacon":
         return {
@@ -467,7 +747,13 @@ function getXp(hero, guarantLegendArt = false, boss = false) {
           src: "img/artifacts/flacon.png",
           rarity: "royalblue",
           title: "Флакон Здоровья",
-          descr: "Полностью исцеляет при получении и пассивно увеличивает регенерацию здоровья после боя",
+          descr: "Полностью исцеляет при получении и пассивно увеличивает регенерацию здоровья на 20",
+          useArt: function () {
+            changeHpHero(hero.maxHPHero);
+            hero.regeneration += 20;
+            (0,_calc_hp__WEBPACK_IMPORTED_MODULE_0__["default"])(".hero_hp", hero.hp);
+            alert(`вы получили: ${this.title}`);
+          },
         };
       case "spear":
         return {
@@ -476,6 +762,11 @@ function getXp(hero, guarantLegendArt = false, boss = false) {
           rarity: "limegreen",
           title: "Копьё Рыцаря",
           descr: "Увеличивает максимальную атаку на 7 и силу крит.удара на 20%",
+          useArt: function () {
+            (0,_update_stats__WEBPACK_IMPORTED_MODULE_2__["default"])(".attackMax", 7);
+            incSecondaryStatHero("critPower", 20);
+            alert(`вы получили: ${this.title}`);
+          },
         };
       case "ironArmor":
         return {
@@ -483,7 +774,13 @@ function getXp(hero, guarantLegendArt = false, boss = false) {
           src: "img/artifacts/ironArmor.png",
           rarity: "limegreen",
           title: "Железная Кираса",
-          descr: "Увеличивает защиту на 3 и максимальное здоровье на 30",
+          descr: "Увеличивает защиту на 3 и максимальное здоровье на 25",
+          useArt: function () {
+            incMaxHPHero(25);
+            (0,_calc_hp__WEBPACK_IMPORTED_MODULE_0__["default"])(".hero_hp", hero.hp);
+            incSecondaryStatHero("def", 3);
+            alert(`вы получили: ${this.title}`);
+          },
         };
       case "clover":
         return {
@@ -492,6 +789,10 @@ function getXp(hero, guarantLegendArt = false, boss = false) {
           rarity: "limegreen",
           title: "Клевер",
           descr: "Увеличивает удачу на 8",
+          useArt: function () {
+            incSecondaryStatHero("luck", 8);
+            alert(`вы получили: ${this.title}`);
+          },
         };
       case "amulet":
         return {
@@ -499,8 +800,14 @@ function getXp(hero, guarantLegendArt = false, boss = false) {
           src: "img/artifacts/amulet.png",
           rarity: "limegreen",
           title: "Aмулет Жизни",
-          descr:
-            "Увеличивает максимальный запас здоровья на 35, силу магии на 4 и регенерацию здоровья после боя.",
+          descr: "Увеличивает максимальный запас здоровья на 40, силу магии на 4 и регенерацию здоровья на 10",
+          useArt: function () {
+            incSecondaryStatHero("magicPower", 4);
+            incMaxHPHero(40);
+            (0,_calc_hp__WEBPACK_IMPORTED_MODULE_0__["default"])(".hero_hp", hero.hp);
+            hero.regeneration += 10;
+            alert(`вы получили: ${this.title}`);
+          },
         };
       case "dagger":
         return {
@@ -509,6 +816,10 @@ function getXp(hero, guarantLegendArt = false, boss = false) {
           rarity: "limegreen",
           title: "Кинжал",
           descr: "Увеличивает шанс крит.удара на 7%",
+          useArt: function () {
+            incSecondaryStatHero("critChance", 7);
+            alert(`вы получили: ${this.title}`);
+          },
         };
       case "heart":
         return {
@@ -516,7 +827,13 @@ function getXp(hero, guarantLegendArt = false, boss = false) {
           src: "img/artifacts/heart.png",
           rarity: "limegreen",
           title: "Сердце",
-          descr: "Увеличивает максимальное здоровье на 65",
+          descr: "Увеличивает максимальное здоровье на 70, и сразу же исцеляет на 70",
+          useArt: function () {
+            changeHpHero(70);
+            incMaxHPHero(70);
+            (0,_calc_hp__WEBPACK_IMPORTED_MODULE_0__["default"])(".hero_hp", hero.hp);
+            alert(`вы получили: ${this.title}`);
+          },
         };
       case "phoenix":
         return {
@@ -525,6 +842,10 @@ function getXp(hero, guarantLegendArt = false, boss = false) {
           rarity: "royalblue",
           title: "Крылья Феника",
           descr: "Возрождает вас единожды после смерти",
+          useArt: function () {
+            hero.arts.phoenix = true;
+            alert(`вы получили: ${this.title}`);
+          },
         };
       case "sword":
         return {
@@ -533,6 +854,10 @@ function getXp(hero, guarantLegendArt = false, boss = false) {
           rarity: "limegreen",
           title: "Меч",
           descr: "Увеличивает атаку на 7",
+          useArt: function () {
+            incAttackHero(7, 7);
+            alert(`вы получили: ${this.title}`);
+          },
         };
       case "mace":
         return {
@@ -541,6 +866,10 @@ function getXp(hero, guarantLegendArt = false, boss = false) {
           rarity: "limegreen",
           title: "Булава",
           descr: "Увеличивает максимальную атаку на 13",
+          useArt: function () {
+            (0,_update_stats__WEBPACK_IMPORTED_MODULE_2__["default"])(".attackMax", 13);
+            alert(`вы получили: ${this.title}`);
+          },
         };
       case "magicBall":
         return {
@@ -549,6 +878,12 @@ function getXp(hero, guarantLegendArt = false, boss = false) {
           rarity: "limegreen",
           title: "Магический Шар",
           descr: "Увеличивает уклонение, адаптацию на 5%, и силу магии на 5",
+          useArt: function () {
+            incSecondaryStatHero("magicPower", 5);
+            incSecondaryStatHero("dodge", 5);
+            incSecondaryStatHero("adapt", 5);
+            alert(`вы получили: ${this.title}`);
+          },
         };
       case "vampiric":
         return {
@@ -556,7 +891,11 @@ function getXp(hero, guarantLegendArt = false, boss = false) {
           src: "img/artifacts/vampiric.png",
           rarity: "royalblue",
           title: "Клыки Вампира",
-          descr: "Восстанавливает здоровье при атаке в размере 8%",
+          descr: "Увеличивает вампиризм на 8%",
+          useArt: function () {
+            hero.vampiric += 8;
+            alert(`вы получили: ${this.title}`);
+          },
         };
       case "goldSword":
         return {
@@ -565,6 +904,10 @@ function getXp(hero, guarantLegendArt = false, boss = false) {
           rarity: "gold",
           title: "Золотой Меч",
           descr: "Увеличивает атаку на 12",
+          useArt: function () {
+            incAttackHero(12, 12);
+            alert(`вы получили: ${this.title}`);
+          },
         };
       case "helmet":
         return {
@@ -572,7 +915,12 @@ function getXp(hero, guarantLegendArt = false, boss = false) {
           src: "img/artifacts/helmet.png",
           rarity: "gold",
           title: "Шлем Варвара",
-          descr: "Увеличивает защиту на 2 и вампиризм +10%",
+          descr: "Увеличивает защиту на 3 и вампиризм на 9%",
+          useArt: function () {
+            hero.vampiric += 9;
+            incSecondaryStatHero("def", 3);
+            alert(`вы получили: ${this.title}`);
+          },
         };
       case "eyeFirst":
         return {
@@ -581,6 +929,12 @@ function getXp(hero, guarantLegendArt = false, boss = false) {
           rarity: "gold",
           title: "Левый глаз демона",
           descr: "Увеличивает максимальное здоровье на 75 и адаптацию на 15%",
+          useArt: function () {
+            incMaxHPHero(75);
+            (0,_calc_hp__WEBPACK_IMPORTED_MODULE_0__["default"])(".hero_hp", hero.hp);
+            incSecondaryStatHero("adapt", 15);
+            alert(`вы получили: ${this.title}`);
+          },
         };
       case "eyeSecond":
         return {
@@ -589,6 +943,11 @@ function getXp(hero, guarantLegendArt = false, boss = false) {
           rarity: "gold",
           title: "Правый глаз демона",
           descr: "Увеличивает шанс крит. удара на 9% и адаптацию на 15%",
+          useArt: function () {
+            incSecondaryStatHero("critChance", 9);
+            incSecondaryStatHero("adapt", 15);
+            alert(`вы получили: ${this.title}`);
+          },
         };
       case "knightArmor":
         return {
@@ -597,6 +956,11 @@ function getXp(hero, guarantLegendArt = false, boss = false) {
           rarity: "royalblue",
           title: "Доспех Рыцаря",
           descr: "Увеличивает защиту на 4 и удачу на 2",
+          useArt: function () {
+            incSecondaryStatHero("def", 4);
+            incSecondaryStatHero("luck", 2);
+            alert(`вы получили: ${this.title}`);
+          },
         };
       case "leatherArmor":
         return {
@@ -605,6 +969,11 @@ function getXp(hero, guarantLegendArt = false, boss = false) {
           rarity: "limegreen",
           title: "Кожаный Доспех",
           descr: "Увеличивает защиту на 2 и уклонение на 4%",
+          useArt: function () {
+            incSecondaryStatHero("def", 2);
+            incSecondaryStatHero("dodge", 4);
+            alert(`вы получили: ${this.title}`);
+          },
         };
       case "gauntletGloves":
         return {
@@ -613,20 +982,27 @@ function getXp(hero, guarantLegendArt = false, boss = false) {
           rarity: "limegreen",
           title: "Железные Перчатки",
           descr: "Увеличивает защиту на 2 и адаптацию на 8%",
+          useArt: function () {
+            incSecondaryStatHero("def", 2);
+            incSecondaryStatHero("adapt", 8);
+            alert(`вы получили: ${this.title}`);
+          },
         };
       default:
         console.log("что-то не так");
     }
-  }
 
-  function useArtifact(art, hero) {
-    let hpMax = +document.querySelector(".hero_hp").getAttribute("data-hp");
-    let mpMax = +document.querySelector(".hero_mp").getAttribute("data-mp");
-
-    function icnMaxHPHero(hpMax, value) {
+    function incMaxHPHero(value) {
+      let hpMax = hero.maxHPHero;
       hpMax = +hpMax + value;
       (0,_update_stats__WEBPACK_IMPORTED_MODULE_2__["default"])(".hpMax", value);
       document.querySelector(".hero_hp").setAttribute("data-hp", hpMax);
+    }
+
+    function incMaxMPHero(value) {
+      hero.MaxMPHero = +hero.maxMPHero + +value;
+      document.querySelector(".hero_mp").setAttribute("data-mp", hero.MaxMPHero);
+      (0,_calc_mp__WEBPACK_IMPORTED_MODULE_1__["default"])(hero.mana);
     }
 
     function incAttackHero(minAttack, maxAttack) {
@@ -641,392 +1017,36 @@ function getXp(hero, guarantLegendArt = false, boss = false) {
       (0,_update_stats__WEBPACK_IMPORTED_MODULE_2__["default"])(`.${stat}`, value);
     }
 
-    switch (art) {
-      case "emblemDragon":
-        hero.emblemDragon = true;
-        alert("вы получили Эмблему Дракона");
-        break;
-      case "thunderHammer":
-        incAttackHero(5, 5);
-        incSecondaryStatHero("magicPower", 5);
-        hero.thunderHammer = true;
-        alert("вы получили Громовой Молот");
-        break;
-      case "staffOfHealing":
-        incSecondaryStatHero("magicPower", 5);
-        icnMaxHPHero(hpMax, 25);
-        hero.hp += 25;
-        (0,_calc_hp__WEBPACK_IMPORTED_MODULE_0__["default"])(".hero_hp", hero.hp);
-        hero.regeneration += 20;
-        alert("вы получили Посох Исцеления");
-        break;
-      case "flameBook":
-        incSecondaryStatHero("magicPower", 16);
-        alert("вы получили Огненную Книгу");
-        break;
-      case "magicBook":
-        incSecondaryStatHero("magicPower", 10);
-        incSecondaryStatHero("adapt", 5);
-
-        alert("вы получили Книгу Магии");
-        break;
-      case "robberyCloak":
-        hero.robberyCloak = true;
-        incSecondaryStatHero("dodge", 5);
-        alert("вы получили Плащ Разбойника");
-        break;
-      case "handKingHell":
-        hero.handKingHell = true;
-        alert("вы получили Адские когти");
-        break;
-      case "swordKingHell":
-        incAttackHero(5, 5);
-        hero.swordKingHell = true;
-        alert("вы получили Меч Короля Ада");
-        break;
-      case "potion_Hp_Mp":
-        hero.potion_Hp_Mp = true;
-        alert("вы получили Зелье Регенерации");
-        break;
-      case "magicShield":
-        incSecondaryStatHero("def", 2);
-        icnMaxHPHero(hpMax, 20);
-        hero.hp += 20;
-        (0,_calc_hp__WEBPACK_IMPORTED_MODULE_0__["default"])(".hero_hp", hero.hp);
-        hero.magicshield = true;
-        alert("вы получили Магический Щит");
-        break;
-      case "frostSword":
-        incAttackHero(4, 4);
-        hero.frostsword = true;
-        alert("вы получили Ледяной меч");
-        break;
-
-      case "leatherBracers":
-        incSecondaryStatHero("def", 1);
-        incSecondaryStatHero("dodge", 1);
-        incSecondaryStatHero("adapt", 10);
-        alert("вы получили Кожанные Наручи");
-        break;
-
-      case "glassesMiner":
-        incSecondaryStatHero("def", 1);
-        incSecondaryStatHero("luck", 1);
-        incSecondaryStatHero("adapt", 10);
-        alert("вы получили Очки Пилота");
-        break;
-
-      case "sphereOfPower":
-        incAttackHero(2, 2);
-        incSecondaryStatHero("magicPower", 2);
-        !hero.bonusMP ? (hero.bonusMP = 1) : (hero.bonusMP += 1);
-        alert("Вы получили Cферу Силы");
-        break;
-
-      case "spark":
-        icnMaxHPHero(hpMax, 35);
-        hero.hp += 35;
-        (0,_calc_hp__WEBPACK_IMPORTED_MODULE_0__["default"])(".hero_hp", hero.hp);
-        hero.mp += 35;
-        mpMax = +mpMax + 35;
-        document.querySelector(".hero_mp").setAttribute("data-mp", mpMax);
-        (0,_calc_mp__WEBPACK_IMPORTED_MODULE_1__["default"])(+document.querySelector(".current_mp").textContent);
-        alert("Вы получили Волшебную Исрку");
-        break;
-      case "dwarfHammer":
-        icnMaxHPHero(hpMax, 40);
-        hero.hp += 40;
-        (0,_calc_hp__WEBPACK_IMPORTED_MODULE_0__["default"])(".hero_hp", hero.hp);
-        incAttackHero(6, 6);
-        incSecondaryStatHero("adapt", -8);
-        alert("вы получили Молот Дворфов");
-        break;
-      case "sphereDM":
-        incSecondaryStatHero("adapt", 10);
-        hero.sphereDM = true;
-        alert("вы получили Сердце Алмазного Гиганта");
-        break;
-      case "iceDM":
-        incSecondaryStatHero("def", 7);
-        incSecondaryStatHero("luck", 3);
-        (0,_calc_hp__WEBPACK_IMPORTED_MODULE_0__["default"])(".hero_hp", hero.hp);
-        alert("вы получили Первородный Алмаз");
-        break;
-      case "staffOmbal":
-        incSecondaryStatHero("magicPower", 5);
-        hero.staffOmbal = true;
-        alert("вы получили Жезл Омбала");
-        break;
-      case "ringOmbal":
-        icnMaxHPHero(hpMax, 110);
-        hero.hp += 110;
-        (0,_calc_hp__WEBPACK_IMPORTED_MODULE_0__["default"])(".hero_hp", hero.hp);
-        alert("вы получили Кольцо Жизненной Силы");
-        break;
-      case "pumpkinMimic":
-        icnMaxHPHero(hpMax, -60);
-        hero.hp -= 60;
-        (0,_calc_hp__WEBPACK_IMPORTED_MODULE_0__["default"])(".hero_hp", hero.hp);
-        incAttackHero(12, 12);
-        incSecondaryStatHero("critPower", 20);
-        alert("вы получили Голову Мимика");
-        break;
-      case "darknessMimic":
-        hero.darknessMimic = true;
-        alert("вы получили Сферу Мрака");
-        break;
-      case "fangOrk":
-        let buffAttack0 = Math.round(hero.attack[0] * 0.25);
-        let buffAttack1 = Math.round(hero.attack[1] * 0.25);
-
-        incAttackHero(buffAttack0, buffAttack1);
-        incSecondaryStatHero("critChance", 6);
-
-        alert("вы получили Клык Вождя Орков");
-
-        break;
-      case "bloodOrk":
-        hero.bloodOrk = true;
-        alert("вы получили Кровь Вождя Орков");
-        break;
-      case "apple":
-        hero.hp += 175;
-        (0,_calc_hp__WEBPACK_IMPORTED_MODULE_0__["default"])(".hero_hp", hero.hp);
-        incSecondaryStatHero("luck", 5);
-        alert("вы получили Яблочко и скушали его");
-        break;
-      case "goldBelt":
-        icnMaxHPHero(hpMax, 50);
-        hero.hp += 50;
-        (0,_calc_hp__WEBPACK_IMPORTED_MODULE_0__["default"])(".hero_hp", hero.hp);
-        incSecondaryStatHero("luck", 4);
-        alert("вы получили Золотой Пояс");
-        break;
-      case "iceAxe":
-        incAttackHero(5, 5);
-        incSecondaryStatHero("critChance", 3);
-        alert("вы получили Топор Варвара");
-        break;
-      case "gauntletGloves":
-        incSecondaryStatHero("def", 2);
-        incSecondaryStatHero("adapt", 8);
-        alert("вы получили Железные Перчатки");
-        break;
-      case "goldCrown":
-        !hero.goldMod ? (hero.goldMod = 0.2) : (hero.goldMod += 0.2);
-        alert("вы получили Золотую Корону");
-        break;
-      case "redDagger":
-        incAttackHero(7, 7);
-        hero.redDagger = true;
-        alert("вы получили Алый Кинжал");
-        break;
-      case "gnomeShield":
-        incSecondaryStatHero("def", 4);
-        hero.block = true;
-        alert("вы получили Щит Гномов");
-        break;
-      case "blackRaven":
-        hero.touchOfDeath = true;
-        alert("вы получили Ворона Смерти");
-        break;
-      case "boots":
-        incSecondaryStatHero("def", 1);
-        incSecondaryStatHero("dodge", 6);
-        alert("вы получили Сапожки");
-        break;
-      case "leatherArmor":
-        incSecondaryStatHero("def", 2);
-        incSecondaryStatHero("dodge", 4);
-        alert("вы получили Кожаный Доспех");
-        break;
-      case "bronzeAxe":
-        incAttackHero(9, 4);
-        alert("вы получили Бронзовый Топор");
-        break;
-
-      case "fieryHand":
-        incSecondaryStatHero("def", 3);
-        hero.reflect = true;
-        alert("вы получили Огненную Кожу");
-
-        break;
-      case "shieldAndSword":
-        incSecondaryStatHero("def", 2);
-        incAttackHero(5, 5);
-        alert("вы получили Щит и Mеч");
-
-        break;
-      case "cursedSkull":
-        hero.hp -= 80;
-        hero.def -= 3;
-        incSecondaryStatHero("critPower", 25);
-        incSecondaryStatHero("def", -3);
-        incAttackHero(10, 10);
-        (0,_calc_hp__WEBPACK_IMPORTED_MODULE_0__["default"])(".hero_hp", hero.hp);
-        alert("вы получили Проклятый Череп");
-
-        break;
-      case "amulet":
-        incSecondaryStatHero("magicPower", 4);
-        icnMaxHPHero(hpMax, 35);
-        hero.hp += 35;
-        (0,_calc_hp__WEBPACK_IMPORTED_MODULE_0__["default"])(".hero_hp", hero.hp);
-        hero.regeneration += 10;
-        alert("вы получили Амулет Жизни");
-
-        break;
-      case "flacon":
-        hero.hp = +hpMax;
-        hero.regeneration += 20;
-        (0,_calc_hp__WEBPACK_IMPORTED_MODULE_0__["default"])(".hero_hp", hero.hp);
-        alert("вы получили Флакон Здоровья");
-
-        break;
-      case "fieryFist":
-        hero.fieryFist = true;
-        incAttackHero(6, 6);
-        alert("вы получили Кулак Ярости");
-
-        break;
-      case "goldSword":
-        incAttackHero(12, 12);
-        alert("вы получили Золотой Меч");
-
-        break;
-      case "helmet":
-        !hero.vampiric ? (hero.vampiric = 10) : (hero.vampiric += 10);
-        incSecondaryStatHero("def", 2);
-        alert("вы получили Шлем Варвара");
-
-        break;
-      case "eyeFirst":
-        icnMaxHPHero(hpMax, 75);
-        hero.hp += 75;
-        (0,_calc_hp__WEBPACK_IMPORTED_MODULE_0__["default"])(".hero_hp", hero.hp);
-        incSecondaryStatHero("adapt", 15);
-        alert("вы получили Левый Глаз Демона");
-
-        break;
-      case "eyeSecond":
-        incSecondaryStatHero("critChance", 9);
-        incSecondaryStatHero("adapt", 15);
-        alert("вы получили Правый Глаз Демона");
-
-        break;
-      case "spear":
-        hero.attack[1] += 7;
-        (0,_update_stats__WEBPACK_IMPORTED_MODULE_2__["default"])(".attackMax", 7);
-        incSecondaryStatHero("critPower", 20);
-        alert("вы получили Копьё Рыцаря");
-
-        break;
-      case "ironArmor":
-        icnMaxHPHero(hpMax, 30);
-        hero.hp += 30;
-        (0,_calc_hp__WEBPACK_IMPORTED_MODULE_0__["default"])(".hero_hp", hero.hp);
-        incSecondaryStatHero("def", 3);
-        alert("вы получили Железную Кирасу");
-        break;
-      case "knightArmor":
-        incSecondaryStatHero("def", 4);
-        incSecondaryStatHero("luck", 2);
-        alert("вы получили Доспех Рыцаря");
-        break;
-      case "clover":
-        incSecondaryStatHero("luck", 8);
-        alert("вы получили Клевер");
-
-        break;
-      case "dagger":
-        incSecondaryStatHero("critChance", 7);
-        alert("вы получили Кинжал");
-
-        break;
-      case "heart":
-        icnMaxHPHero(hpMax, 65);
-        hero.hp += 65;
-        alert("вы получили Сердце");
-        (0,_calc_hp__WEBPACK_IMPORTED_MODULE_0__["default"])(".hero_hp", hero.hp);
-
-        break;
-      case "phoenix":
-        hero.phoenix = true;
-        alert("вы получили Крылья Феника");
-
-        break;
-      case "sword":
-        incAttackHero(7, 7);
-        alert("вы получили Меч");
-
-        break;
-      case "mace":
-        hero.attack[1] += 13;
-        (0,_update_stats__WEBPACK_IMPORTED_MODULE_2__["default"])(".attackMax", 13);
-        alert("вы получили Булаву");
-
-        break;
-      case "magicBall":
-        incSecondaryStatHero("magicPower", 5);
-        incSecondaryStatHero("dodge", 5);
-        incSecondaryStatHero("adapt", 5);
-        alert("вы получили Магический Шар");
-
-        break;
-      case "vampiric":
-        !hero.vampiric ? (hero.vampiric = 8) : (hero.vampiric += 8);
-        alert("вы получили Клыки Вампира");
-
-        break;
+    function changeHpHero(value) {
+      hero.hp + value > hero.maxHPHero ? (hero.hp = hero.maxHPHero) : (hero.hp += value);
     }
   }
 
-  // Окно выбора артефакта
-  // function artsGetStyle(art, ImgArt) {
-  //   art.append(ImgArt);
-  // }
-
   function chooseArt(firstArtObject, secondArtObject) {
-    let artItems = document.querySelectorAll(".art-item");
-    const btnArtChoose = document.querySelector(".btn__chooseArt");
-
     //// тут
-    function artsGetStyle(art, artObject) {
-      art.setAttribute("art-name", artObject.name);
-      art.style.backgroundColor = artObject.rarity;
-      getArt(artObject, art);
+
+    function artsGetStyle(artObject, artWpapper) {
+      artWpapper.setAttribute("art-name", artObject.name);
+
+      artWpapper.style.backgroundColor = artObject.rarity;
+      appendArt(artObject, artWpapper);
     }
 
-    artsGetStyle(artItems[0], firstArtObject);
-    artsGetStyle(artItems[1], secondArtObject);
+    artsGetStyle(firstArtObject, artItems[0]);
+    artsGetStyle(secondArtObject, artItems[1]);
 
     artWindow.style.display = "block";
-    document.body.style.overflow = "hidden";
-    artItems.forEach((item) => {
-      item.addEventListener("click", (e) => {
-        e.stopPropagation();
-
-        btnArtChoose.style.display = "block";
-        artItems.forEach((art) => {
-          art.setAttribute("data-art", 0);
-          art.style.border = "2px solid";
-          art.style.boxShadow = "none";
-        });
-
-        item.setAttribute("data-art", 1);
-        item.style.border = "4px solid red";
-        item.style.boxShadow = "0 0 20px red";
-      });
-    });
+    // document.body.style.overflow = "hidden";
 
     btnArtChoose.addEventListener(
       "click",
-      (e) => {
+      () => {
         artItems.forEach((item) => {
           if (item.getAttribute("data-art") == 1) {
-            let art = item.getAttribute("art-name");
+            let artName = item.getAttribute("art-name");
             artContent.appendChild(item.firstChild);
-            useArtifact(art, hero);
+            // useArtifact(artName, hero);
+            getDataArt(artName).useArt();
           } else {
             if (item.style.backgroundColor === "gold") {
               artifactsLegends.push(item.getAttribute("art-name"));
@@ -1045,29 +1065,27 @@ function getXp(hero, guarantLegendArt = false, boss = false) {
       { once: true }
     );
   }
-
-  // Получение артефакта
-  // function getArt(img, title, descr, content = artContent) {
-  //   const artElem = document.createElement("div"),
-  //     artImg = document.createElement("img"),
-  //     artDescr = document.createElement("span"),
-  //     artTitle = document.createElement("p");
-
-  //   artElem.classList.add("art__item");
-  //   artImg.setAttribute("src", img);
-  //   artDescr.classList.add("art__text");
-
-  //   content.append(artElem);
-  //   artElem.append(artImg);
-
-  //   artTitle.textContent = title;
-  //   artDescr.textContent = descr;
-  //   artElem.append(artDescr);
-  //   artDescr.prepend(artTitle);
-  // }
 }
 
-function getArt(artObj, content = artContent) {
+artItems.forEach((item) => {
+  item.addEventListener("click", (e) => {
+    e.stopPropagation();
+    console.log(item);
+
+    btnArtChoose.style.display = "block";
+    artItems.forEach((art) => {
+      art.setAttribute("data-art", 0);
+      art.style.border = "2px solid";
+      art.style.boxShadow = "none";
+    });
+
+    item.setAttribute("data-art", 1);
+    item.style.border = "4px solid red";
+    item.style.boxShadow = "0 0 20px red";
+  });
+});
+
+function appendArt(artObj, content = artContent) {
   const artElem = document.createElement("div"),
     artImg = document.createElement("img"),
     artDescr = document.createElement("span"),
@@ -1086,11 +1104,6 @@ function getArt(artObj, content = artContent) {
   artElem.append(artDescr);
   artDescr.prepend(artTitle);
 }
-// name: "eyeSecond",
-//           src: "img/artifacts/eye_second.png",
-//           rarity: "gold",
-//           title: "Левый глаз демона",
-//           descr: "Увеличивает максимальное здоровье на 100 и уклонение на 10%",
 
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (getXp);
 
@@ -1110,7 +1123,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ });
 // Main
 const AudioBackground = new Audio("./audio/background.mp3");
-decVolume(AudioBackground, 0.2);
+decVolume(AudioBackground, 0.1);
 const AudioClickSliderArrows = new Audio("./audio/click_slider-arrows.mp3");
 decVolume(AudioClickSliderArrows, 0.5);
 const AudioHeroChosen = new Audio("./audio/hero_chosen.mp3");
@@ -1163,6 +1176,32 @@ const AudioGetDemageWoman3 = new Audio("./audio/get_demage_woman_3.mp3");
 decVolume(AudioGetDemageWoman3, 0.1);
 const AudioGetDemageWoman4 = new Audio("./audio/get_demage_woman_4.mp3");
 decVolume(AudioGetDemageWoman4, 0.1);
+// skills
+const AudioSkillWarrior = new Audio("./audio/skills/skill_warrior.mp3");
+decVolume(AudioSkillWarrior, 0.3);
+const AudioSkillRogue = new Audio("./audio/skills/skill_rogue.mp3");
+decVolume(AudioSkillRogue, 0.7);
+const AudioSkillMonk = new Audio("./audio/skills/skill_monk.mp3");
+decVolume(AudioSkillMonk, 0.3);
+const AudioSkillJester = new Audio("./audio/skills/skill_jester.mp3");
+decVolume(AudioSkillJester, 0.9);
+const AudioSkillDryad = new Audio("./audio/skills/skill_dryad.mp3");
+decVolume(AudioSkillDryad, 0.4);
+const AudioSkillMechanic = new Audio("./audio/skills/skill_mechanic.mp3");
+decVolume(AudioSkillMechanic, 0.5);
+const AudioSkillWitchmag = new Audio("./audio/skills/skill_witchmag.mp3");
+decVolume(AudioSkillWitchmag, 0.5);
+
+const AudioSkillMageFire = new Audio("./audio/skills/skill_mage_fire.mp3");
+decVolume(AudioSkillMageFire, 0.5);
+const AudioSkillMageIceBlock = new Audio("./audio/skills/skill_mage_ice_block.mp3");
+decVolume(AudioSkillMageIceBlock, 0.3);
+const AudioSkillMageIceDestr = new Audio("./audio/skills/skill_mage_ice_destr.mp3");
+decVolume(AudioSkillMageIceDestr, 0.5);
+const AudioSkillMageIceCreate = new Audio("./audio/skills/skill_mage_ice_create.mp3");
+decVolume(AudioSkillMageIceCreate, 0.3);
+const AudioSkillMageLightning = new Audio("./audio/skills/skill_mage_lightning.mp3");
+decVolume(AudioSkillMageLightning, 0.5);
 
 function decVolume(audio, volume) {
   audio.volume = volume;
@@ -1217,6 +1256,30 @@ function AudioAction(audio, action) {
         return AudioGetDemageWoman4;
       case "missAttack":
         return AudioMissAttack;
+      case "skillWARRIOR":
+        return AudioSkillWarrior;
+      case "skillROGUE":
+        return AudioSkillRogue;
+      case "skillMONK":
+        return AudioSkillMonk;
+      case "skillJESTER":
+        return AudioSkillJester;
+      case "skillDRYAD":
+        return AudioSkillDryad;
+      case "skillMECHANIC":
+        return AudioSkillMechanic;
+      case "skillWITCHMAG":
+        return AudioSkillWitchmag;
+      case "skillMAGE_fire":
+        return AudioSkillMageFire;
+      case "skillMAGE_iceCreate":
+        return AudioSkillMageIceCreate;
+      case "skillMAGE_iceBlock":
+        return AudioSkillMageIceBlock;
+      case "skillMAGE_iceDestr":
+        return AudioSkillMageIceDestr;
+      case "skillMAGE_lightning":
+        return AudioSkillMageLightning;
     }
   }
 }
@@ -1245,12 +1308,10 @@ function setAudioToHero(hero) {
 
   switch (hero.sex) {
     case "man":
-      console.log("man");
       hero.audio.getDemage = () => AudioAction("getDemageMan");
       hero.audio.getCrit = () => AudioAction("getCritDemageMan");
       break;
     case "woman":
-      console.log("woman");
       hero.audio.getDemage = () => AudioAction("getDemageWoman");
       hero.audio.getCrit = () => AudioAction("getCritDemageWoman");
       break;
@@ -1258,7 +1319,25 @@ function setAudioToHero(hero) {
 
   hero.audio.miss = () => AudioAction("missAttack");
 
-  console.log(hero);
+  switch (hero.name) {
+    case "warrior":
+    case "rogue":
+    case "monk":
+    case "jester":
+    case "dryad":
+    case "mechanic":
+    case "witchmag":
+      hero.audio.skill = () => AudioAction(`skill${hero.name.toUpperCase()}`);
+      break;
+    case "mage":
+      hero.audio.skill = {};
+      hero.audio.skill.iceCreate = () => AudioAction("skillMAGE_iceCreate");
+      hero.audio.skill.iceBlock = () => AudioAction("skillMAGE_iceBlock");
+      hero.audio.skill.iceDestr = () => AudioAction("skillMAGE_iceDestr");
+      hero.audio.skill.fire = () => AudioAction("skillMAGE_fire");
+      hero.audio.skill.lightning = () => AudioAction("skillMAGE_lightning");
+      break;
+  }
 }
 
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (AudioAction);
@@ -1284,97 +1363,97 @@ __webpack_require__.r(__webpack_exports__);
 
 const arrBuffs = [
   {
-    name: "attack",
+    name: "hawk",
     title: "Метка Ястреба",
     descr: "Атака + 14%",
     value: { inc: 14, percent: true, buff: ["attack"], selector: [".attackMin", ".attackMax"] },
   },
   {
-    name: "def",
+    name: "turtle",
     title: "Метка Черепахи",
-    descr: "Защита + 16%",
-    value: { inc: 16, percent: true, buff: ["def"], selector: [".def"] },
+    descr: "Защита + 15%",
+    value: { inc: 15, percent: true, buff: ["def"], selector: [".def"] },
   },
   {
-    name: "maxHp",
+    name: "bear",
     title: "Метка Медведя",
     descr: "Запас Здоровья + 14%",
     value: { inc: 14, percent: true, buff: ["hp"], selector: [".hpMax"] },
   },
   {
-    name: "dodge",
+    name: "monkey",
     title: "Метка Обезьяны",
     descr: "Уклонение + 16%",
     value: { inc: 16, percent: true, buff: ["dodge"], selector: [".dodge"] },
   },
   {
-    name: "сrit",
+    name: "tiger",
     title: "Метка Тигра",
     descr: "Шанс крит.удара и Сила крит.удара + 7%",
     value: { inc: 7, percent: true, buff: ["critChance", "critPower"], selector: [".critChance", ".critPower"] },
   },
   {
-    name: "adapt",
+    name: "raccoon",
     title: "Метка Eнота",
     descr: "Адаптация + 16%",
     value: { inc: 16, percent: true, buff: ["adapt"], selector: [".adapt"] },
   },
   {
-    name: "luck",
+    name: "frog",
     title: "Метка Лягушки",
     descr: "Удача + 16%",
     value: { inc: 16, percent: true, buff: ["luck"], selector: [".luck"] },
   },
   {
-    name: "attack-def",
+    name: "rhino",
     title: "Метка Носорога",
     descr: "Атака + 8% <br> Защита + 8%",
     value: { inc: 8, percent: true, buff: ["attack", "def"], selector: [".attackMin", ".attackMax", ".def"] },
   },
   {
-    name: "attack-adapt",
+    name: "hyena",
     title: "Метка Гиены",
     descr: "Атака + 8% <br> Адаптация + 8%",
     value: { inc: 8, percent: true, buff: ["attack", "adapt"], selector: [".attackMin", ".attackMax", ".adapt"] },
   },
   {
-    name: "def-maxHp",
+    name: "lion",
     title: "Метка Льва",
     descr: "Запас Здоровья + 8% <br> Защита + 8%",
     value: { inc: 8, percent: true, buff: ["hp", "def"], selector: [".hpMax", ".def"] },
   },
   {
-    name: "dodge-maxHp",
+    name: "wolf",
     title: "Метка Волка",
     descr: "Запас Здоровья + 8% <br> Уклонение + 8%",
     value: { inc: 8, percent: true, buff: ["hp", "dodge"], selector: [".hpMax", ".dodge"] },
   },
   {
-    name: "luck-maxHp",
-    title: "Метка Eжа",
+    name: "crab",
+    title: "Метка Краба",
     descr: "Запас Здоровья + 8% <br> Удача + 8%",
     value: { inc: 8, percent: true, buff: ["hp", "luck"], selector: [".hpMax", ".luck"] },
   },
   {
-    name: "luck-dodge",
+    name: "dolphin",
     title: "Метка Дельфина",
     descr: "Уклонение + 9% <br> Удача + 9%",
     value: { inc: 9, percent: true, buff: ["dodge", "luck"], selector: [".dodge", ".luck"] },
   },
   {
-    name: "attack-dodge",
+    name: "fox",
     title: "Метка Лисы",
     descr: "Aтака + 8% <br> Уклонение + 8%",
     value: { inc: 8, percent: true, buff: ["attack", "dodge"], selector: [".attackMin", ".attackMax", ".dodge"] },
   },
   {
-    name: "def-adapt",
-    title: "Метка Зубра",
+    name: "shark",
+    title: "Метка Акулы",
     descr: `Защита + 9% <br> Адаптация + 9%`,
     value: { inc: 9, percent: true, buff: ["def", "adapt"], selector: [".def", ".adapt"] },
   },
   {
-    name: "attack-magicPower",
+    name: "snake",
     title: "Метка Змеи",
     descr: `Атака + 8% <br> Сила Магии + 8%`,
     value: {
@@ -1385,13 +1464,13 @@ const arrBuffs = [
     },
   },
   {
-    name: "adapt-magicPower",
-    title: "Метка Хамелеона",
+    name: "lizard",
+    title: "Метка Ящера",
     descr: `Адаптация + 9% <br> Сила Магии + 9%`,
     value: { inc: 9, percent: true, buff: ["adapt", "magicPower"], selector: [".adapt", ".magicPower"] },
   },
   {
-    name: "luck-magicPower",
+    name: "crane",
     title: "Метка Журавля",
     descr: `Удача + 9% <br> Сила Магии + 9%`,
     value: { inc: 9, percent: true, buff: ["luck", "magicPower"], selector: [".luck", ".magicPower"] },
@@ -1517,7 +1596,7 @@ function buff(hero) {
 
     buffElem.classList.add("buff__container");
     // buffElem.style.backgroundColor = artObj.rarity;
-    buffImg.setAttribute("src", "img/icons/buffs/mark_buff.png");
+    buffImg.setAttribute("src", `img/icons/buffs/buff-${buff.name}.png`);
     buffText.classList.add("buff__text");
 
     item.setAttribute("buff-name", buff.title);
@@ -1607,7 +1686,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
 /* harmony export */ });
-function calcMp(numMp) {
+function calcMp(numMp = 0) {
   const mpBar = document.querySelector(".hero_mp");
   let mpAtr = +mpBar.getAttribute("data-mp");
   const factor = mpBar.parentNode.clientWidth / mpAtr;
@@ -1656,7 +1735,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
 /* harmony export */ });
-let mainBg = document.body;
+const mainBg = document.body;
 const changeBg = (enemyName) => {
   switch (enemyName) {
     case "greenMonster":
@@ -1668,6 +1747,7 @@ const changeBg = (enemyName) => {
       mainBg.classList.add("hell");
       break;
     case "angelFighter":
+    case "whiteDragon":
       mainBg.classList.add("paradise");
       break;
     default:
@@ -1700,18 +1780,19 @@ function searchEnemy(luck) {
   const checkLuck = Math.floor(Math.random() * 100) + 1;
   const modLuck = checkLuck * 1.1 + chanceGoldBox;
 
-  console.log(`${minLimit} - ${maxLimit}`);
   if (modLuck <= luck) {
     chanceGoldBox++;
     return (0,_heroes__WEBPACK_IMPORTED_MODULE_0__["default"])("enemy", 0);
   } else {
     // const enemyNum = Math.floor(Math.random() * (0 - difficulty + 1)) + difficulty;
     const enemyNum = Math.floor(minLimit + Math.random() * (maxLimit + 1 - minLimit));
+    console.log(`${minLimit} - ${maxLimit}`, `: enemy = ${enemyNum}`);
+
     if (maxLimit <= (0,_heroes__WEBPACK_IMPORTED_MODULE_0__["default"])("count") - 1) {
       // maxLimit += 1;
       maxLimit += 0.75;
     }
-    if (minLimit <= (0,_heroes__WEBPACK_IMPORTED_MODULE_0__["default"])("count") - 3) {
+    if (minLimit <= (0,_heroes__WEBPACK_IMPORTED_MODULE_0__["default"])("count") - 2) {
       // minLimit += 0.5;
       minLimit += 0.7;
     }
@@ -1746,8 +1827,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _skills__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./skills */ "./src/js/modules/skills.js");
 /* harmony import */ var _buff__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./buff */ "./src/js/modules/buff.js");
 /* harmony import */ var _mods_mods__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ./mods/mods */ "./src/js/modules/mods/mods.js");
-/* harmony import */ var _audio_audio__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ./audio/audio */ "./src/js/modules/audio/audio.js");
-/* harmony import */ var _changeBg__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! ./changeBg */ "./src/js/modules/changeBg.js");
+/* harmony import */ var _specificity_heroes_specificity__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ./specificity/heroes_specificity */ "./src/js/modules/specificity/heroes_specificity.js");
+/* harmony import */ var _audio_audio__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! ./audio/audio */ "./src/js/modules/audio/audio.js");
 
 
 
@@ -1757,6 +1838,8 @@ __webpack_require__.r(__webpack_exports__);
 
 
 
+
+// import monkSpecificity from "./specificity/monk_specificity";
 
 
 
@@ -1764,38 +1847,31 @@ __webpack_require__.r(__webpack_exports__);
 
 //
 
-
-
-let mana = 0;
-
-let berserk = false;
 let regenDryad = 5;
-let comboMechanic;
+// let comboMechanic;
+
 let manaRegen = 5;
 
 const textRaidLvl = document.querySelector(".text__raid span");
 
 let enemyCount = 0;
 
-// const critPowerMod = (critPower) => Math.round(critPower * 0.85);
-// const critСhanceMod = (critChance) => Math.round(critChance * 0.85);
-// const dodgeMod = (dodge) => Math.round(dodge * 0.85);
-// const defMod = (def) => Math.round(def * 0.8);
-// const adaptMod = (adapt) => Math.round(adapt * 0.35);
-
 function fight(target, assaulter, btnsHidden, btnReload, btnDisplay) {
   let maxHPHero = +document.querySelector(".hero_hp").getAttribute("data-hp");
   let maxHPEnemy = +document.querySelector(".enemy_hp").getAttribute("data-hp");
   target.maxHPEnemy = maxHPEnemy;
   assaulter.maxHPHero = maxHPHero;
-  let maxMP = assaulter.mp;
-  comboMechanic = 0;
+  let maxMP = assaulter.maxMPHero;
+  // comboMechanic = 0;
   let buffAttack = 0;
   let buffDodge = 0;
   let bloodOrkTrigger = false;
   let darknessStep;
   let staffOmbalStep = 0;
   let sphereDMStep = false;
+  _specificity_heroes_specificity__WEBPACK_IMPORTED_MODULE_9__.mechanicSpecificity.use();
+
+  assaulter.stun = 0;
 
   function battle(target, assaulter) {
     // Вычисление атаки
@@ -1850,175 +1926,226 @@ function fight(target, assaulter, btnsHidden, btnReload, btnDisplay) {
       finishFight();
       return;
     }
-    if (ObjDmg === "Промах") {
-      // AudioAction("missAttack");
-      assaulter.audio.miss();
-      (0,_text__WEBPACK_IMPORTED_MODULE_2__["default"])("Промах!", "orange");
-      comboMechanic = 0;
-
-      assaulter.swordKingHell ? swordKingHell(assaulter, target) : null;
+    if (assaulter.stun) {
+      (0,_text__WEBPACK_IMPORTED_MODULE_2__["default"])(`Вы оглушены (${assaulter.stun} ход)`, "orange");
+      assaulter.stun--;
     } else {
-      // ObjDmg.crit ? AudioAction("swordCrit") : AudioAction("swordStrike");
-      ObjDmg.crit ? assaulter.audio.crit() : assaulter.audio.attack();
-      // musicAction("warriorStrike");
-      let dmgHeroNum = ObjDmg.dmg;
-      dmgHeroNum += redDagger(assaulter.redDagger, target.def);
-      dmgHeroNum = CountComboMechanic(assaulter.name, dmgHeroNum) + buffAttack;
+      if (ObjDmg === "Промах") {
+        // AudioAction("missAttack");
+        assaulter.audio.miss();
+        (0,_text__WEBPACK_IMPORTED_MODULE_2__["default"])("Промах!", "orange");
+        _specificity_heroes_specificity__WEBPACK_IMPORTED_MODULE_9__.mechanicSpecificity.use();
 
-      // monk level_2 second
-      assaulter.name == "monk" && assaulter.monkTiger && ObjDmg.crit ? monkTiger(assaulter, target) : null;
-      // monk level_3 first
-      assaulter.name == "monk" && assaulter.monkLotus ? monkLotus(assaulter, target) : null;
-      // mechanic level_1 first
-      assaulter.name == "mechanic" && assaulter.mechanicMaster
-        ? assaulter.mechanicMaster(assaulter, target)
-        : null;
+        assaulter.arts.swordKingHell ? swordKingHell(assaulter, target) : null;
+      } else {
+        // ObjDmg.crit ? AudioAction("swordCrit") : AudioAction("swordStrike");
+        ObjDmg.crit ? assaulter.audio.crit() : assaulter.audio.attack();
 
-      target.hp -= dmgHeroNum;
-      touchOfDeath(assaulter, target);
-      staffOmbal(assaulter, maxHPHero, target, staffOmbalStep);
-      thunderHammer(assaulter, target);
+        let dmgHeroNum = ObjDmg.dmg + buffAttack;
 
-      ObjDmg.crit && assaulter.handKingHell ? handKingHell(target, maxHPEnemy) : null;
+        dmgHeroNum += redDagger(assaulter.arts.redDagger, target.def);
+        // mechanic specificify
+        useUtilityByHeroName("mechanic", () => (dmgHeroNum = _specificity_heroes_specificity__WEBPACK_IMPORTED_MODULE_9__.mechanicSpecificity.use(dmgHeroNum, target)), []);
+        // jester specificify
+        useUtilityByHeroName(
+          "jester",
+          () => (dmgHeroNum = (0,_specificity_heroes_specificity__WEBPACK_IMPORTED_MODULE_9__.jesterSpecificity)(assaulter, dmgHeroNum, target.def)),
+          []
+        );
+        // witchmag specificify
+        useUtilityByHeroName(
+          "witchmag",
+          () => (dmgHeroNum = dmgHeroNum + (0,_specificity_heroes_specificity__WEBPACK_IMPORTED_MODULE_9__.witchmagSpecificity)(assaulter.magicPower)),
+          []
+        );
+        // monk level_2 second
+        useUtilityByHeroName("monk", () => monkTiger(assaulter, target), [assaulter.monkTiger, ObjDmg.crit]);
+        // monk level_3 first
+        useUtilityByHeroName("monk", () => monkLotus(assaulter, target), [assaulter.monkLotus]);
+        // monk specificity
+        useUtilityByHeroName("monk", () => _specificity_heroes_specificity__WEBPACK_IMPORTED_MODULE_9__.monkSpecificity.use(target), []);
+        // mechanic level_1 first
+        useUtilityByHeroName("mechanic", () => assaulter.mechanicMaster(assaulter, target), [
+          assaulter.mechanicMaster,
+        ]);
+        // dryad level_4 second
+        useUtilityByHeroName("dryad", () => assaulter.dryadMoonlight(assaulter, target), [
+          assaulter.dryadMoonlight,
+        ]);
+        // witchmag level_4 first
+        useUtilityByHeroName("witchmag", () => assaulter.witchmagThirstBlade(assaulter, target), [
+          assaulter.witchmagThirstBlade,
+        ]);
 
-      (0,_calc_hp__WEBPACK_IMPORTED_MODULE_0__["default"])(".enemy_hp", target.hp);
+        target.hp -= dmgHeroNum;
+        blackRaven(assaulter, target);
+        staffOmbal(assaulter, maxHPHero, target, staffOmbalStep);
+        thunderHammer(assaulter, target);
+        emblemWolf(assaulter, target);
 
-      // vampiric
-      if (assaulter.vampiric) {
-        assaulter.hp += vampiric(assaulter, dmgHeroNum);
-        if (assaulter.hp > +maxHPHero) {
-          assaulter.hp = +maxHPHero;
+        ObjDmg.crit && assaulter.arts.handKingHell ? handKingHell(target, maxHPEnemy) : null;
+
+        (0,_calc_hp__WEBPACK_IMPORTED_MODULE_0__["default"])(".enemy_hp", target.hp);
+
+        // vampiric
+        if (assaulter.vampiric) {
+          assaulter.hp += vampiric(assaulter, dmgHeroNum);
+          if (assaulter.hp > +maxHPHero) {
+            assaulter.hp = +maxHPHero;
+          }
+          (0,_calc_hp__WEBPACK_IMPORTED_MODULE_0__["default"])(".hero_hp", assaulter.hp);
         }
-        (0,_calc_hp__WEBPACK_IMPORTED_MODULE_0__["default"])(".hero_hp", assaulter.hp);
-      }
 
-      // MANA
+        // MANA
 
-      if (assaulter.mana < maxMP) {
-        assaulter.bonusMP ? (assaulter.mana += manaRegen + assaulter.bonusMP) : (assaulter.mana += manaRegen);
-        ObjDmg.crit && assaulter.frostsword ? (assaulter.mana += 2) : null;
-        // assaulter.name == "mage" ? (assaulter.mana += 1) : null;
+        if (assaulter.mana < maxMP) {
+          assaulter.bonusMP ? (assaulter.mana += manaRegen + assaulter.bonusMP) : (assaulter.mana += manaRegen);
+          ObjDmg.crit && assaulter.arts.frostsword ? (assaulter.mana += 2) : null;
+          // assaulter.name == "mage" ? (assaulter.mana += 1) : null;
 
-        // monk level_1 first
-        if (assaulter.name == "monk" && assaulter.monkSnakeStrikes) {
-          assaulter.mana += assaulter.monkSnakeStrikes();
+          // monk level_1 first
+          // if (assaulter.name == "monk" && assaulter.monkSnakeStrikes) {
+          //   assaulter.mana += assaulter.monkSnakeStrikes();
+          // }
+
+          useUtilityByHeroName("monk", () => assaulter.monkSnakeStrikes(), [assaulter.monkSnakeStrikes]);
+
+          if (assaulter.mana > maxMP) {
+            assaulter.mana = maxMP;
+          }
+          (0,_calc_mp__WEBPACK_IMPORTED_MODULE_1__["default"])(assaulter.mana);
         }
-        if (assaulter.mana > maxMP) {
-          assaulter.mana = maxMP;
-        }
-        (0,_calc_mp__WEBPACK_IMPORTED_MODULE_1__["default"])(assaulter.mana);
-      }
 
-      //
-
-      if (target.hp <= 0) {
-        clearInterval(battleSetInterval);
-        (0,_text__WEBPACK_IMPORTED_MODULE_2__["default"])(`Вы нанесли${ObjDmg.crit} ${dmgHeroNum} урона и убили противника`, "white");
         //
-        finishFight();
-        return;
+
+        if (target.hp <= 0) {
+          clearInterval(battleSetInterval);
+          (0,_text__WEBPACK_IMPORTED_MODULE_2__["default"])(`Вы нанесли${ObjDmg.crit} ${dmgHeroNum} урона и убили противника`, "white");
+          useUtilityByHeroName("rogue", () => assaulter.rogueRewardKill(assaulter, maxHPHero, maxHPEnemy), [
+            assaulter.rogueRewardKill,
+          ]);
+          //
+          finishFight();
+          return;
+        }
+        (0,_text__WEBPACK_IMPORTED_MODULE_2__["default"])(`Вы нанесли${ObjDmg.crit} ${dmgHeroNum} урона`, "yellow");
       }
-      (0,_text__WEBPACK_IMPORTED_MODULE_2__["default"])(`Вы нанесли${ObjDmg.crit} ${dmgHeroNum} урона`, "yellow");
     }
 
     // specificity mage
     if (assaulter.mana < maxMP && assaulter.name == "mage") {
-      assaulter.mana += 1;
+      assaulter.mana += (0,_specificity_heroes_specificity__WEBPACK_IMPORTED_MODULE_9__.mageSpecificity)();
       (0,_calc_mp__WEBPACK_IMPORTED_MODULE_1__["default"])(assaulter.mana);
     }
     staffOmbalStep++;
 
     setTimeout(() => {
-      // target.hp = checkAttrHP(".enemy_hp");
       if (target.hp <= 0) {
         return;
       }
       if (target.stun) {
-        (0,_text__WEBPACK_IMPORTED_MODULE_2__["default"])("Враг оглушен", "dodgerblue");
-        target.stun = false;
+        (0,_text__WEBPACK_IMPORTED_MODULE_2__["default"])(`Враг оглушен (${target.stun} ход)`, "dodgerblue");
+        target.stun--;
         return;
       }
       if (ObjDmgEnemy === "Промах") {
-        musicAction("missAttack");
+        (0,_audio_audio__WEBPACK_IMPORTED_MODULE_10__["default"])("missAttack");
         (0,_text__WEBPACK_IMPORTED_MODULE_2__["default"])("Вы увернулись", "green");
 
-        assaulter.robberyCloak ? robberyCloak(assaulter) : null;
+        assaulter.arts.robberyCloak ? robberyCloak(assaulter) : null;
         // monk level_2 first
-        assaulter.name == "monk" && assaulter.monkMantis ? monkMantis(assaulter, target) : null;
+        useUtilityByHeroName("monk", () => monkMantis(assaulter, target), [assaulter.monkMantis]);
         // mage level_3 first
-        assaulter.name == "mage" && assaulter.mageSkillMage ? mageSkillMage(assaulter) : null;
+        useUtilityByHeroName("mage", () => mageSkillMage(assaulter), [assaulter.mageSkillMage]);
       } else {
-        ObjDmgEnemy.crit ? assaulter.audio.getCrit() : assaulter.audio.getDemage();
-
         let dmgEnemyNum = Math.round(ObjDmgEnemy.dmg * target.multiplierDmg);
 
-        if (assaulter.block) {
+        if (assaulter.arts.gnomeShield) {
           dmgEnemyNum = gnomeShield(dmgEnemyNum);
         }
 
-        assaulter.magicshield ? magicShield(assaulter) : null;
+        assaulter.arts.magicshield ? magicShield(assaulter) : null;
 
-        assaulter.potion_Hp_Mp ? potion_Hp_Mp(assaulter, maxHPHero) : null;
+        assaulter.arts.potion_Hp_Mp ? potion_Hp_Mp(assaulter, maxHPHero) : null;
 
-        if (assaulter.sphereDM) {
+        if (assaulter.arts.sphereDM) {
           dmgEnemyNum = sphereDM(assaulter, dmgEnemyNum);
         }
 
+        // warrior specificity
+        // assaulter.name == "warrior" && ObjDmgEnemy.crit ? (dmgEnemyNum = warriorSpecificity(dmgEnemyNum)) : null;
+        useUtilityByHeroName("warrior", () => (dmgEnemyNum = _specificity_heroes_specificity__WEBPACK_IMPORTED_MODULE_9__.warriorSpecificity.use(dmgEnemyNum)), [
+          ObjDmgEnemy.crit,
+        ]);
+        // monk level_4 first
+        useUtilityByHeroName("monk", () => (dmgEnemyNum = assaulter.monkPainSuppression(dmgEnemyNum)), [
+          assaulter.monkPainSuppression,
+        ]);
+        // level_4 second
+        useUtilityByHeroName("mage", () => assaulter.mageFireShield.takeDmg(target), [assaulter.mageFireShield]);
+
         // barrier
 
-        if (assaulter.barrier) {
-          if (assaulter.barrier - dmgEnemyNum > 0) {
-            assaulter.barrier -= dmgEnemyNum;
-            (0,_text__WEBPACK_IMPORTED_MODULE_2__["default"])(`Ледяной щит поглотил ${dmgEnemyNum} урона. Прочность: ${assaulter.barrier}`, "aqua");
+        function barrier(hero) {
+          dmgEnemyNum = Math.round(dmgEnemyNum * 0.75);
+          if (hero.barrier - dmgEnemyNum > 0) {
+            hero.barrier -= dmgEnemyNum;
+            (0,_text__WEBPACK_IMPORTED_MODULE_2__["default"])(`Ледяной щит поглотил ${dmgEnemyNum} урона. Прочность: ${hero.barrier}`, "aqua");
             dmgEnemyNum = 0;
+            hero.audio.skill.iceBlock();
           } else {
-            dmgEnemyNum = -(assaulter.barrier - dmgEnemyNum);
-            assaulter.hp -= dmgEnemyNum;
-            (0,_calc_hp__WEBPACK_IMPORTED_MODULE_0__["default"])(".hero_hp", assaulter.hp);
-            (0,_text__WEBPACK_IMPORTED_MODULE_2__["default"])(`Ледяной щит поглотил ${assaulter.barrier} урона и был разбит`, "aqua");
-            assaulter.barrier = 0;
-            assaulter.absorbDamage = 0;
-            assaulter.mageOnIceShield = false;
+            dmgEnemyNum = -(hero.barrier - dmgEnemyNum);
+            hero.hp -= dmgEnemyNum;
+            (0,_calc_hp__WEBPACK_IMPORTED_MODULE_0__["default"])(".hero_hp", hero.hp);
+            (0,_text__WEBPACK_IMPORTED_MODULE_2__["default"])(`Ледяной щит поглотил ${hero.barrier} урона и был разбит`, "aqua");
+            hero.barrier = 0;
+
+            hero.mageOnIceShield = false;
+            hero.audio.skill.iceDestr();
           }
           // mage level_2 first
-          if (assaulter.name == "mage" && assaulter.mageShieldReflect) {
-            target.hp -= assaulter.mageShieldReflect();
+          if (hero.name == "mage" && hero.mageShieldReflect) {
+            target.hp -= hero.mageShieldReflect();
             (0,_calc_hp__WEBPACK_IMPORTED_MODULE_0__["default"])(".enemy_hp", target.hp);
           }
+        }
+
+        if (assaulter.barrier) {
+          barrier(assaulter);
         } else {
           assaulter.hp -= dmgEnemyNum;
           (0,_calc_hp__WEBPACK_IMPORTED_MODULE_0__["default"])(".hero_hp", assaulter.hp);
         }
 
+        if (dmgEnemyNum > 0) {
+          ObjDmgEnemy.crit ? assaulter.audio.getCrit() : assaulter.audio.getDemage();
+        }
+
         // mage level_3 first
         ObjDmgEnemy.crit && assaulter.name == "mage" && assaulter.mageSkillMage ? mageSkillMage(assaulter) : null;
 
-        ObjDmgEnemy.crit && assaulter.emblemDragon ? emblemDragon(assaulter) : null;
+        ObjDmgEnemy.crit && assaulter.arts.emblemDragon ? emblemDragon(assaulter) : null;
 
         // assaulter.hp -= dmgEnemyNum;
         // calcHp(".hero_hp", assaulter.hp);
 
-        if (assaulter.reflect) {
+        if (assaulter.arts.fieryHand) {
           target.hp -= fieryHand(dmgEnemyNum);
           (0,_calc_hp__WEBPACK_IMPORTED_MODULE_0__["default"])(".enemy_hp", target.hp);
         }
 
-        if (assaulter.bloodOrk && !bloodOrkTrigger) {
-          bloodOrk(assaulter, maxHPHero, target);
-        }
+        assaulter.arts.bloodOrk && !bloodOrkTrigger ? bloodOrk(assaulter, maxHPHero, target) : null;
 
-        if (assaulter.fieryFist) {
-          buffAttack = fieryFist(assaulter, maxHPHero);
-        }
+        assaulter.arts.fieryFist ? (buffAttack = fieryFist(assaulter, maxHPHero)) : null;
 
         if (assaulter.hp <= 0) {
-          if (assaulter.phoenix) {
+          if (assaulter.arts.phoenix) {
             assaulter.hp = +maxHPHero;
             (0,_text__WEBPACK_IMPORTED_MODULE_2__["default"])(
               `Противник убивает вас, ненеся${ObjDmgEnemy.crit} ${dmgEnemyNum}... но вы крылья феника возрождают вас`,
               "green"
             );
-            assaulter.phoenix = false;
+            assaulter.arts.phoenix = false;
           } else {
             if (target.name === "boss") {
               assaulter.hp = Math.floor(+maxHPHero / 2);
@@ -2039,10 +2166,15 @@ function fight(target, assaulter, btnsHidden, btnReload, btnDisplay) {
           }
         } else {
           (0,_text__WEBPACK_IMPORTED_MODULE_2__["default"])(`Противник нанес вам${ObjDmgEnemy.crit} ${dmgEnemyNum} урона`, "orange");
+          // warrior level_4 second
+          useUtilityByHeroName("warrior", () => assaulter.warriorRevenge(assaulter, target), [
+            assaulter.warriorRevenge,
+            ObjDmgEnemy.crit,
+          ]);
         }
         (0,_calc_hp__WEBPACK_IMPORTED_MODULE_0__["default"])(".hero_hp", assaulter.hp);
       }
-      if (assaulter.darknessMimic) {
+      if (assaulter.arts.darknessMimic) {
         darknessMimic(assaulter, maxHPHero);
       }
     }, 700);
@@ -2058,9 +2190,9 @@ function fight(target, assaulter, btnsHidden, btnReload, btnDisplay) {
       (0,_calc_hp__WEBPACK_IMPORTED_MODULE_0__["default"])(".hero_hp", assaulter.hp);
 
       // jester level_1 first
-      if (assaulter.name == "jester" && assaulter.jesterShifflDeck) {
-        assaulter.mana += assaulter.jesterShifflDeck();
-      }
+      useUtilityByHeroName("jester", () => (assaulter.mana += assaulter.jesterShifflDeck()), [
+        assaulter.jesterShifflDeck,
+      ]);
       if (assaulter.mana > maxMP) {
         assaulter.mana = maxMP;
       }
@@ -2068,9 +2200,7 @@ function fight(target, assaulter, btnsHidden, btnReload, btnDisplay) {
     }, 900);
 
     // mage level_3 second
-    if (assaulter.name == "mage" && assaulter.magePotionsCooking) {
-      assaulter.magePotionsCooking();
-    }
+    useUtilityByHeroName("mage", () => assaulter.magePotionsCooking(), [assaulter.magePotionsCooking]);
 
     checkNameEnemy(target, assaulter);
     setTimeout(() => {
@@ -2089,7 +2219,7 @@ function fight(target, assaulter, btnsHidden, btnReload, btnDisplay) {
       !hero.traderMeeting ? (hero.traderMeeting = 1) : hero.traderMeeting++;
     } else if (enemy.name === "boss") {
       (0,_artifacts__WEBPACK_IMPORTED_MODULE_3__["default"])(hero, false, true);
-      !hero.goldMod ? (hero.goldMod = 0.1) : (hero.goldMod += 0.1);
+      hero.goldMod += 0.1;
       textRaidLvl.textContent = +textRaidLvl.textContent + 5;
       hero.boss += 1;
     } else if (enemy.name === "unicorn" && !(hero.unicornMeeting == 2)) {
@@ -2111,20 +2241,13 @@ function fight(target, assaulter, btnsHidden, btnReload, btnDisplay) {
     (0,_gold_coin__WEBPACK_IMPORTED_MODULE_4__["default"])(enemy.gold, hero.goldMod);
   }
 
-  // Комбо механика
-  function CountComboMechanic(name, dmg) {
-    if (name === "mechanic") {
-      comboMechanic++;
-
-      if (comboMechanic == 4) {
-        comboMechanic = 0;
-        // addText(`комбо ${Math.floor(dmg * 1.5)} от обычного ${dmg}`, "gold");
-        return Math.floor(dmg * 1.5);
-      } else {
-        return dmg;
-      }
+  function useUtilityByHeroName(name, callback, [...trigers]) {
+    if (
+      assaulter.name === name &&
+      !([...trigers].includes(false) || [...trigers].includes(undefined) || [...trigers].includes(""))
+    ) {
+      callback();
     }
-    return dmg;
   }
 
   // mage level_3 first
@@ -2159,7 +2282,7 @@ function fight(target, assaulter, btnsHidden, btnReload, btnDisplay) {
       const dmg = hero.monkLotus(enemy);
       if (dmg > 0) {
         enemy.hp -= dmg;
-        enemy.stun = true;
+        enemy.stun++;
         (0,_text__WEBPACK_IMPORTED_MODULE_2__["default"])(`Вы используете технику лотоса, нанося ${dmg} урона, оглушив его`, "magenta");
         (0,_calc_hp__WEBPACK_IMPORTED_MODULE_0__["default"])(".enemy_hp", enemy.hp);
       }
@@ -2172,7 +2295,7 @@ function fight(target, assaulter, btnsHidden, btnReload, btnDisplay) {
       extraHP += hero.regeneration;
     }
     if (hero.name === "dryad") {
-      regenDryad += 1;
+      regenDryad += 1.25;
       extraHP += regenDryad;
       if (hero.hp <= 60) {
         extraHP += extraHP;
@@ -2191,19 +2314,30 @@ function fight(target, assaulter, btnsHidden, btnReload, btnDisplay) {
 
   // Артефакты
 
+  function emblemWolf(hero, enemy) {
+    if (hero.emblemWolf) {
+      let chance = Math.floor(Math.random() * 100) + 1;
+      if (chance <= 20) {
+        const dmg = Math.floor(10 + (maxHPEnemy / 100) * 3);
+        enemy.hp -= dmg;
+        (0,_text__WEBPACK_IMPORTED_MODULE_2__["default"])(`Противник получает дополнительный урон: ${dmg} `, "aqua");
+      }
+    }
+  }
+
   function emblemDragon(hero) {
     hero.attack[0] += 5;
     hero.attack[1] += 5;
     hero.def += 5;
-    (0,_update_stats__WEBPACK_IMPORTED_MODULE_5__["default"])(".attackMin", hero.attackMin, true);
-    (0,_update_stats__WEBPACK_IMPORTED_MODULE_5__["default"])(".attackMax", hero.attackMax, true);
+    (0,_update_stats__WEBPACK_IMPORTED_MODULE_5__["default"])(".attackMin", hero.attack[0], true);
+    (0,_update_stats__WEBPACK_IMPORTED_MODULE_5__["default"])(".attackMax", hero.attack[1], true);
     (0,_update_stats__WEBPACK_IMPORTED_MODULE_5__["default"])(".def", hero.def, true);
     setTimeout(() => {
       hero.attack[0] -= 5;
       hero.attack[1] -= 5;
       hero.def -= 5;
-      (0,_update_stats__WEBPACK_IMPORTED_MODULE_5__["default"])(".attackMin", hero.attackMin, true);
-      (0,_update_stats__WEBPACK_IMPORTED_MODULE_5__["default"])(".attackMax", hero.attackMax, true);
+      (0,_update_stats__WEBPACK_IMPORTED_MODULE_5__["default"])(".attackMin", hero.attack[0], true);
+      (0,_update_stats__WEBPACK_IMPORTED_MODULE_5__["default"])(".attackMax", hero.attack[1], true);
       (0,_update_stats__WEBPACK_IMPORTED_MODULE_5__["default"])(".def", hero.def, true);
     }, 6000);
   }
@@ -2211,7 +2345,7 @@ function fight(target, assaulter, btnsHidden, btnReload, btnDisplay) {
   function thunderHammer(hero, enemy) {
     if (hero.thunderHammer) {
       let chance = Math.floor(Math.random() * 100) + 1;
-      chance < 9 ? (enemy.stun = true) : null;
+      chance < 9 ? enemy.stun++ : null;
     }
   }
 
@@ -2286,7 +2420,7 @@ function fight(target, assaulter, btnsHidden, btnReload, btnDisplay) {
   }
 
   function staffOmbal(hero, maxHPHero, enemy, step) {
-    if (hero.staffOmbal) {
+    if (hero.arts.staffOmbal) {
       if (step >= 5 && enemy.hp >= 0) {
         setTimeout(() => {
           let dagon = Math.round(maxHPHero / (100 / 20));
@@ -2366,8 +2500,8 @@ function fight(target, assaulter, btnsHidden, btnReload, btnDisplay) {
     }
   }
 
-  function touchOfDeath(hero, enemy) {
-    if (hero.touchOfDeath) {
+  function blackRaven(hero, enemy) {
+    if (hero.arts.blackRaven) {
       let chance = Math.floor(Math.random() * 100) + 1;
       if (chance <= 4) {
         let dmgToHero;
@@ -2390,7 +2524,8 @@ function fight(target, assaulter, btnsHidden, btnReload, btnDisplay) {
   // console.log(Math.floor(Math.random() * 100) + 1);
 
   function vampiric(hero, dmg) {
-    let heal = Math.floor((dmg / (100 / hero.vampiric)) * 0.75);
+    // let heal = Math.floor((dmg / (100 / hero.vampiric)) * 0.75);
+    let heal = Math.floor(dmg * (0,_mods_mods__WEBPACK_IMPORTED_MODULE_8__.vampiricMod)(hero.vampiric));
     // console.log(`Вампиризи = ${heal}`);
     return heal;
   }
@@ -2449,15 +2584,11 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
 /* harmony export */ });
-function goldCoin(value, modificator) {
+function goldCoin(value, goldMod) {
   const coinBar = document.querySelector(".bar__coin");
   const coinElement = coinBar.querySelector("span");
   let coin = +coinBar.querySelector("span").textContent;
-  let goldMod = 1;
 
-  if (modificator) {
-    goldMod += +modificator;
-  }
   getCoin(value);
 
   function getCoin(value) {
@@ -2497,9 +2628,11 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ });
 function createHeroes(part, hero) {
   class Hero {
-    constructor(attack, hp, def, critChance, critPower, dodge, luck, adapt, magicPower, mp, name) {
+    constructor(attack, hp, def, critChance, critPower, dodge, luck, adapt, magicPower, maxMp, name) {
       this.attack = attack;
       this.hp = hp;
+      this.maxHPHero = hp;
+      this.maxMPHero = maxMp;
       this.def = def;
       this.critChance = critChance;
       this.critPower = critPower;
@@ -2508,13 +2641,17 @@ function createHeroes(part, hero) {
       this.name = name;
       this.adapt = adapt;
       this.magicPower = magicPower;
-      this.mp = mp;
+      // this.mp = maxMp;
       this.mana = 0;
       this.regeneration = 0;
       this.absorbDamage = 0;
+      this.vampiric = 0;
       this.lvl = 1;
       this.talentsPoint = 0;
       this.barrier = 0;
+      this.name === "rogue" ? (this.goldMod = 1.1) : (this.goldMod = 1);
+      this.stun = 0;
+      this.arts = {};
     }
   }
   class Enemy {
@@ -2530,33 +2667,34 @@ function createHeroes(part, hero) {
       this.gold = gold;
       this.adapt = adapt;
       this.multiplierDmg = 1;
+      this.stun = 0;
     }
   }
   const heroes = [
     function warrior() {
-      // return new Hero([700, 760], 700, 5, 17, 160, 5, 7, 11, 15, 160, "warrior");
+      // return new Hero([17001, 12760], 700, 5, 17, 160, 5, 7, 11, 15, 160, "warrior");
       return new Hero([25, 32], 350, 7, 17, 155, 5, 6, 11, 15, 160, "warrior");
     },
     function rogue() {
       return new Hero([32, 39], 275, 3, 21, 170, 17, 9, 15, 14, 170, "rogue");
     },
     function monk() {
-      return new Hero([24, 30], 365, 2, 15, 175, 24, 12, 21, 20, 200, "monk");
+      return new Hero([23, 28], 340, 1, 15, 175, 24, 12, 21, 20, 200, "monk");
     },
     function jester() {
-      return new Hero([23, 35], 300, 0, 16, 200, 18, 17, 10, 23, 200, "jester");
+      return new Hero([22, 35], 300, 0, 16, 200, 18, 17, 10, 23, 200, "jester");
     },
     function dryad() {
-      return new Hero([23, 29], 310, 1, 17, 150, 20, 13, 13, 39, 200, "dryad");
+      return new Hero([22, 29], 310, 1, 17, 150, 20, 13, 13, 39, 200, "dryad");
     },
     function mechanic() {
-      return new Hero([25, 31], 315, 4, 18, 190, 11, 8, 16, 16, 175, "mechanic");
+      return new Hero([25, 31], 315, 4, 18, 200, 11, 8, 18, 16, 175, "mechanic");
     },
     function witchmag() {
-      return new Hero([28, 35], 285, 2, 18, 175, 14, 9, 17, 31, 180, "witchmag");
+      return new Hero([26, 34], 285, 2, 18, 175, 14, 9, 17, 31, 180, "witchmag");
     },
     function mage() {
-      return new Hero([15, 21], 270, 1, 20, 150, 13, 12, 14, 45, 250, "mage");
+      return new Hero([15, 21], 270, 1, 20, 150, 12, 12, 14, 45, 250, "mage");
     },
   ];
 
@@ -2565,127 +2703,181 @@ function createHeroes(part, hero) {
       return new Enemy([5, 5], 100, 5, 1, 1, 1, 1, "goldBox", "img/enemy/goldBox.png", 50);
     },
     function wolf() {
-      return new Enemy([17, 23], 160, 1, 13, 170, 12, 10, "wolf", "img/enemy/wolf.png", 6);
+      return new Enemy([17, 24], 170, 1, 13, 170, 12, 10, "wolf", "img/enemy/wolf.png", 7);
     },
     function goblin() {
-      return new Enemy([18, 25], 200, 2, 18, 150, 17, 12, "goblin", "img/enemy/goblin.png", 7);
+      return new Enemy([18, 25], 200, 2, 18, 150, 17, 12, "goblin", "img/enemy/goblin.png", 8);
     },
     function satyr() {
-      return new Enemy([20, 25], 165, 1, 14, 150, 27, 10, "satyr", "img/enemy/satyr.png", 8);
+      return new Enemy([20, 25], 170, 1, 14, 150, 27, 10, "satyr", "img/enemy/satyr.png", 9);
     },
     function werewolf() {
-      return new Enemy([17, 27], 215, 1, 25, 170, 15, 12, "werewolf", "img/enemy/werewolf.png", 9);
+      return new Enemy([17, 27], 230, 2, 25, 170, 15, 12, "werewolf", "img/enemy/werewolf.png", 10);
     },
     function ork() {
-      return new Enemy([16, 22], 320, 4, 10, 190, 5, 10, "ork", "img/enemy/ork.png", 10);
+      return new Enemy([16, 23], 330, 4, 11, 190, 5, 10, "ork", "img/enemy/ork.png", 12);
     },
     function skeleton() {
-      return new Enemy([21, 30], 210, 0, 18, 200, 21, 10, "skeleton", "img/enemy/skeleton.png", 11);
+      return new Enemy([23, 31], 220, 0, 18, 200, 21, 10, "skeleton", "img/enemy/skeleton.png", 13);
     },
     function gnome() {
-      return new Enemy([9, 15], 150, 0, 33, 170, 80, 15, "gnome", "img/enemy/gnome.png", 12);
+      return new Enemy([9, 15], 160, 0, 33, 170, 80, 15, "gnome", "img/enemy/gnome.png", 14);
+    },
+    function tramp() {
+      return new Enemy([20, 28], 270, 3, 25, 170, 40, 15, "tramp", "img/enemy/tramp.png", 15);
     },
     function behemoth() {
-      return new Enemy([22, 30], 330, 7, 10, 150, 1, 25, "behemoth", "img/enemy/behemoth.png", 13);
+      return new Enemy([23, 32], 350, 7, 10, 150, 1, 25, "behemoth", "img/enemy/behemoth.png", 16);
     },
     function dragon() {
-      return new Enemy([22, 34], 240, 5, 45, 150, 15, 15, "dragon", "img/enemy/dragon.png", 15);
+      return new Enemy([24, 36], 260, 5, 45, 150, 15, 15, "dragon", "img/enemy/dragon.png", 17);
     },
     function guard() {
-      return new Enemy([24, 29], 380, 12, 10, 200, 1, 25, "guard", "img/enemy/guard.png", 17);
+      return new Enemy([25, 31], 390, 12, 10, 200, 1, 25, "guard", "img/enemy/guard.png", 18);
+    },
+    function ancientSatyr() {
+      return new Enemy([31, 38], 300, 3, 25, 200, 45, 35, "ancientSatyr", "img/enemy/ancientSatyr.png", 19);
     },
     function stoneTroll() {
-      return new Enemy([26, 33], 370, 9, 20, 170, 15, 25, "stoneTroll", "img/enemy/stoneTroll.png", 19);
+      return new Enemy([30, 36], 380, 13, 20, 170, 15, 30, "stoneTroll", "img/enemy/stoneTroll.png", 20);
     },
     function trader() {
-      return new Enemy([13, 16], 175, 1, 1, 150, 5, 1, "trader", "img/enemy/trader.png", 5);
+      return new Enemy([15, 17], 180, 1, 1, 150, 5, 1, "trader", "img/enemy/trader.png", 5);
     },
     function greenMonster() {
-      return new Enemy([29, 38], 280, 3, 30, 200, 38, 15, "greenMonster", "img/enemy/greenMonster.png", 21);
+      return new Enemy([33, 42], 290, 3, 30, 200, 40, 20, "greenMonster", "img/enemy/greenMonster.png", 21);
     },
     function fierySkeleton() {
-      return new Enemy([37, 47], 300, 1, 20, 210, 25, 15, "fierySkeleton", "img/enemy/fierySkeleton.png", 23);
+      return new Enemy([37, 47], 330, 1, 20, 210, 25, 20, "fierySkeleton", "img/enemy/fierySkeleton.png", 22);
     },
     function cannibal() {
-      return new Enemy([35, 45], 440, 9, 25, 150, 1, 20, "cannibal", "img/enemy/cannibal.png", 25);
+      return new Enemy([38, 48], 480, 9, 25, 150, 1, 20, "cannibal", "img/enemy/cannibal.png", 23);
     },
     function kikimora() {
-      return new Enemy([42, 50], 330, 3, 24, 170, 35, 15, "kikimora", "img/enemy/kikimora.png", 27);
+      return new Enemy([43, 52], 350, 3, 24, 170, 35, 20, "kikimora", "img/enemy/kikimora.png", 25);
+    },
+    function giantTroll() {
+      return new Enemy([46, 53], 510, 10, 30, 150, 22, 20, "giantTroll", "img/enemy/giantTroll.png", 27);
     },
     function spirit() {
-      return new Enemy([41, 49], 280, 0, 27, 150, 67, 15, "spirit", "img/enemy/spirit.png", 29);
+      return new Enemy([43, 49], 300, 0, 28, 150, 65, 15, "spirit", "img/enemy/spirit.png", 29);
     },
     function unicorn() {
-      return new Enemy([40, 50], 285, 1, 15, 215, 45, 5, "unicorn", "img/enemy/unicorn.png", 30);
+      return new Enemy([43, 54], 290, 2, 15, 215, 45, 5, "unicorn", "img/enemy/unicorn.png", 31);
     },
     function damn() {
-      return new Enemy([43, 53], 360, 4, 45, 150, 40, 15, "damn", "img/enemy/damn.png", 32);
+      return new Enemy([48, 58], 370, 4, 45, 150, 40, 25, "damn", "img/enemy/damn.png", 33);
     },
     function dreamEater() {
-      return new Enemy([44, 55], 400, 4, 40, 150, 40, 25, "dreamEater", "img/enemy/dreamEater.png", 34);
+      return new Enemy([44, 55], 450, 4, 40, 150, 40, 25, "dreamEater", "img/enemy/dreamEater.png", 35);
+    },
+    function lich() {
+      return new Enemy([52, 58], 450, 8, 30, 200, 35, 30, "lich", "img/enemy/lich.png", 37);
     },
     function giantZombie() {
-      return new Enemy([48, 55], 520, 15, 33, 175, 1, 15, "giantZombie", "img/enemy/giantZombie.png", 35);
+      return new Enemy([48, 59], 570, 16, 33, 175, 1, 20, "giantZombie", "img/enemy/giantZombie.png", 39);
     },
     function cyclops() {
-      return new Enemy([50, 58], 540, 12, 25, 175, 5, 3, "cyclops", "img/enemy/cyclops.png", 37);
+      return new Enemy([52, 60], 580, 13, 25, 175, 5, 5, "cyclops", "img/enemy/cyclops.png", 41);
     },
     function goldDragon() {
-      return new Enemy([51, 60], 500, 25, 20, 190, 10, 35, "goldDragon", "img/enemy/goldDragon.png", 100);
+      return new Enemy([52, 62], 550, 25, 20, 190, 10, 35, "goldDragon", "img/enemy/goldDragon.png", 100);
     },
     function SeaZombie() {
-      return new Enemy([63, 72], 410, 7, 25, 210, 30, 20, "SeaZombie", "img/enemy/SeaZombie.png", 40);
+      return new Enemy([63, 73], 430, 7, 25, 210, 30, 25, "SeaZombie", "img/enemy/SeaZombie.png", 43);
     },
     function viking() {
-      return new Enemy([50, 60], 580, 16, 33, 150, 20, 25, "viking", "img/enemy/viking.png", 42);
+      return new Enemy([54, 67], 610, 16, 33, 150, 20, 30, "viking", "img/enemy/viking.png", 45);
     },
     function imps() {
-      return new Enemy([50, 61], 470, 6, 45, 175, 55, 20, "imps", "img/enemy/imps.png", 45);
+      return new Enemy([54, 65], 480, 6, 45, 175, 55, 25, "imps", "img/enemy/imps.png", 47);
     },
     function titan() {
-      return new Enemy([56, 70], 700, 19, 20, 210, 1, 30, "titan", "img/enemy/titan.png", 47);
+      return new Enemy([59, 72], 700, 20, 20, 210, 1, 30, "titan", "img/enemy/titan.png", 49);
     },
     function masterOfMark() {
-      return new Enemy([57, 65], 550, 7, 25, 200, 35, 40, "masterOfMark", "img/enemy/masterOfMark.png", 49);
+      return new Enemy([57, 66], 570, 7, 25, 200, 35, 40, "masterOfMark", "img/enemy/masterOfMark.png", 51);
     },
     function diablo() {
-      return new Enemy([60, 71], 720, 23, 15, 200, 20, 40, "diablo", "img/enemy/diablo.png", 51);
+      return new Enemy([62, 73], 750, 23, 15, 200, 20, 40, "diablo", "img/enemy/diablo.png", 53);
     },
     function blackDragon() {
-      return new Enemy([69, 79], 600, 13, 35, 150, 40, 35, "blackDragon", "img/enemy/blackDragon.png", 54);
+      return new Enemy([69, 80], 650, 13, 35, 150, 40, 35, "blackDragon", "img/enemy/blackDragon.png", 55);
     },
     function stoneGiant() {
-      return new Enemy([56, 66], 880, 34, 10, 200, 1, 45, "stoneGiant", "img/enemy/stoneGiant.png", 57);
+      return new Enemy([56, 68], 940, 34, 10, 200, 1, 45, "stoneGiant", "img/enemy/stoneGiant.png", 57);
     },
     function evilMonster() {
-      return new Enemy([77, 89], 940, 18, 25, 200, 9, 25, "evilMonster", "img/enemy/evilMonster.png", 60);
+      return new Enemy([77, 91], 1000, 18, 25, 200, 9, 35, "evilMonster", "img/enemy/evilMonster.png", 59);
     },
     function ghostKnight() {
-      return new Enemy([83, 93], 950, 27, 35, 150, 18, 35, "evilMonster", "img/enemy/ghostKnight.png", 63);
+      return new Enemy([85, 95], 1000, 27, 35, 150, 18, 40, "evilMonster", "img/enemy/ghostKnight.png", 61);
     },
     function AncientButcher() {
-      return new Enemy([77, 88], 1150, 14, 20, 225, 8, 45, "AncientButcher", "img/enemy/AncientButcher.png", 67);
+      return new Enemy([82, 90], 1150, 15, 20, 225, 8, 45, "AncientButcher", "img/enemy/AncientButcher.png", 63);
     },
     function ermungand() {
-      return new Enemy([79, 90], 1200, 27, 33, 175, 20, 50, "ermungand", "img/enemy/ermungand.png", 71);
+      return new Enemy([79, 94], 1200, 27, 33, 175, 20, 50, "ermungand", "img/enemy/ermungand.png", 65);
     },
     function devourer() {
-      return new Enemy([86, 96], 1500, 14, 20, 200, 5, 55, "devourer", "img/enemy/devourer.png", 75);
+      return new Enemy([88, 96], 1500, 14, 20, 200, 5, 55, "devourer", "img/enemy/devourer.png", 68);
     },
     function demon() {
-      return new Enemy([90, 99], 1480, 12, 10, 150, 10, 50, "demon", "img/enemy/demon.png", 80);
+      return new Enemy([90, 105], 1550, 12, 10, 150, 10, 50, "demon", "img/enemy/demon.png", 71);
     },
     function devil() {
-      return new Enemy([105, 110], 1500, 8, 35, 215, 35, 60, "devil", "img/enemy/devil.png", 85);
+      return new Enemy([105, 120], 1700, 8, 35, 215, 35, 60, "devil", "img/enemy/devil.png", 74);
     },
     function angelFighter() {
-      return new Enemy([95, 115], 1555, 15, 55, 155, 55, 55, "angelFighter", "img/enemy/angelFighter.png", 91);
+      return new Enemy([115, 125], 1555, 15, 55, 155, 55, 55, "angelFighter", "img/enemy/angelFighter.png", 78);
     },
     function whiteDragon() {
-      return new Enemy([100, 113], 1650, 18, 30, 175, 60, 60, "whiteDragon", "img/enemy/whiteDragon.png", 97);
+      return new Enemy([105, 115], 1800, 20, 30, 175, 60, 60, "whiteDragon", "img/enemy/whiteDragon.png", 82);
+    },
+    function archangelWarrior() {
+      return new Enemy(
+        [125, 135],
+        1900,
+        28,
+        25,
+        180,
+        30,
+        60,
+        "archangelWarrior",
+        "img/enemy/archangelWarrior.png",
+        85
+      );
+    },
+    function archangelKnight() {
+      return new Enemy(
+        [125, 140],
+        2050,
+        25,
+        40,
+        175,
+        40,
+        65,
+        "archangelKnight",
+        "img/enemy/archangelKnight.png",
+        87
+      );
+    },
+    function archangelChampion() {
+      return new Enemy(
+        [150, 165],
+        2100,
+        37,
+        35,
+        200,
+        20,
+        65,
+        "archangelChampion",
+        "img/enemy/archangelChampion.png",
+        90
+      );
     },
     function death() {
-      return new Enemy([180, 200], 2077, 15, 70, 300, 45, 99, "death", "img/enemy/death.png", 120);
+      return new Enemy([200, 210], 2500, 15, 70, 300, 55, 99, "death", "img/enemy/death.png", 110);
     },
   ];
 
@@ -2694,22 +2886,25 @@ function createHeroes(part, hero) {
 
   const boss = [
     function bossOrk() {
-      return new Enemy([44, 49], 520, 10, 20, 175, 20, 25, "boss", "img/enemy/bossOrk.png", 50);
+      return new Enemy([48, 56], 580, 11, 20, 175, 20, 25, "boss", "img/enemy/bossOrk.png", 50);
     },
     function mimic() {
-      return new Enemy([60, 70], 610, 5, 25, 225, 40, 35, "boss", "img/enemy/boss/mimic.png", 75);
+      return new Enemy([68, 78], 650, 5, 25, 215, 45, 35, "boss", "img/enemy/boss/mimic.png", 75);
     },
     function ombal() {
-      return new Enemy([72, 84], 1500, 12, 20, 200, 5, 50, "boss", "img/enemy/boss/ombal.png", 100);
+      return new Enemy([75, 87], 1600, 13, 20, 215, 5, 55, "boss", "img/enemy/boss/ombal.png", 100);
     },
     function diamondMan() {
-      return new Enemy([78, 89], 1780, 47, 10, 225, 5, 65, "boss", "img/enemy/boss/diamondMan.png", 125);
+      return new Enemy([84, 94], 1900, 47, 10, 225, 5, 65, "boss", "img/enemy/boss/diamondMan.png", 125);
     },
     function kingHell() {
-      return new Enemy([140, 150], 2100, 35, 35, 250, 20, 75, "boss", "img/enemy/boss/kingHell.png", 150);
+      return new Enemy([140, 150], 2350, 35, 35, 250, 20, 75, "boss", "img/enemy/boss/kingHell.png", 150);
     },
     function fireMinotaur() {
-      return new Enemy([200, 220], 3200, 28, 40, 275, 10, 85, "boss", "img/enemy/boss/fireMinotaur.png", 500);
+      return new Enemy([200, 220], 3400, 28, 40, 275, 10, 85, "boss", "img/enemy/boss/fireMinotaur.png", 250);
+    },
+    function godDevourer() {
+      return new Enemy([280, 350], 5000, 25, 30, 250, 5, 120, "boss", "img/enemy/boss/godDevourer.png", 350);
     },
   ];
 
@@ -2757,13 +2952,15 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   "critPowerMod": () => (/* binding */ critPowerMod),
 /* harmony export */   "critСhanceMod": () => (/* binding */ critСhanceMod),
 /* harmony export */   "defMod": () => (/* binding */ defMod),
-/* harmony export */   "dodgeMod": () => (/* binding */ dodgeMod)
+/* harmony export */   "dodgeMod": () => (/* binding */ dodgeMod),
+/* harmony export */   "vampiricMod": () => (/* binding */ vampiricMod)
 /* harmony export */ });
 const critPowerMod = (critPower) => Math.round(critPower * 0.85);
 const critСhanceMod = (critChance) => Math.round(critChance * 0.85);
 const dodgeMod = (dodge) => Math.round(dodge * 0.85);
 const defMod = (def) => Math.round(def * 0.8);
 const adaptMod = (adapt) => Math.round(adapt * 0.35);
+const vampiricMod = (vampiric) => (vampiric * 0.8) / 100;
 
 
 /***/ }),
@@ -2840,7 +3037,7 @@ function getParameter(selector, cardParametr) {
 
       goldHero -= price.textContent;
 
-      price.textContent = +price.textContent + 6;
+      price.textContent = +price.textContent + 7;
       document.querySelector(".bar__coin span").textContent = goldHero;
     } else {
       alert("Не хватает золота");
@@ -2875,7 +3072,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _talents_talentsHeroes_jester__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./talents/talentsHeroes/jester */ "./src/js/modules/talents/talentsHeroes/jester.js");
 /* harmony import */ var _talents_talentsHeroes_dryad__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./talents/talentsHeroes/dryad */ "./src/js/modules/talents/talentsHeroes/dryad.js");
 /* harmony import */ var _talents_talentsHeroes_mechanic__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./talents/talentsHeroes/mechanic */ "./src/js/modules/talents/talentsHeroes/mechanic.js");
-/* harmony import */ var _talents_talentsHeroes_witchmage__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ./talents/talentsHeroes/witchmage */ "./src/js/modules/talents/talentsHeroes/witchmage.js");
+/* harmony import */ var _talents_talentsHeroes_witchmag__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ./talents/talentsHeroes/witchmag */ "./src/js/modules/talents/talentsHeroes/witchmag.js");
 /* harmony import */ var _talents_talentsHeroes_mage__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ./talents/talentsHeroes/mage */ "./src/js/modules/talents/talentsHeroes/mage.js");
 /* harmony import */ var _mods_mods__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! ./mods/mods */ "./src/js/modules/mods/mods.js");
 
@@ -2925,6 +3122,7 @@ const skill = {
     mage: 30,
   },
 
+  active: false,
   enemy: {},
   maxHPHero: 0,
   monkGates: 0,
@@ -2935,9 +3133,9 @@ const skill = {
     switch (hero.name) {
       case "warrior":
         if (hero.hp > 0 && this.enemy.hp > 0 && mana >= this.manaCost.warrior) {
-          let buffmagicPower = hero.magicPower * 0.012 + 1;
+          let buffmagicPower = hero.magicPower * 0.0115 + 1;
           // level_1 first
-          let dmg = Math.round(45 + hero.def * 2.75 * buffmagicPower * _talents_talentsHeroes_warrior__WEBPACK_IMPORTED_MODULE_3__["default"].levels.level_1.first.init());
+          let dmg = Math.round(50 + hero.def * 2.6 * buffmagicPower * _talents_talentsHeroes_warrior__WEBPACK_IMPORTED_MODULE_3__["default"].levels.level_1.first.init());
           // level_2 first
           _talents_talentsHeroes_warrior__WEBPACK_IMPORTED_MODULE_3__["default"].levels.level_2.first.init(this.enemy);
 
@@ -2945,11 +3143,12 @@ const skill = {
           (0,_text__WEBPACK_IMPORTED_MODULE_0__["default"])(`Вы наносите удар щитом: ${dmg} урона, и ставите блок`, "cyan");
 
           if (this.enemy.hp > 0) {
-            let buffdef = Math.round(hero.def * 0.8 * buffmagicPower) + 8;
+            let buffdef = Math.round(hero.def * 0.8 * buffmagicPower) + 10;
             hero.def += buffdef;
 
             // level_2 second
-            hero.absorbDamage = _talents_talentsHeroes_warrior__WEBPACK_IMPORTED_MODULE_3__["default"].levels.level_2.second.init();
+            let absorbDmg = _talents_talentsHeroes_warrior__WEBPACK_IMPORTED_MODULE_3__["default"].levels.level_2.second.init();
+            hero.absorbDamage += absorbDmg;
 
             // level_3 first
             _talents_talentsHeroes_warrior__WEBPACK_IMPORTED_MODULE_3__["default"].levels.level_3.first.init(hero, this.maxHPHero);
@@ -2959,10 +3158,11 @@ const skill = {
               hero.def -= buffdef;
               (0,_update_stats__WEBPACK_IMPORTED_MODULE_1__["default"])(".def", hero.def, true);
 
-              hero.absorbDamage = 0;
+              hero.absorbDamage -= absorbDmg;
             }, 8000);
           }
           mana -= this.manaCost.warrior;
+          hero.audio.skill();
           // mana = 0;
           // this.mana = 0;
         }
@@ -2977,10 +3177,10 @@ const skill = {
           dmg += _talents_talentsHeroes_rogue__WEBPACK_IMPORTED_MODULE_4__["default"].levels.level_2.second.init(this.enemy);
 
           this.enemy.hp -= dmg;
-          const enemyDef = this.enemy.def;
-          const enemyName = this.enemy.name;
           // level_2 first
-          this.enemy.def -= Math.round(this.enemy.def / _talents_talentsHeroes_rogue__WEBPACK_IMPORTED_MODULE_4__["default"].levels.level_2.first.init());
+          const decDef = Math.round(this.enemy.def / _talents_talentsHeroes_rogue__WEBPACK_IMPORTED_MODULE_4__["default"].levels.level_2.first.init());
+          const enemyName = this.enemy.name;
+          this.enemy.def -= decDef;
           (0,_text__WEBPACK_IMPORTED_MODULE_0__["default"])(`Вы совершаете быстрый, двойной удар: ${dmg} урона`, "cyan");
 
           // level_3 first
@@ -2990,10 +3190,11 @@ const skill = {
 
           setTimeout(() => {
             if (enemyName == this.enemy.name) {
-              this.enemy.def = enemyDef;
+              this.enemy.def += decDef;
             }
           }, 6000);
           mana -= this.manaCost.rogue;
+          hero.audio.skill();
         }
         return [mana, this.enemy.hp];
 
@@ -3050,16 +3251,17 @@ const skill = {
           }, 12000);
 
           mana -= this.manaCost.monk;
+          hero.audio.skill();
         }
         return [mana, this.enemy.hp];
 
       case "jester":
         if (hero.hp > 0 && this.enemy.hp > 0 && mana >= this.manaCost.jester) {
-          let buffmagicPower = hero.magicPower * 0.012 + 1;
+          let buffmagicPower = hero.magicPower * 0.0115 + 1;
           let bonusChance = hero.luck * 0.2;
           let chance = Math.random() * 100 + 1 + bonusChance;
           if (chance <= 33) {
-            let bonus = hero.luck * 1.25;
+            let bonus = hero.luck * 1.2;
             let heal = 35 + Math.round((this.maxHPHero / 13 + bonus) * buffmagicPower);
             hero.hp + heal > this.maxHPHero ? (hero.hp = this.maxHPHero) : (hero.hp += heal);
             (0,_text__WEBPACK_IMPORTED_MODULE_0__["default"])(`карта:Валет, вы исцеляетесь на ${heal}`, "cyan");
@@ -3078,29 +3280,28 @@ const skill = {
               hero.dodge -= 100;
               (0,_update_stats__WEBPACK_IMPORTED_MODULE_1__["default"])(".dodge", hero.dodge, true);
             }, duration);
-          } else if (chance > 77 && chance <= 95) {
+          } else if (chance > 77 && chance <= 97) {
             let bonus = hero.luck * 1.45;
             let dmgHeal = 45 + Math.round((this.enemy.hp / 17 + bonus) * buffmagicPower);
             hero.hp + dmgHeal > this.maxHPHero ? (hero.hp = this.maxHPHero) : (hero.hp += dmgHeal);
             this.enemy.hp -= dmgHeal;
             (0,_text__WEBPACK_IMPORTED_MODULE_0__["default"])(`Карта:Туз, вы наносите врагу ${dmgHeal} урона и исцеляетесь`, "cyan");
-          } else if (chance > 95) {
+          } else if (chance > 97) {
             let bonus = hero.luck * 1.6;
-            let dmg = 40 + Math.round((this.maxHPHero / 14 + bonus) * buffmagicPower);
+            let dmg = 50 + Math.round((this.maxHPHero / 14 + bonus) * buffmagicPower);
             this.enemy.hp -= dmg;
-            if (this.enemy.hp <= 0) {
-              let heal = 40 + Math.round(this.maxHPHero / 14 + bonus);
-              hero.hp + heal > this.maxHPHero ? (hero.hp = this.maxHPHero) : (hero.hp += heal);
-              mana += 50;
-            }
-            (0,_text__WEBPACK_IMPORTED_MODULE_0__["default"])(`Карта:Джокер, наносит ${dmg} урона, если враг убит исцеляетесь и получаете 50 маны`, "cyan");
+            this.enemy.stun += 2;
+            (0,_text__WEBPACK_IMPORTED_MODULE_0__["default"])(`Карта:Джокер, наносит ${dmg} урона, и оглушает противника на 2 хода`, "cyan");
           }
           // level_3 first
           _talents_talentsHeroes_jester__WEBPACK_IMPORTED_MODULE_5__["default"].levels.level_3.first.init(this.enemy);
           // level_3 second
           _talents_talentsHeroes_jester__WEBPACK_IMPORTED_MODULE_5__["default"].levels.level_3.second.init(hero);
+          // level_4 first
+          _talents_talentsHeroes_jester__WEBPACK_IMPORTED_MODULE_5__["default"].levels.level_4.first.init(this.enemy);
 
           mana -= this.manaCost.jester;
+          hero.audio.skill();
         }
         return [mana, this.enemy.hp];
 
@@ -3109,9 +3310,9 @@ const skill = {
           let heal;
           let buffmagicPower = hero.magicPower * 0.022 + 1;
           if (hero.hp <= this.maxHPHero / 5) {
-            heal = 70 + Math.round((this.maxHPHero / 13) * buffmagicPower);
+            heal = 60 + Math.round((this.maxHPHero / 13) * buffmagicPower);
           } else {
-            heal = 45 + Math.round((this.maxHPHero / 14) * buffmagicPower);
+            heal = 40 + Math.round((this.maxHPHero / 14) * buffmagicPower);
           }
           hero.hp + heal > this.maxHPHero ? (hero.hp = this.maxHPHero) : (hero.hp += heal);
           let dmg = Math.round(heal / 2);
@@ -3124,14 +3325,15 @@ const skill = {
           // level_1 first
           _talents_talentsHeroes_dryad__WEBPACK_IMPORTED_MODULE_6__["default"].levels.level_1.first.init(hero, this.maxHPHero);
           // level_3 first
-          _talents_talentsHeroes_dryad__WEBPACK_IMPORTED_MODULE_6__["default"].levels.level_3.first.init(this.enemy);
+          _talents_talentsHeroes_dryad__WEBPACK_IMPORTED_MODULE_6__["default"].levels.level_3.first.init(hero);
 
           mana -= this.manaCost.dryad;
+          hero.audio.skill();
         }
         return [mana, this.enemy.hp];
 
       case "mechanic":
-        if (hero.hp > 0 && this.enemy.hp > 0 && mana >= this.manaCost.mechanic) {
+        if (hero.hp > 0 && this.enemy.hp > 0 && mana >= this.manaCost.mechanic && !this.active) {
           let buffmagicPower = hero.magicPower * 0.011 + 1;
           const buffAttack = Math.round(buffmagicPower * 21);
           const buffMinAttack = Math.round(hero.attack[0] * (buffAttack / 100));
@@ -3140,6 +3342,7 @@ const skill = {
           const buffDef = Math.round((hero.def * 0.2 + 6 + buffDefTalent) * buffmagicPower);
           const buffAdapt = 30 + _talents_talentsHeroes_mechanic__WEBPACK_IMPORTED_MODULE_7__["default"].levels.level_2.first.init();
           const duration = Math.round(8000 + _talents_talentsHeroes_mechanic__WEBPACK_IMPORTED_MODULE_7__["default"].levels.level_2.second.init());
+          this.active = true;
           hero.def += buffDef;
           hero.adapt += buffAdapt;
           hero.attack[0] += buffMinAttack;
@@ -3154,6 +3357,8 @@ const skill = {
           (0,_update_stats__WEBPACK_IMPORTED_MODULE_1__["default"])(".adapt", hero.adapt, true);
           (0,_update_stats__WEBPACK_IMPORTED_MODULE_1__["default"])(".attackMin", hero.attack[0], true);
           (0,_update_stats__WEBPACK_IMPORTED_MODULE_1__["default"])(".attackMax", hero.attack[1], true);
+          // level_4 second
+          hero.mechanicFullCapacity ? hero.mechanicFullCapacity.activate(this.maxHPHero) : null;
           setTimeout(() => {
             hero.def -= buffDef;
             hero.adapt -= buffAdapt;
@@ -3163,8 +3368,11 @@ const skill = {
             (0,_update_stats__WEBPACK_IMPORTED_MODULE_1__["default"])(".adapt", hero.adapt, true);
             (0,_update_stats__WEBPACK_IMPORTED_MODULE_1__["default"])(".attackMin", hero.attack[0], true);
             (0,_update_stats__WEBPACK_IMPORTED_MODULE_1__["default"])(".attackMax", hero.attack[1], true);
+            this.active = false;
+            hero.mechanicFullCapacity ? hero.mechanicFullCapacity.deactivate(this.maxHPHero, this.enemy) : null;
           }, duration);
           mana -= this.manaCost.mechanic;
+          hero.audio.skill();
         }
         return [mana, this.enemy.hp];
 
@@ -3173,22 +3381,23 @@ const skill = {
           let buffmagicPower = hero.magicPower * 0.018 + 1;
 
           // level_1 first
-          const factorDmg = _talents_talentsHeroes_witchmage__WEBPACK_IMPORTED_MODULE_8__["default"].levels.level_1.first.init();
+          const factorDmg = _talents_talentsHeroes_witchmag__WEBPACK_IMPORTED_MODULE_8__["default"].levels.level_1.first.init();
           let dmg = 17 + Math.round((this.enemy.maxHPEnemy / 60) * buffmagicPower * factorDmg);
 
           // level_2 second
-          const duration = _talents_talentsHeroes_witchmage__WEBPACK_IMPORTED_MODULE_8__["default"].levels.level_2.second.init();
+          const duration = _talents_talentsHeroes_witchmag__WEBPACK_IMPORTED_MODULE_8__["default"].levels.level_2.second.init();
           let count = 0;
           (0,_text__WEBPACK_IMPORTED_MODULE_0__["default"])(`Вы накладываете проклятие на противника`, "cyan");
 
           setTimeout(() => {
             // level_3 first
             hero.witchmagEnchBlade ? hero.witchmagEnchBlade(true) : null;
+            hero.witchmagCurseWeakness ? hero.witchmagCurseWeakness.activate(this.enemy) : null;
 
             const dot = setInterval(() => {
               if (count >= duration || this.enemy.hp <= 0 || hero.hp < 0) {
                 clearInterval(dot);
-
+                hero.witchmagCurseWeakness ? hero.witchmagCurseWeakness.deactivate(this.enemy) : null;
                 hero.witchmagEnchBlade ? hero.witchmagEnchBlade(false) : null;
               } else {
                 this.enemy.hp -= dmg;
@@ -3196,10 +3405,10 @@ const skill = {
                 count++;
 
                 // level_2 first
-                _talents_talentsHeroes_witchmage__WEBPACK_IMPORTED_MODULE_8__["default"].levels.level_2.first.init(hero);
+                _talents_talentsHeroes_witchmag__WEBPACK_IMPORTED_MODULE_8__["default"].levels.level_2.first.init(hero);
                 // count >= 3 || this.enemy.hp <= 0 ? clearInterval(dot) : count++;
                 (0,_text__WEBPACK_IMPORTED_MODULE_0__["default"])(`проклятие высасывает у врага ${dmg} жизненной силы,`, "cyan");
-                count >= duration ? _talents_talentsHeroes_witchmage__WEBPACK_IMPORTED_MODULE_8__["default"].levels.level_3.second.init(this.enemy) : null;
+                count >= duration ? _talents_talentsHeroes_witchmag__WEBPACK_IMPORTED_MODULE_8__["default"].levels.level_3.second.init(this.enemy) : null;
                 (0,_calc_hp__WEBPACK_IMPORTED_MODULE_2__["default"])(".enemy_hp", this.enemy.hp);
                 (0,_calc_hp__WEBPACK_IMPORTED_MODULE_2__["default"])(".hero_hp", hero.hp);
               }
@@ -3207,12 +3416,13 @@ const skill = {
           }, 150);
 
           mana -= this.manaCost.witchmag;
+          hero.audio.skill();
         }
         return [mana, this.enemy.hp];
 
       case "mage":
         if (hero.hp > 0 && this.enemy.hp > 0 && mana >= this.manaCost.mage) {
-          let buffmagicPower = hero.magicPower * 0.026 + 1;
+          let buffmagicPower = hero.magicPower * 0.0255 + 1;
 
           const fireBoll = () => {
             let dmg = Math.round(5 + (35 + hero.lvl) * buffmagicPower);
@@ -3227,16 +3437,20 @@ const skill = {
             }
             // mage level_2 second
             _talents_talentsHeroes_mage__WEBPACK_IMPORTED_MODULE_9__["default"].levels.level_2.second.init(hero, this.enemy);
+            // mage level_4 second
+            hero.mageFireShield ? hero.mageFireShield.use() : null;
+
+            hero.audio.skill.fire();
           };
           const iceShield = () => {
-            hero.absorbDamage = 25;
-            hero.barrier = Math.round(5 + (hero.magicPower + hero.lvl) * 1.1);
+            hero.barrier = Math.round(10 + (hero.magicPower + hero.lvl) * 1.1);
             hero.mageOnIceShield = true;
             (0,_text__WEBPACK_IMPORTED_MODULE_0__["default"])(`Вы создаете ледяной щит. Прочность: ${hero.barrier}`, "cyan");
             // setTimeout(() => {
             //   hero.absorbDamage = 0;
             //   hero.mageOnIceShield = false;
             // }, 8000);
+            hero.audio.skill.iceCreate();
           };
           const thunderСlap = () => {
             const сheckCrit = Math.round(Math.random() * 100) + 1;
@@ -3244,12 +3458,15 @@ const skill = {
             if (сheckCrit <= (0,_mods_mods__WEBPACK_IMPORTED_MODULE_10__["critСhanceMod"])(hero.critChance) - (0,_mods_mods__WEBPACK_IMPORTED_MODULE_10__.adaptMod)(this.enemy.adapt)) {
               dmg = Math.round(dmg * ((0,_mods_mods__WEBPACK_IMPORTED_MODULE_10__.critPowerMod)(hero.critPower) / 100));
               this.enemy.hp -= dmg;
-              (0,_text__WEBPACK_IMPORTED_MODULE_0__["default"])(`Вы паражаете врага серией ударов молнии, нанося ${dmg} урона и оглушая на 1 ход`, "cyan");
+              (0,_text__WEBPACK_IMPORTED_MODULE_0__["default"])(`Вы паражаете врага серией ударов молнии, нанося ${dmg} урона и оглушая его`, "cyan");
             } else {
               this.enemy.hp -= dmg;
-              (0,_text__WEBPACK_IMPORTED_MODULE_0__["default"])(`Вы паражаете врага ударом молнии, нанося ${dmg} урона и оглушая на 1 ход`, "cyan");
+              (0,_text__WEBPACK_IMPORTED_MODULE_0__["default"])(`Вы паражаете врага ударом молнии, нанося ${dmg} урона и оглушая его`, "cyan");
             }
-            this.enemy.stun = true;
+            // mage level_4 first
+            _talents_talentsHeroes_mage__WEBPACK_IMPORTED_MODULE_9__["default"].levels.level_4.first.init(hero, this.enemy);
+            this.enemy.stun++;
+            hero.audio.skill.lightning();
           };
 
           hero.hp > this.maxHPHero / 2 ? fireBoll() : hero.mageOnIceShield ? thunderСlap() : iceShield();
@@ -3342,6 +3559,233 @@ const sliderHero = (slides, prev, next) => {
 
 /***/ }),
 
+/***/ "./src/js/modules/specificity/heroes_specificity.js":
+/*!**********************************************************!*\
+  !*** ./src/js/modules/specificity/heroes_specificity.js ***!
+  \**********************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "jesterSpecificity": () => (/* reexport safe */ _jester_specificity__WEBPACK_IMPORTED_MODULE_2__["default"]),
+/* harmony export */   "mageSpecificity": () => (/* reexport safe */ _mage_specificity__WEBPACK_IMPORTED_MODULE_5__["default"]),
+/* harmony export */   "mechanicSpecificity": () => (/* reexport safe */ _mechanic_specificity__WEBPACK_IMPORTED_MODULE_4__["default"]),
+/* harmony export */   "monkSpecificity": () => (/* reexport safe */ _monk_specificity__WEBPACK_IMPORTED_MODULE_1__["default"]),
+/* harmony export */   "warriorSpecificity": () => (/* reexport safe */ _warrior_specificity__WEBPACK_IMPORTED_MODULE_0__["default"]),
+/* harmony export */   "witchmagSpecificity": () => (/* reexport safe */ _witchmag_specificity__WEBPACK_IMPORTED_MODULE_3__["default"])
+/* harmony export */ });
+/* harmony import */ var _warrior_specificity__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./warrior_specificity */ "./src/js/modules/specificity/warrior_specificity.js");
+/* harmony import */ var _monk_specificity__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./monk_specificity */ "./src/js/modules/specificity/monk_specificity.js");
+/* harmony import */ var _jester_specificity__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./jester_specificity */ "./src/js/modules/specificity/jester_specificity.js");
+/* harmony import */ var _witchmag_specificity__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./witchmag_specificity */ "./src/js/modules/specificity/witchmag_specificity.js");
+/* harmony import */ var _mechanic_specificity__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./mechanic_specificity */ "./src/js/modules/specificity/mechanic_specificity.js");
+/* harmony import */ var _mage_specificity__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./mage_specificity */ "./src/js/modules/specificity/mage_specificity.js");
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/***/ }),
+
+/***/ "./src/js/modules/specificity/jester_specificity.js":
+/*!**********************************************************!*\
+  !*** ./src/js/modules/specificity/jester_specificity.js ***!
+  \**********************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+let jesterCombo = 1;
+const jesterSpecificity = (hero, dmgHero, enemyDef) => {
+  if (jesterCombo < 4) {
+    jesterCombo++;
+    return dmgHero;
+  } else {
+    let dmg = Math.round(dmgHero + enemyDef);
+    jesterCombo = 1;
+    hero.mana += 2;
+    return dmg;
+  }
+};
+
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (jesterSpecificity);
+
+
+/***/ }),
+
+/***/ "./src/js/modules/specificity/mage_specificity.js":
+/*!********************************************************!*\
+  !*** ./src/js/modules/specificity/mage_specificity.js ***!
+  \********************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+const bonusMana = 1;
+const mageSpecificity = () => {
+  return bonusMana;
+};
+
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (mageSpecificity);
+
+
+/***/ }),
+
+/***/ "./src/js/modules/specificity/mechanic_specificity.js":
+/*!************************************************************!*\
+  !*** ./src/js/modules/specificity/mechanic_specificity.js ***!
+  \************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+// const mod = 1.5;
+// let mechanicCombo = 1;
+// const mechanicSpecificity = (dmgHero) => {
+//   if (dmgHero) {
+//     if (mechanicCombo > 3) {
+//       mechanicCombo = 1;
+
+//       const dmg = Math.round(dmgHero * mod);
+//       return dmg;
+//     } else {
+//       mechanicCombo++;
+
+//       return dmgHero;
+//     }
+//   } else {
+//     mechanicCombo = 1;
+//   }
+// };
+
+const mechanicSpecificity = {
+  mod: 1.5,
+  mechanicCombo: 1,
+  chanceToStun: 0,
+  use: function (dmgHero, enemy) {
+    if (dmgHero) {
+      if (this.mechanicCombo > 3) {
+        const chanceTotal = Math.random() * 100 + 1;
+        if (this.chanceToStun >= chanceTotal) {
+          enemy.stun++;
+        }
+        this.mechanicCombo = 1;
+        const dmg = Math.round(dmgHero * this.mod);
+        return dmg;
+      } else {
+        this.mechanicCombo++;
+        return dmgHero;
+      }
+    } else {
+      this.mechanicCombo = 1;
+    }
+  },
+};
+
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (mechanicSpecificity);
+
+
+/***/ }),
+
+/***/ "./src/js/modules/specificity/monk_specificity.js":
+/*!********************************************************!*\
+  !*** ./src/js/modules/specificity/monk_specificity.js ***!
+  \********************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+// const chance = 3;
+// const monkSpecificity = (enemy) => {
+//   const chanceTotal = Math.random() * 100 + 1;
+//   if (chance >= chanceTotal) {
+//     enemy.stun++;
+//   }
+// };
+
+const monkSpecificity = {
+  chance: 3,
+  use: function (enemy) {
+    const chanceTotal = Math.random() * 100 + 1;
+    if (this.chance >= chanceTotal) {
+      enemy.stun++;
+    }
+  },
+};
+
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (monkSpecificity);
+
+
+/***/ }),
+
+/***/ "./src/js/modules/specificity/warrior_specificity.js":
+/*!***********************************************************!*\
+  !*** ./src/js/modules/specificity/warrior_specificity.js ***!
+  \***********************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+// let mod = 20;
+// const warriorSpecificity = (dmg) => {
+//   console.log(`${dmg}`, `= ${dmg - dmg * (mod / 100)}`);
+//   return Math.round(dmg - dmg * (mod / 100));
+// };
+
+const warriorSpecificity = {
+  mod: 20,
+  use: function (dmg) {
+    return Math.round(dmg - dmg * (this.mod / 100));
+  },
+};
+
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (warriorSpecificity);
+
+
+/***/ }),
+
+/***/ "./src/js/modules/specificity/witchmag_specificity.js":
+/*!************************************************************!*\
+  !*** ./src/js/modules/specificity/witchmag_specificity.js ***!
+  \************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+const witchmagSpecificity = (magicPowerHero) => {
+  const mod = 0.1;
+  const bonusDmg = Math.round(magicPowerHero * mod);
+  console.log(bonusDmg);
+  return bonusDmg;
+};
+
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (witchmagSpecificity);
+
+
+/***/ }),
+
 /***/ "./src/js/modules/talents/accordion.js":
 /*!*********************************************!*\
   !*** ./src/js/modules/talents/accordion.js ***!
@@ -3357,9 +3801,10 @@ function accordion(
   contentActive = "talents__accordion-content--active",
   paddings = 280
 ) {
-  const container = document.querySelector(".talents__container");
+  // const container = document.querySelector(".talents__container");
   const head = document.querySelector(".talents__accordion-head");
   head.addEventListener("click", () => {
+    console.log("sss");
     head.classList.toggle(headActive);
     head.previousElementSibling.classList.toggle(contentActive);
 
@@ -3372,8 +3817,6 @@ function accordion(
     }
   });
 }
-
-accordion();
 
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (accordion);
 
@@ -3396,7 +3839,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _talentsHeroes_jester__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./talentsHeroes/jester */ "./src/js/modules/talents/talentsHeroes/jester.js");
 /* harmony import */ var _talentsHeroes_dryad__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./talentsHeroes/dryad */ "./src/js/modules/talents/talentsHeroes/dryad.js");
 /* harmony import */ var _talentsHeroes_mechanic__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./talentsHeroes/mechanic */ "./src/js/modules/talents/talentsHeroes/mechanic.js");
-/* harmony import */ var _talentsHeroes_witchmage__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./talentsHeroes/witchmage */ "./src/js/modules/talents/talentsHeroes/witchmage.js");
+/* harmony import */ var _talentsHeroes_witchmag__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./talentsHeroes/witchmag */ "./src/js/modules/talents/talentsHeroes/witchmag.js");
 /* harmony import */ var _talentsHeroes_mage__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./talentsHeroes/mage */ "./src/js/modules/talents/talentsHeroes/mage.js");
 
 
@@ -3410,44 +3853,71 @@ __webpack_require__.r(__webpack_exports__);
 const coreTalents = {
   hero: {},
 
-  setDescr: function (objTalent) {
-    const level_1_First = document.querySelector(".talents-item.level-1.first"),
-      level_2_First = document.querySelector(".talents-item.level-2.first"),
-      level_2_Second = document.querySelector(".talents-item.level-2.second"),
-      level_3_First = document.querySelector(".talents-item.level-3.first"),
-      level_3_Second = document.querySelector(".talents-item.level-3.second");
+  setText: function (objTalent) {
+    // const level_1_First = document.querySelector(".talents-item.level_1.first"),
+    //   level_2_First = document.querySelector(".talents-item.level_2.first"),
+    //   level_2_Second = document.querySelector(".talents-item.level_2.second"),
+    //   level_3_First = document.querySelector(".talents-item.level_3.first"),
+    //   level_3_Second = document.querySelector(".talents-item.level_3.second"),
+    //   level_4_First = document.querySelector(".talents-item.level_4.first"),
+    //   level_4_Second = document.querySelector(".talents-item.level_4.second");
 
-    const descr_1_1 = level_1_First.querySelectorAll(".descr .text"),
-      descr_2_1 = level_2_First.querySelectorAll(".descr .text"),
-      descr_2_2 = level_2_Second.querySelectorAll(".descr .text"),
-      descr_3_1 = level_3_First.querySelectorAll(".descr .text"),
-      descr_3_2 = level_3_Second.querySelectorAll(".descr .text");
-
-    const descrArrs = [descr_1_1, descr_2_1, descr_2_2, descr_3_1, descr_3_2];
-
-    level_1_First.style.backgroundImage = objTalent.level_1.first.img;
-    level_2_First.style.backgroundImage = objTalent.level_2.first.img;
-    level_2_Second.style.backgroundImage = objTalent.level_2.second.img;
-    level_3_First.style.backgroundImage = objTalent.level_3.first.img;
-    level_3_Second.style.backgroundImage = objTalent.level_3.second.img;
-
-    level_1_First.querySelector(".talents__title").textContent = objTalent.level_1.first.title;
-    level_2_First.querySelector(".talents__title").textContent = objTalent.level_2.first.title;
-    level_2_Second.querySelector(".talents__title").textContent = objTalent.level_2.second.title;
-    level_3_First.querySelector(".talents__title").textContent = objTalent.level_3.first.title;
-    level_3_Second.querySelector(".talents__title").textContent = objTalent.level_3.second.title;
-
-    descrArrs.forEach((arr) => {
-      let count = 0;
-
-      arr.forEach((descr) => {
-        const talantLevel = descr.getAttribute("data-talent-level");
-        const talantNum = descr.getAttribute("data-talent");
-        descr.textContent = objTalent[talantLevel][talantNum].descr[count++];
+    let descrArr = [];
+    function getItems() {
+      const arrItems = document.querySelectorAll(".talents-item");
+      arrItems.forEach((item) => {
+        const level = item.getAttribute("level-current");
+        const branch = item.getAttribute("branch");
+        item.style.backgroundImage = objTalent[level][branch].img;
+        item.querySelector(".talents__title").textContent = objTalent[level][branch].title;
+        descrArr.push(item.querySelectorAll(".descr .text"));
       });
-    });
+      setDescr();
+      return arrItems;
+    }
 
-    this.setEvent([level_1_First, level_2_First, level_2_Second, level_3_First, level_3_Second]);
+    // const descr_1_1 = level_1_First.querySelectorAll(".descr .text"),
+    //   descr_2_1 = level_2_First.querySelectorAll(".descr .text"),
+    //   descr_2_2 = level_2_Second.querySelectorAll(".descr .text"),
+    //   descr_3_1 = level_3_First.querySelectorAll(".descr .text"),
+    //   descr_3_2 = level_3_Second.querySelectorAll(".descr .text"),
+    //   descr_4_1 = level_4_First.querySelectorAll(".descr .text"),
+    //   descr_4_2 = level_4_Second.querySelectorAll(".descr .text");
+
+    // const descrArrs = [descr_1_1, descr_2_1, descr_2_2, descr_3_1, descr_3_2, descr_4_1, descr_4_2];
+    // console.log(descrArrs);
+
+    // level_1_First.style.backgroundImage = objTalent.level_1.first.img;
+    // level_2_First.style.backgroundImage = objTalent.level_2.first.img;
+    // level_2_Second.style.backgroundImage = objTalent.level_2.second.img;
+    // level_3_First.style.backgroundImage = objTalent.level_3.first.img;
+    // level_3_Second.style.backgroundImage = objTalent.level_3.second.img;
+    // level_4_First.style.backgroundImage = objTalent.level_4.first.img;
+    // level_4_Second.style.backgroundImage = objTalent.level_4.second.img;
+
+    // level_1_First.querySelector(".talents__title").textContent = objTalent.level_1.first.title;
+    // level_2_First.querySelector(".talents__title").textContent = objTalent.level_2.first.title;
+    // level_2_Second.querySelector(".talents__title").textContent = objTalent.level_2.second.title;
+    // level_3_First.querySelector(".talents__title").textContent = objTalent.level_3.first.title;
+    // level_3_Second.querySelector(".talents__title").textContent = objTalent.level_3.second.title;
+    // level_4_First.querySelector(".talents__title").textContent = objTalent.level_4.first.title;
+    // level_4_Second.querySelector(".talents__title").textContent = objTalent.level_4.second.title;
+
+    // console.log(descrArrs);
+
+    function setDescr() {
+      descrArr.forEach((arr) => {
+        let count = 0;
+
+        arr.forEach((descr) => {
+          const talantLevel = descr.getAttribute("data-talent-level");
+          const talantNum = descr.getAttribute("data-talent");
+          descr.textContent = objTalent[talantLevel][talantNum].descr[count++];
+        });
+      });
+    }
+
+    this.setEvent(getItems());
   },
 
   setEvent: function (items) {
@@ -3487,7 +3957,7 @@ const coreTalents = {
               const branch = item.getAttribute("branch");
 
               document.querySelectorAll(`.${level}`).forEach((item) => {
-                if (level == "level-2") {
+                if (level == "level_2") {
                   item.removeAttribute("disabled");
                 } else {
                   if (item.classList.contains(`${branch}`)) {
@@ -3532,7 +4002,7 @@ const coreTalents = {
         _talentsHeroes_mechanic__WEBPACK_IMPORTED_MODULE_5__["default"].init(item, this.hero);
         break;
       case "witchmag":
-        _talentsHeroes_witchmage__WEBPACK_IMPORTED_MODULE_6__["default"].init(item, this.hero);
+        _talentsHeroes_witchmag__WEBPACK_IMPORTED_MODULE_6__["default"].init(item, this.hero);
         break;
       case "mage":
         _talentsHeroes_mage__WEBPACK_IMPORTED_MODULE_7__["default"].init(item, this.hero);
@@ -3549,14 +4019,14 @@ const coreTalents = {
     this.hero = hero;
     switch (hero.name) {
       case "warrior":
-        this.setDescr({
+        this.setText({
           level_1: {
             first: {
-              title: "Адский крик",
+              title: "Тежёлый металл",
               descr: [
-                "1: Увеличивает урон от Боевого крика на 15%",
-                "2: Увеличивает урон от Боевого крика на 20%",
-                "3: Увеличивает урон от Боевого крика на 25%",
+                "1: Увеличивает урон от Удара щитом на 20%",
+                "2: Увеличивает урон от Удара щитом на 28%",
+                "3: Увеличивает урон от Удара щитом на 36%",
               ],
               img: "url(./img/icons/talents/warrior/talent_warrior_1_1.png)",
             },
@@ -3564,13 +4034,13 @@ const coreTalents = {
 
           level_2: {
             first: {
-              title: "Оглушающий рев",
-              descr: ["Боевой Крик оглушает противника на 1 ход и навсегда снижает его уклонение на 15%"],
+              title: "Сотрясение",
+              descr: ["Удар щитом оглушает противника на 1 ход и навсегда снижает его уклонение на 20%"],
               img: "url(./img/icons/talents/warrior/talent_warrior_2_1.png)",
             },
             second: {
               title: "Защитная стойка",
-              descr: ["Блок после Боевого Крика дополнительно уменьшает получаемый урон на 25%"],
+              descr: ["Блок после Удара щитом дополнительно уменьшает получаемый урон на 25%"],
               img: "url(./img/icons/talents/warrior/talent_warrior_2_2.png)",
             },
           },
@@ -3579,9 +4049,9 @@ const coreTalents = {
             first: {
               title: "Ни шагу назад",
               descr: [
-                "1: Боевой Крик восстанавливает 10% от макс.запаса здоровья ",
-                "2: Боевой Крик восстанавливает 12.5% от макс.запаса здоровья ",
-                "3: Боевой Крик восстанавливает 15% от макс.запаса здоровья ",
+                "1: Удар щитом восстанавливает 10% от макс.запаса здоровья ",
+                "2: Удар щитом восстанавливает 13% от макс.запаса здоровья ",
+                "3: Удар щитом восстанавливает 16% от макс.запаса здоровья ",
               ],
               img: "url(./img/icons/talents/warrior/talent_warrior_3_1.png)",
             },
@@ -3591,10 +4061,31 @@ const coreTalents = {
               img: "url(./img/icons/talents/warrior/talent_warrior_3_2.png)",
             },
           },
+
+          level_4: {
+            first: {
+              title: "Стойкость берсерка",
+              descr: [
+                "1: Снижает получаемый урон на 6%, Стойкость к боли снижает критичексий урон на ещё 5% ",
+                "2: Снижает получаемый урон на 9%, Стойкость к боли снижает критичексий урон на ещё 10% ",
+                "3: Снижает получаемый урон на 12%, Стойкость к боли снижает критичексий урон на ещё 15% ",
+              ],
+              img: "url(./img/icons/talents/warrior/talent_warrior_4_1.png)",
+            },
+            second: {
+              title: "Реванш",
+              descr: [
+                "1: При получении критического урона есть 50% шанс нанести врагу удар в размере 100% от атаки героя",
+                "2: При получении критического урона есть 60% шанс нанести врагу удар в размере 130% от атаки героя",
+                "3: При получении критического урона есть 70% шанс нанести врагу удар в размере 160% от атаки героя",
+              ],
+              img: "url(./img/icons/talents/warrior/talent_warrior_4_2.png)",
+            },
+          },
         });
         break;
       case "rogue":
-        this.setDescr({
+        this.setText({
           level_1: {
             first: {
               title: "Острый кинжал",
@@ -3615,13 +4106,14 @@ const coreTalents = {
             },
             second: {
               title: "Удар в сердце",
-              descr: ["Двойной удар наносит дополнительно 12%(боссу: 6%) от макс.здоровья врага"],
+              descr: ["Двойной удар наносит дополнительно 14%(боссу: 7%) от макс.здоровья врага"],
               img: "url(./img/icons/talents/rogue/talent_rogue_2_2.png)",
             },
           },
 
           level_3: {
             first: {
+              title: "Кровавый пир",
               descr: [
                 "1: Двойной удар исцеляет на 25% от нанесенного урона",
                 "2: Двойной удар исцеляет на 30% от нанесенного урона",
@@ -3630,6 +4122,7 @@ const coreTalents = {
               img: "url(./img/icons/talents/rogue/talent_rogue_3_1.png)",
             },
             second: {
+              title: "Уход в тень",
               descr: [
                 "1: После Двойного удара уклонение повышается на 40% на 6 секунд",
                 "2: После Двойного удара уклонение повышается на 55% на 6 секунд",
@@ -3638,17 +4131,38 @@ const coreTalents = {
               img: "url(./img/icons/talents/rogue/talent_rogue_3_2.png)",
             },
           },
+
+          level_4: {
+            first: {
+              title: "Серия ударов",
+              descr: [
+                "1: Снижает стоимость маны на Двойной удар на 10",
+                "2: Снижает стоимость маны на Двойной удар на 15",
+                "3: Снижает стоимость маны на Двойной удар на 20",
+              ],
+              img: "url(./img/icons/talents/rogue/talent_rogue_4_1.png)",
+            },
+            second: {
+              title: "Награда за расправу",
+              descr: [
+                "1: Убивая противника, вы исцеляетесь на 8% от его макс.здоровья",
+                "2: Убивая противника, вы исцеляетесь на 12% от его макс.здоровья",
+                "3: Убивая противника, вы исцеляетесь на 16% от его макс.здоровья",
+              ],
+              img: "url(./img/icons/talents/rogue/talent_rogue_4_2.png)",
+            },
+          },
         });
         break;
       case "monk":
-        this.setDescr({
+        this.setText({
           level_1: {
             first: {
               title: "Удары змеи",
               descr: [
-                "1: Увеличивает атаку на 2. Даёт 30% шанс получить единицу маны при атаке",
-                "2: Увеличивает атаку на 4. Даёт 40% шанс получить единицу маны при атаке",
-                "3: Увеличивает атаку на 6. Даёт 50% шанс получить единицу маны при атаке",
+                "1: Увеличивает атаку на 3. Даёт 30% шанс получить единицу маны при атаке",
+                "2: Увеличивает атаку на 5. Даёт 40% шанс получить единицу маны при атаке",
+                "3: Увеличивает атаку на 7. Даёт 50% шанс получить единицу маны при атаке",
               ],
               img: "url(./img/icons/talents/monk/talent_monk_1_1.png)",
             },
@@ -3682,18 +4196,38 @@ const coreTalents = {
             second: {
               title: "Синергия чакр",
               descr: [
-                "1: Увеличивает макс.запас здоровья и маны на 35, и регенерацию после боя на 15",
-                "2: Увеличивает макс.запас здоровья и маны на 50, и регенерацию после боя на 20",
-                "3: Увеличивает макс.запас здоровья и маны на 65, и регенерацию после боя на 25",
+                "1: Увеличивает макс.запас здоровья и маны на 40, и регенерацию после боя на 15",
+                "2: Увеличивает макс.запас здоровья и маны на 60, и регенерацию после боя на 25",
+                "3: Увеличивает макс.запас здоровья и маны на 80, и регенерацию после боя на 35",
               ],
               img: "url(./img/icons/talents/monk/talent_monk_3_2.png)",
+            },
+          },
+          level_4: {
+            first: {
+              title: "Подавление боли",
+              descr: [
+                "1: С шансом 18% при получении удара, вы получаете на 20% меньше урона",
+                "2: С шансом 22% при получении удара, вы получаете на 25% меньше урона",
+                "3: С шансом 26% при получении удара, вы получаете на 30% меньше урона",
+              ],
+              img: "url(./img/icons/talents/monk/talent_monk_4_1.png)",
+            },
+            second: {
+              title: "Уязвимое место",
+              descr: [
+                "1: Увеличивает шанс оглушения от Удара по почкам на 2%",
+                "2: Увеличивает шанс оглушения от Удара по почкам на 3%",
+                "3: Увеличивает шанс оглушения от Удара по почкам на 4%",
+              ],
+              img: "url(./img/icons/talents/monk/talent_monk_4_2.png)",
             },
           },
         });
         break;
 
       case "jester":
-        this.setDescr({
+        this.setText({
           level_1: {
             first: {
               title: "Перетасовка колоды",
@@ -3739,17 +4273,37 @@ const coreTalents = {
               img: "url(./img/icons/talents/jester/talent_jester_3_2.png)",
             },
           },
+          level_4: {
+            first: {
+              title: "Взрывной подарок",
+              descr: [
+                "1: С шансом 23% при использовании способности вы наносите врагу 16%(боссу: 8%) от его макс.здоровья",
+                "2: С шансом 28% при использовании способности вы наносите врагу 18%(боссу: 9%) от его макс.здоровья",
+                "3: С шансом 33% при использовании способности вы наносите врагу 20%(боссу: 10%) от его макс.здоровья",
+              ],
+              img: "url(./img/icons/talents/jester/talent_jester_4_1.png)",
+            },
+            second: {
+              title: "Изворотливость",
+              descr: [
+                "1: Увеличивает уклонение и адаптацию на 6% ",
+                "2: Увеличивает уклонение и адаптацию на 9% ",
+                "3: Увеличивает уклонение и адаптацию на 12% ",
+              ],
+              img: "url(./img/icons/talents/jester/talent_jester_4_2.png)",
+            },
+          },
         });
         break;
       case "dryad":
-        this.setDescr({
+        this.setText({
           level_1: {
             first: {
               title: "Целительное прикосновение",
               descr: [
-                "1: После использования способности, герой восстанавливает каждый ход 3% макс.запаса здоровья в течении 6 секунд",
-                "2: После использования способности, герой восстанавливает каждый ход 4% макс.запаса здоровья в течении 6 секунд",
-                "3: После использования способности, герой восстанавливает каждый ход 5% макс.запаса здоровья в течении 6 секунд",
+                "1: После использования способности, герой восстанавливает каждый ход 4% макс.запаса здоровья в течении 2 ходов",
+                "2: После использования способности, герой восстанавливает каждый ход 5% макс.запаса здоровья в течении 2 ходов",
+                "3: После использования способности, герой восстанавливает каждый ход 6% макс.запаса здоровья в течении 2 ходов",
               ],
               img: "url(./img/icons/talents/dryad/talent_dryad_1_1.png)",
             },
@@ -3773,8 +4327,8 @@ const coreTalents = {
               title: "Дубовая кожа",
               descr: [
                 "1: Вмешательства природы уменьшает получаемый урон на 40% на 2 хода",
-                "2: Вмешательства природы уменьшает получаемый урон на 50% на 2 хода",
-                "3: Вмешательства природы уменьшает получаемый урон на 60% на 2 хода",
+                "2: Вмешательства природы уменьшает получаемый урон на 55% на 2 хода",
+                "3: Вмешательства природы уменьшает получаемый урон на 70% на 2 хода",
               ],
               img: "url(./img/icons/talents/dryad/talent_dryad_3_1.png)",
             },
@@ -3788,17 +4342,37 @@ const coreTalents = {
               img: "url(./img/icons/talents/dryad/talent_dryad_3_2.png)",
             },
           },
+          level_4: {
+            first: {
+              title: "Облик медведя",
+              descr: [
+                "1: Увеличивает ваш макс.запас здоровья на 70 и защиту на 3, но уменьшает уклонение на 3%",
+                "2: Увеличивает ваш макс.запас здоровья на 105 и защиту на 5, но уменьшает уклонение на 5%",
+                "3: Увеличивает ваш макс.запас здоровья на 140 и защиту на 7, но уменьшает уклонение на 7%",
+              ],
+              img: "url(./img/icons/talents/dryad/talent_dryad_4_1.png)",
+            },
+            second: {
+              title: "Лунный огонь",
+              descr: [
+                "1: С шансом 16% перед атакой вы наносите дополнительно 80% урона от вашей силы магии",
+                "2: С шансом 20% перед атакой вы наносите дополнительно 100% урона от вашей силы магии",
+                "3: С шансом 24% перед атакой вы наносите дополнительно 120% урона от вашей силы магии",
+              ],
+              img: "url(./img/icons/talents/dryad/talent_dryad_4_2.png)",
+            },
+          },
         });
         break;
       case "mechanic":
-        this.setDescr({
+        this.setText({
           level_1: {
             first: {
               title: "Мастер-ломастер",
               descr: [
-                "1: С 17% шансом ваши атаки уменьшают защиту противника на 3, увеличивая вашу, на 2 хода",
-                "2: С 20% шансом ваши атаки уменьшают защиту противника на 4, увеличивая вашу, на 2 хода",
-                "3: С 23% шансом ваши атаки уменьшают защиту противника на 5, увеличивая вашу, на 2 хода",
+                "1: С 17% шансом ваши атаки уменьшают защиту противника на 4, увеличивая вашу, на 2 хода",
+                "2: С 20% шансом ваши атаки уменьшают защиту противника на 5, увеличивая вашу, на 2 хода",
+                "3: С 23% шансом ваши атаки уменьшают защиту противника на 6, увеличивая вашу, на 2 хода",
               ],
               img: "url(./img/icons/talents/mechanic/talent_mechanic_1_1.png)",
             },
@@ -3812,7 +4386,7 @@ const coreTalents = {
             },
             second: {
               title: "Экономия энергии",
-              descr: ["Продлевает длительность Режима Турбо на 3 секунды"],
+              descr: ["Продлевает длительность Режима Турбо на 4 секунды"],
               img: "url(./img/icons/talents/mechanic/talent_mechanic_2_2.png)",
             },
           },
@@ -3821,34 +4395,54 @@ const coreTalents = {
             first: {
               title: "Усовершенственные нейроны",
               descr: [
-                "1: Увеличивает уклонение на 6% и макс.запас здоровья на 30",
-                "2: Увеличивает уклонение на 8% и макс.запас здоровья на 40",
-                "3: Увеличивает уклонение на 10% и макс.запас здоровья на 50",
+                "1: Увеличивает уклонение на 6% и макс.запас здоровья на 45",
+                "2: Увеличивает уклонение на 8% и макс.запас здоровья на 60",
+                "3: Увеличивает уклонение на 10% и макс.запас здоровья на 75",
               ],
               img: "url(./img/icons/talents/mechanic/talent_mechanic_3_1.png)",
             },
             second: {
               title: "Броне-пластины",
               descr: [
-                "1: Режим Турбо дополнительно увеличивает защиту на 6",
-                "2: Режим Турбо дополнительно увеличивает защиту на 9",
-                "3: Режим Турбо дополнительно увеличивает защиту на 12",
+                "1: Режим Турбо дополнительно увеличивает защиту на 7",
+                "2: Режим Турбо дополнительно увеличивает защиту на 10",
+                "3: Режим Турбо дополнительно увеличивает защиту на 13",
               ],
               img: "url(./img/icons/talents/mechanic/talent_mechanic_3_2.png)",
+            },
+          },
+          level_4: {
+            first: {
+              title: "Мощный бум",
+              descr: [
+                "1: Комбо-удар наносит дополнительно 20% урона и с шансом 18% оглушает врага на 1 ход",
+                "2: Комбо-удар наносит дополнительно 30% урона и с шансом 23% оглушает врага на 1 ход",
+                "3: Комбо-удар наносит дополнительно 40% урона и с шансом 28% оглушает врага на 1 ход",
+              ],
+              img: "url(./img/icons/talents/mechanic/talent_mechanic_4_1.png)",
+            },
+            second: {
+              title: "На полную мощность",
+              descr: [
+                "1: Активация Режима Турбо исцеляет вас на 10% от макс.здоровья, а после завершения наносит врагу столько же урона, оглушая вас на 1 ход ",
+                "2: Активация Режима Турбо исцеляет вас на 14% от макс.здоровья, а после завершения наносит врагу столько же урона, оглушая вас на 1 ход ",
+                "3: Активация Режима Турбо исцеляет вас на 18% от макс.здоровья, а после завершения наносит врагу столько же урона, оглушая вас на 1 ход ",
+              ],
+              img: "url(./img/icons/talents/mechanic/talent_mechanic_4_2.png)",
             },
           },
         });
 
         break;
       case "witchmag":
-        this.setDescr({
+        this.setText({
           level_1: {
             first: {
               title: "Усиленные чары",
               descr: [
-                "1: Усиливает урон Чароплетсво на 17%",
-                "2: Усиливает урон Чароплетсво на 23%",
-                "3: Усиливает урон Чароплетсво на 30%",
+                "1: Усиливает урон Чароплетсво на 18%",
+                "2: Усиливает урон Чароплетсво на 25%",
+                "3: Усиливает урон Чароплетсво на 32%",
               ],
               img: "url(./img/icons/talents/witchmag/talent_witchmag_1_1.png)",
             },
@@ -3887,10 +4481,30 @@ const coreTalents = {
               img: "url(./img/icons/talents/witchmag/talent_witchmag_3_2.png)",
             },
           },
+          level_4: {
+            first: {
+              title: "Жажда клинка",
+              descr: [
+                "1: С шансом 8% при атаке вы наносите дополнительный удар в размере 50% от атаки и исцеляетсь на такое же значение ",
+                "2: С шансом 10% при атаке вы наносите дополнительный удар в размере 65% от атаки и исцеляетсь на такое же значение",
+                "3: С шансом 12% при атаке вы наносите дополнительный удар в размере 80% от атаки и исцеляетсь на такое же значение",
+              ],
+              img: "url(./img/icons/talents/witchmag/talent_witchmag_4_1.png)",
+            },
+            second: {
+              title: "Проклятие слабости",
+              descr: [
+                "1: Чароплетство уменьшает атаку и защиту противника на 22%",
+                "2: Чароплетство уменьшает атаку и защиту противника на 28%",
+                "3: Чароплетство уменьшает атаку и защиту противника на 34%",
+              ],
+              img: "url(./img/icons/talents/witchmag/talent_witchmag_4_2.png)",
+            },
+          },
         });
         break;
       case "mage":
-        this.setDescr({
+        this.setText({
           level_1: {
             first: {
               title: "Сконцентрированный взмах",
@@ -3907,7 +4521,7 @@ const coreTalents = {
             first: {
               title: "Школа магии льда",
               descr: [
-                "Пока активен ледяной щит, атакующий вас враг получает урон в размере 50% от вашей силы магии",
+                "Пока активен ледяной щит, атакующий вас враг получает урон в размере 40% от вашей силы магии",
               ],
               img: "url(./img/icons/talents/mage/talent_mage_2_1.png)",
             },
@@ -3922,9 +4536,9 @@ const coreTalents = {
             first: {
               title: "Искусный волшебник",
               descr: [
-                "1: При уклонении или при получении крит.урона, вы получаете ледяной щит, поглощающий 12% от макс.здоровья героя, суммируется",
-                "2: При уклонении или при получении крит.урона, вы получаете ледяной щит, поглощающий 15% от макс.здоровья героя, суммируется",
-                "3: При уклонении или при получении крит.урона, вы получаете ледяной щит, поглощающий 18% от макс.здоровья героя, суммируется",
+                "1: При уклонении или при получении крит.урона, вы получаете ледяной щит, поглощающий 8% от макс.здоровья героя, суммируется",
+                "2: При уклонении или при получении крит.урона, вы получаете ледяной щит, поглощающий 11% от макс.здоровья героя, суммируется",
+                "3: При уклонении или при получении крит.урона, вы получаете ледяной щит, поглощающий 14% от макс.здоровья героя, суммируется",
               ],
               img: "url(./img/icons/talents/mage/talent_mage_3_1.png)",
             },
@@ -3936,6 +4550,26 @@ const coreTalents = {
                 "3: После каждого боя вы варите зелье и восстанавливаете 16% здровья и 25 маны.",
               ],
               img: "url(./img/icons/talents/mage/talent_mage_3_2.png)",
+            },
+          },
+          level_4: {
+            first: {
+              title: "Громовой раскат",
+              descr: [
+                "1: Удар молнии добавляет 10% от макс.здоровья к прочности ледяного щита и с шансом 40% может оглушить на 2 хода",
+                "2: Удар молнии добавляет 13% от макс.здоровья к прочности ледяного щита и с шансом 50% может оглушить на 2 хода",
+                "3: Удар молнии добавляет 16% от макс.здоровья к прочности ледяного щита и с шансом 60% может оглушить на 2 хода",
+              ],
+              img: "url(./img/icons/talents/mage/talent_mage_4_1.png)",
+            },
+            second: {
+              title: "Огненная защита",
+              descr: [
+                "1: Огненный шар окружает вас огнем на 3 хода, поглощая 25% входящего урона и наносит атакующему 30% урона от силы магии",
+                "2: Огненный шар окружает вас огнем на 3 хода, поглощая 35% входящего урона и наносит атакующему 40% урона от силы магии ",
+                "3: Огненный шар окружает вас огнем на 3 хода, поглощая 45% входящего урона и наносит атакующему 50% урона от силы магии ",
+              ],
+              img: "url(./img/icons/talents/mage/talent_mage_4_2.png)",
             },
           },
         });
@@ -3963,11 +4597,12 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ });
 /* harmony import */ var _update_stats__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../update_stats */ "./src/js/modules/update_stats.js");
 /* harmony import */ var _calc_hp__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../calc_hp */ "./src/js/modules/calc_hp.js");
-/* harmony import */ var _skills__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../../skills */ "./src/js/modules/skills.js");
+/* harmony import */ var _text__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../../text */ "./src/js/modules/text.js");
+/* harmony import */ var _skills__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../../skills */ "./src/js/modules/skills.js");
 
 
 // import calcMp from "../../calc_mp";
-// import addText from "../../text";
+
 
 
 const talentDryad = {
@@ -3984,15 +4619,15 @@ const talentDryad = {
             let count = 0;
             switch (this.amount) {
               case 1: {
-                healProcent = 3;
-                break;
-              }
-              case 2: {
                 healProcent = 4;
                 break;
               }
-              case 3: {
+              case 2: {
                 healProcent = 5;
+                break;
+              }
+              case 3: {
+                healProcent = 6;
                 break;
               }
               default:
@@ -4000,7 +4635,7 @@ const talentDryad = {
             }
             setTimeout(() => {
               const healing = setInterval(() => {
-                if (count >= 3 || hero.hp < 0) {
+                if (count >= 2 || hero.hp < 0) {
                   clearInterval(healing);
                 } else {
                   hero.hp += Math.round(maxHp / (100 / healProcent));
@@ -4047,23 +4682,23 @@ const talentDryad = {
       first: {
         learn: false,
         amount: 0,
-        init: function (enemy) {
+        init: function (hero) {
           if (this.learn) {
-            let factorDmg = 1;
+            let absorbDmg = 0;
             switch (this.amount) {
               case 1:
-                factorDmg = 0.6;
+                absorbDmg = 40;
                 break;
               case 2:
-                factorDmg = 0.5;
+                absorbDmg = 55;
                 break;
               case 3:
-                factorDmg = 0.4;
+                absorbDmg = 70;
                 break;
             }
-            enemy.multiplierDmg = factorDmg;
+            hero.absorbDamage += absorbDmg;
             setTimeout(() => {
-              enemy.multiplierDmg = 1;
+              hero.absorbDamage -= absorbDmg;
             }, 4000);
           }
         },
@@ -4073,25 +4708,98 @@ const talentDryad = {
         amount: 0,
         init: function (hero) {
           if (this.learn) {
-            const changeDescr = _skills__WEBPACK_IMPORTED_MODULE_2__.initDescrBtn.bind({ manaCost: _skills__WEBPACK_IMPORTED_MODULE_2__.manaCost });
+            const changeDescr = _skills__WEBPACK_IMPORTED_MODULE_3__.initDescrBtn.bind({ manaCost: _skills__WEBPACK_IMPORTED_MODULE_3__.manaCost });
             switch (this.amount) {
               case 1:
                 hero.magicPower += 4;
-                _skills__WEBPACK_IMPORTED_MODULE_2__.manaCost.dryad -= 5;
+                _skills__WEBPACK_IMPORTED_MODULE_3__.manaCost.dryad -= 5;
                 changeDescr(hero.name);
                 break;
               case 2:
                 hero.magicPower += 2;
-                _skills__WEBPACK_IMPORTED_MODULE_2__.manaCost.dryad -= 5;
+                _skills__WEBPACK_IMPORTED_MODULE_3__.manaCost.dryad -= 5;
                 changeDescr(hero.name);
                 break;
               case 3:
                 hero.magicPower += 2;
-                _skills__WEBPACK_IMPORTED_MODULE_2__.manaCost.dryad -= 5;
+                _skills__WEBPACK_IMPORTED_MODULE_3__.manaCost.dryad -= 5;
                 changeDescr(hero.name);
                 break;
             }
             (0,_update_stats__WEBPACK_IMPORTED_MODULE_0__["default"])(".magicPower", hero.magicPower, true);
+          }
+        },
+      },
+    },
+    level_4: {
+      first: {
+        learn: false,
+        amount: 0,
+        init: function (hero) {
+          if (this.learn) {
+            let bonusHp = 0,
+              bonusDef = 0,
+              reduceDodge = 0;
+            switch (this.amount) {
+              case 1:
+                bonusHp = 70;
+                bonusDef = 3;
+                reduceDodge = 3;
+                break;
+              case 2:
+                bonusHp = 35;
+                bonusDef = 2;
+                reduceDodge = 2;
+                break;
+              case 3:
+                bonusHp = 35;
+                bonusDef = 2;
+                reduceDodge = 2;
+                break;
+            }
+            hero.maxHPHero += bonusHp;
+            (0,_update_stats__WEBPACK_IMPORTED_MODULE_0__["default"])(".hpMax", bonusHp);
+            document.querySelector(".hero_hp").setAttribute("data-hp", +hero.maxHPHero);
+            (0,_calc_hp__WEBPACK_IMPORTED_MODULE_1__["default"])(".hero_hp", hero.hp);
+            hero.def += bonusDef;
+            hero.dodge -= reduceDodge;
+            (0,_update_stats__WEBPACK_IMPORTED_MODULE_0__["default"])(".def", hero.def, true);
+            (0,_update_stats__WEBPACK_IMPORTED_MODULE_0__["default"])(".dodge", hero.dodge, true);
+          }
+        },
+      },
+      second: {
+        learn: false,
+        amount: 0,
+        init: function (hero) {
+          if (this.learn) {
+            let chance = 0,
+              factorDmg = 0;
+
+            switch (this.amount) {
+              case 1:
+                chance = 16;
+                factorDmg = 0.8;
+                break;
+              case 2:
+                chance = 20;
+                factorDmg = 1;
+                break;
+              case 3:
+                chance = 24;
+                factorDmg = 1.2;
+                break;
+            }
+            hero.dryadMoonlight = function (hero, enemy) {
+              const chanceTotal = Math.random() * 100 + 1;
+              if (chance > chanceTotal) {
+                if (enemy.hp > 0) {
+                  const dmg = Math.round(hero.magicPower * factorDmg);
+                  enemy.hp -= dmg;
+                  (0,_text__WEBPACK_IMPORTED_MODULE_2__["default"])(`Лунный огонь наносит врагу ${dmg} урона`, "magenta");
+                }
+              }
+            };
           }
         },
       },
@@ -4115,6 +4823,12 @@ const talentDryad = {
     }
     if (level == "level_3" && branch == "second") {
       this.levels.level_3.second.init(hero);
+    }
+    if (level == "level_4" && branch == "first") {
+      this.levels.level_4.first.init(hero);
+    }
+    if (level == "level_4" && branch == "second") {
+      this.levels.level_4.second.init(hero);
     }
 
     console.log(this.levels);
@@ -4157,11 +4871,11 @@ const talentJester = {
             let bonusMana = 0;
             switch (this.amount) {
               case 1: {
-                bonusMana = 20;
+                bonusMana = 16;
                 break;
               }
               case 2: {
-                bonusMana = 24;
+                bonusMana = 21;
                 break;
               }
               case 3: {
@@ -4264,10 +4978,74 @@ const talentJester = {
             if (chance > chanceTotal) {
               setTimeout(() => {
                 hero.mana += bonusMana;
-                (0,_text__WEBPACK_IMPORTED_MODULE_2__["default"])(`Враг смухлевали и восстановили ${bonusMana} маны`, "magenta");
+                (0,_text__WEBPACK_IMPORTED_MODULE_2__["default"])(`Вы смухлевали и восстановили ${bonusMana} маны`, "magenta");
                 (0,_calc_mp__WEBPACK_IMPORTED_MODULE_1__["default"])(hero.mana);
               }, 400);
             }
+          }
+        },
+      },
+    },
+    level_4: {
+      first: {
+        learn: false,
+        amount: 0,
+        init: function (enemy) {
+          if (this.learn) {
+            let chance = 0;
+            let factorDmg = 0;
+            switch (this.amount) {
+              case 1:
+                chance = 23;
+                factorDmg = 16;
+                break;
+              case 2:
+                chance = 28;
+                factorDmg = 18;
+                break;
+              case 3:
+                chance = 33;
+                factorDmg = 20;
+                break;
+            }
+            const chanceTotal = Math.random() * 100 + 1;
+            if (chance > chanceTotal) {
+              let mod = 1;
+              enemy.name == "boss" ? (mod = 0.5) : null;
+              if (enemy.hp > 0) {
+                const dmg = Math.round(enemy.maxHPEnemy / (100 / (factorDmg * mod)));
+                enemy.hp -= dmg;
+                (0,_text__WEBPACK_IMPORTED_MODULE_2__["default"])(`Подсунув Взрывной подарок вы наносите ${dmg} урона`, "magenta");
+              }
+            }
+          }
+        },
+      },
+      second: {
+        learn: false,
+        amount: 0,
+        init: function (hero) {
+          if (this.learn) {
+            let bonusDodge = 0,
+              bonusAdapt = 0;
+            switch (this.amount) {
+              case 1:
+                bonusDodge = 6;
+                bonusAdapt = 6;
+                break;
+              case 2:
+                bonusDodge = 3;
+                bonusAdapt = 3;
+                break;
+              case 3:
+                bonusDodge = 3;
+                bonusAdapt = 3;
+                break;
+            }
+            hero.dodge += bonusDodge;
+            hero.adapt += bonusAdapt;
+            (0,_update_stats__WEBPACK_IMPORTED_MODULE_0__["default"])(".dodge", hero.dodge, true);
+            (0,_update_stats__WEBPACK_IMPORTED_MODULE_0__["default"])(".adapt", hero.adapt, true);
           }
         },
       },
@@ -4291,6 +5069,9 @@ const talentJester = {
     }
     if (level == "level_2" && branch == "second") {
       this.levels.level_2.second.init(hero);
+    }
+    if (level == "level_4" && branch == "second") {
+      this.levels.level_4.second.init(hero);
     }
 
     console.log(this.levels);
@@ -4363,7 +5144,7 @@ const talentMage = {
         init: function (hero) {
           if (this.learn) {
             hero.mageShieldReflect = function () {
-              return Math.round(hero.magicPower / 2);
+              return Math.round(hero.magicPower / (100 / 40));
             };
           }
         },
@@ -4375,14 +5156,14 @@ const talentMage = {
           if (this.learn) {
             const duration = 3;
             let count = 0;
-            let dmg = Math.floor(10 + hero.magicPower / 2);
+            let dmg = Math.floor(5 + hero.magicPower / 2);
             const dot = setInterval(() => {
               if (count >= duration || enemy.hp <= 0 || hero.hp < 0) {
                 clearInterval(dot);
               } else {
                 enemy.hp -= dmg;
                 count++;
-                (0,_text__WEBPACK_IMPORTED_MODULE_3__["default"])(`Враг горит и получает ${dmg} урона,`, "cyan");
+                (0,_text__WEBPACK_IMPORTED_MODULE_3__["default"])(`Враг горит и получает ${dmg} урона,`, "magenta");
                 (0,_calc_hp__WEBPACK_IMPORTED_MODULE_1__["default"])(".enemy_hp", enemy.hp);
               }
             }, 2000);
@@ -4401,18 +5182,19 @@ const talentMage = {
             let factor = 0;
             switch (this.amount) {
               case 1:
-                factor = 12;
+                factor = 8;
                 break;
               case 2:
-                factor = 15;
+                factor = 11;
                 break;
               case 3:
-                factor = 18;
+                factor = 14;
                 break;
             }
             hero.mageSkillMage = function () {
               const barrier = Math.round(hero.maxHPHero / (100 / factor));
               hero.barrier += barrier;
+
               hero.mageOnIceShield = true;
             };
           }
@@ -4458,6 +5240,84 @@ const talentMage = {
         },
       },
     },
+    level_4: {
+      first: {
+        learn: false,
+        amount: 0,
+        init: function (hero, enemy) {
+          if (this.learn) {
+            let factor = 0,
+              chance = 0;
+            switch (this.amount) {
+              case 1:
+                factor = 10;
+                chance = 40;
+                break;
+              case 2:
+                factor = 13;
+                chance = 50;
+                break;
+              case 3:
+                factor = 16;
+                chance = 60;
+                break;
+            }
+            const bonusBarrier = Math.round(hero.maxHPHero / (100 / factor));
+            hero.barrier += bonusBarrier;
+            const chanceTotal = Math.random() * 100 + 1;
+            if (chance > chanceTotal) {
+              enemy.stun++;
+            }
+          }
+        },
+      },
+      second: {
+        learn: false,
+        amount: 0,
+        init: function (hero) {
+          if (this.learn) {
+            let duration = 6000;
+            let absorb = 0;
+            let reflectFactor = 0;
+            let timeout;
+            switch (this.amount) {
+              case 1:
+                hero.mageFireShield = {};
+                hero.mageFireShield.active = false;
+                absorb = 25;
+                reflectFactor = 0.3;
+                break;
+              case 2:
+                absorb = 35;
+                reflectFactor = 0.4;
+                break;
+              case 3:
+                absorb = 45;
+                reflectFactor = 0.5;
+                break;
+            }
+            hero.mageFireShield.use = function () {
+              !hero.mageFireShield.active ? (hero.absorbDamage += absorb) : null;
+              hero.mageFireShield.active = true;
+
+              clearTimeout(timeout);
+              timeout = setTimeout(() => {
+                hero.absorbDamage -= absorb;
+                hero.mageFireShield.active = false;
+              }, duration);
+            };
+            hero.mageFireShield.takeDmg = function (enemy) {
+              if (hero.mageFireShield.active) {
+                const dmg = Math.round(hero.magicPower * reflectFactor);
+                (0,_text__WEBPACK_IMPORTED_MODULE_3__["default"])(`Огненный щит наносит врагу ${dmg} урона`, "magenta");
+                enemy.hp -= dmg;
+                (0,_calc_hp__WEBPACK_IMPORTED_MODULE_1__["default"])(".enemy_hp", enemy.hp);
+              }
+            };
+          }
+        },
+      },
+    },
   },
 
   init(talent, hero) {
@@ -4481,6 +5341,9 @@ const talentMage = {
     if (level == "level_3" && branch == "second") {
       this.levels.level_3.second.init(hero);
     }
+    if (level == "level_4" && branch == "second") {
+      this.levels.level_4.second.init(hero);
+    }
 
     console.log(this.levels);
   },
@@ -4503,11 +5366,14 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ });
 /* harmony import */ var _update_stats__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../update_stats */ "./src/js/modules/update_stats.js");
 /* harmony import */ var _calc_hp__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../calc_hp */ "./src/js/modules/calc_hp.js");
+/* harmony import */ var _text__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../../text */ "./src/js/modules/text.js");
+/* harmony import */ var _specificity_mechanic_specificity__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../../specificity/mechanic_specificity */ "./src/js/modules/specificity/mechanic_specificity.js");
 
 
 // import calcMp from "../../calc_mp";
-// import addText from "../../text";
+
 // import { manaCost, initDescrBtn } from "../../skills";
+
 
 const talentMechanic = {
   hero: {},
@@ -4520,21 +5386,21 @@ const talentMechanic = {
         init: function (hero) {
           if (this.learn) {
             let chance = 0;
-            let decDef = 0;
+            let factorDef = 0;
             switch (this.amount) {
               case 1: {
                 chance = 17;
-                decDef = 3;
+                factorDef = 4;
                 break;
               }
               case 2: {
                 chance = 20;
-                decDef = 4;
+                factorDef = 5;
                 break;
               }
               case 3: {
                 chance = 23;
-                decDef = 5;
+                factorDef = 6;
                 break;
               }
               default:
@@ -4543,18 +5409,20 @@ const talentMechanic = {
             hero.mechanicMaster = function (hero, enemy) {
               const chanceTotal = Math.random() * 100 + 1;
               if (chance > chanceTotal) {
-                const enemyDef = enemy.def;
-                const enemyName = enemy.name;
-                if (enemy.def - decDef < 0) {
-                  enemy.def = 0;
+                //  const enemyDef = enemy.def;
+                // const enemyName = enemy.name;
+                let decDef = factorDef;
+                if (enemy.def - factorDef < 0) {
+                  decDef = enemy.def;
+                  enemy.def = decDef;
                 } else {
-                  enemy.def -= decDef;
+                  enemy.def -= factorDef;
                 }
-                hero.def += decDef;
+                hero.def += factorDef;
                 (0,_update_stats__WEBPACK_IMPORTED_MODULE_0__["default"])(".def", hero.def, true);
                 setTimeout(() => {
-                  enemy.def += enemyDef;
-                  hero.def -= decDef;
+                  enemy.def += decDef;
+                  hero.def -= factorDef;
                   (0,_update_stats__WEBPACK_IMPORTED_MODULE_0__["default"])(".def", hero.def, true);
                 }, 4000);
               }
@@ -4580,7 +5448,7 @@ const talentMechanic = {
         amount: 0,
         init: function () {
           if (this.learn) {
-            return 3000;
+            return 4000;
           } else {
             return 0;
           }
@@ -4598,15 +5466,15 @@ const talentMechanic = {
             switch (this.amount) {
               case 1:
                 bonusDodge = 6;
-                bonusHp = 30;
+                bonusHp = 45;
                 break;
               case 2:
                 bonusDodge = 2;
-                bonusHp = 10;
+                bonusHp = 15;
                 break;
               case 3:
                 bonusDodge = 2;
-                bonusHp = 10;
+                bonusHp = 15;
                 break;
             }
             hero.dodge += bonusDodge;
@@ -4626,18 +5494,82 @@ const talentMechanic = {
             let bonusDef = 0;
             switch (this.amount) {
               case 1:
-                bonusDef = 6;
+                bonusDef = 7;
                 break;
               case 2:
-                bonusDef = 9;
+                bonusDef = 10;
                 break;
               case 3:
-                bonusDef = 12;
+                bonusDef = 13;
                 break;
             }
             return bonusDef;
           } else {
             return 0;
+          }
+        },
+      },
+    },
+    level_4: {
+      first: {
+        learn: false,
+        amount: 0,
+        init: function () {
+          if (this.learn) {
+            let bonusModDmg = 0,
+              chanceToStun = 0;
+            switch (this.amount) {
+              case 1:
+                bonusModDmg = 0.2;
+                chanceToStun = 18;
+                break;
+              case 2:
+                bonusModDmg = 0.1;
+                chanceToStun = 23;
+                break;
+              case 3:
+                bonusModDmg = 0.1;
+                chanceToStun = 28;
+                break;
+            }
+            _specificity_mechanic_specificity__WEBPACK_IMPORTED_MODULE_3__["default"].mod += bonusModDmg;
+            _specificity_mechanic_specificity__WEBPACK_IMPORTED_MODULE_3__["default"].chanceToStun += chanceToStun;
+          }
+        },
+      },
+      second: {
+        learn: false,
+        amount: 0,
+        init: function (hero) {
+          if (this.learn) {
+            let factorHeal = 0;
+            switch (this.amount) {
+              case 1:
+                hero.mechanicFullCapacity = {};
+                factorHeal = 10;
+                break;
+              case 2:
+                factorHeal = 14;
+                break;
+              case 3:
+                factorHeal = 18;
+                break;
+            }
+            hero.mechanicFullCapacity.activate = function (maxHPHero) {
+              const heal = Math.round(maxHPHero / (100 / factorHeal));
+              hero.hp + heal > maxHPHero ? (hero.hp = maxHPHero) : (hero.hp += heal);
+              (0,_text__WEBPACK_IMPORTED_MODULE_2__["default"])(`Режим Турбо восстанавливает вам ${heal} здоровья`, "green");
+              (0,_calc_hp__WEBPACK_IMPORTED_MODULE_1__["default"])(".hero_hp", hero.hp);
+            };
+            hero.mechanicFullCapacity.deactivate = function (maxHPHero, enemy) {
+              if (enemy.hp >= 0) {
+                const dmg = Math.round(maxHPHero / (100 / factorHeal));
+                enemy.hp -= dmg;
+                (0,_text__WEBPACK_IMPORTED_MODULE_2__["default"])(`после завершения Режима Турбо вы наносите врагу ${dmg} урона и оглушаетесь`, "cyan");
+                hero.stun++;
+                (0,_calc_hp__WEBPACK_IMPORTED_MODULE_1__["default"])(".enemy_hp", enemy.hp);
+              }
+            };
           }
         },
       },
@@ -4658,6 +5590,12 @@ const talentMechanic = {
     }
     if (level == "level_3" && branch == "first") {
       this.levels.level_3.first.init(hero);
+    }
+    if (level == "level_4" && branch == "first") {
+      this.levels.level_4.first.init(hero);
+    }
+    if (level == "level_4" && branch == "second") {
+      this.levels.level_4.second.init(hero);
     }
     // if (level == "level_3" && branch == "second") {
     //   this.levels.level_3.second.init(hero);
@@ -4686,6 +5624,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _calc_hp__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../calc_hp */ "./src/js/modules/calc_hp.js");
 /* harmony import */ var _calc_mp__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../../calc_mp */ "./src/js/modules/calc_mp.js");
 /* harmony import */ var _text__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../../text */ "./src/js/modules/text.js");
+/* harmony import */ var _specificity_monk_specificity__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../../specificity/monk_specificity */ "./src/js/modules/specificity/monk_specificity.js");
+
 
 
 
@@ -4705,8 +5645,8 @@ const talentMonk = {
             switch (this.amount) {
               case 1: {
                 chance = 30;
-                hero.attack[0] += 2;
-                hero.attack[1] += 2;
+                hero.attack[0] += 3;
+                hero.attack[1] += 3;
                 break;
               }
               case 2: {
@@ -4726,11 +5666,9 @@ const talentMonk = {
             }
             hero.monkSnakeStrikes = function () {
               const chanceTotal = Math.random() * 100 + 1;
-              console.log(chance);
+
               if (chance > chanceTotal) {
-                return 1;
-              } else {
-                return 0;
+                hero.mana + 1;
               }
             };
 
@@ -4808,7 +5746,7 @@ const talentMonk = {
                 let mod = 1;
                 enemy.name == "boss" ? (mod = 0.5) : null;
                 if (enemy.hp > 0) {
-                  return enemy.maxHPEnemy / (100 / (factorDmg * mod));
+                  return Math.round(enemy.maxHPEnemy / (100 / (factorDmg * mod)));
                 } else {
                   return 0;
                 }
@@ -4831,30 +5769,99 @@ const talentMonk = {
               bonusRegen = 0;
             switch (this.amount) {
               case 1:
-                bonusMp = 35;
-                bonusHp = 35;
+                bonusMp = 40;
+                bonusHp = 40;
                 bonusRegen = 15;
                 break;
               case 2:
-                bonusMp = 15;
-                bonusHp = 15;
-                bonusRegen = 5;
+                bonusMp = 20;
+                bonusHp = 20;
+                bonusRegen = 10;
                 break;
               case 3:
-                bonusMp = 15;
-                bonusHp = 15;
-                bonusRegen = 5;
+                bonusMp = 20;
+                bonusHp = 20;
+                bonusRegen = 10;
                 break;
             }
             hero.maxHPHero += bonusHp;
             hero.mp += bonusMp;
             hero.regeneration += bonusRegen;
             (0,_update_stats__WEBPACK_IMPORTED_MODULE_0__["default"])(".hpMax", bonusHp);
-            document.querySelector(".hero_hp").setAttribute("data-hp", hero.maxHPHero);
+
+            document.querySelector(".hero_hp").setAttribute("data-hp", +hero.maxHPHero);
+
             // const mpMax = document.querySelector(".hero_mp").getAttribute("data-mp");
             document.querySelector(".hero_mp").setAttribute("data-mp", hero.mp);
             (0,_calc_mp__WEBPACK_IMPORTED_MODULE_2__["default"])(hero.mana);
             (0,_calc_hp__WEBPACK_IMPORTED_MODULE_1__["default"])(".hero_hp", hero.hp);
+          }
+        },
+      },
+    },
+    level_4: {
+      first: {
+        learn: false,
+        amount: 0,
+        init: function (hero) {
+          if (this.learn) {
+            let chance = 0;
+            let reduceDmg = 0;
+            switch (this.amount) {
+              case 1: {
+                chance = 18;
+                reduceDmg = 20;
+                break;
+              }
+              case 2: {
+                chance = 22;
+                reduceDmg = 25;
+                break;
+              }
+              case 3: {
+                chance = 26;
+                reduceDmg = 30;
+                break;
+              }
+              default:
+                null;
+            }
+            hero.monkPainSuppression = function (dmg) {
+              const chanceTotal = Math.random() * 100 + 1;
+              if (chance > chanceTotal) {
+                (0,_text__WEBPACK_IMPORTED_MODULE_3__["default"])(`Вы подавляете урон от следующего удара`, "cyan");
+                return Math.round(dmg - dmg * (reduceDmg / 100));
+              } else {
+                return dmg;
+              }
+            };
+          }
+        },
+      },
+      second: {
+        learn: false,
+        amount: 0,
+        init: function () {
+          if (this.learn) {
+            let bonusChance = 0;
+            switch (this.amount) {
+              case 1: {
+                bonusChance = 2;
+                break;
+              }
+              case 2: {
+                bonusChance = 1;
+                break;
+              }
+              case 3: {
+                bonusChance = 1;
+                break;
+              }
+              default:
+                null;
+            }
+            _specificity_monk_specificity__WEBPACK_IMPORTED_MODULE_4__["default"].chance += bonusChance;
+            console.log(_specificity_monk_specificity__WEBPACK_IMPORTED_MODULE_4__["default"].chance);
           }
         },
       },
@@ -4885,6 +5892,12 @@ const talentMonk = {
     if (level == "level_3" && branch == "second") {
       this.levels.level_3.second.init(hero);
     }
+    if (level == "level_4" && branch == "first") {
+      this.levels.level_4.first.init(hero);
+    }
+    if (level == "level_4" && branch == "second") {
+      this.levels.level_4.second.init();
+    }
 
     console.log(this.levels);
   },
@@ -4908,6 +5921,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _update_stats__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../update_stats */ "./src/js/modules/update_stats.js");
 /* harmony import */ var _calc_hp__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../calc_hp */ "./src/js/modules/calc_hp.js");
 /* harmony import */ var _text__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../../text */ "./src/js/modules/text.js");
+/* harmony import */ var _skills__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../../skills */ "./src/js/modules/skills.js");
+
 
 
 
@@ -4968,10 +5983,11 @@ const talentRogue = {
         amount: 0,
         init: function (enemy) {
           if (this.learn) {
-            let mod = 1;
-            enemy.name == "boss" ? (mod = 0.5) : null;
-            console.log(enemy.maxHPEnemy / (100 / (12 * mod)));
-            return enemy.maxHPEnemy / (100 / (12 * mod));
+            let modBoss = 1;
+            let modDmg = 14;
+            enemy.name == "boss" ? (modBoss = 0.5) : null;
+
+            return Math.round(enemy.maxHPEnemy / (100 / (modDmg * modBoss)));
           } else {
             return 0;
           }
@@ -5030,6 +6046,56 @@ const talentRogue = {
         },
       },
     },
+    level_4: {
+      first: {
+        learn: false,
+        amount: 0,
+        init: function (hero) {
+          if (this.learn) {
+            const changeDescr = _skills__WEBPACK_IMPORTED_MODULE_3__.initDescrBtn.bind({ manaCost: _skills__WEBPACK_IMPORTED_MODULE_3__.manaCost });
+            switch (this.amount) {
+              case 1:
+                _skills__WEBPACK_IMPORTED_MODULE_3__.manaCost.rogue -= 10;
+                break;
+              case 2:
+                _skills__WEBPACK_IMPORTED_MODULE_3__.manaCost.rogue -= 5;
+                break;
+              case 3:
+                _skills__WEBPACK_IMPORTED_MODULE_3__.manaCost.rogue -= 5;
+                break;
+            }
+            changeDescr(hero.name);
+          }
+        },
+      },
+      second: {
+        learn: false,
+        amount: 0,
+        init: function (hero) {
+          if (this.learn) {
+            let modHeal = 0;
+            switch (this.amount) {
+              case 1:
+                modHeal = 8;
+                break;
+              case 2:
+                modHeal = 12;
+                break;
+              case 3:
+                modHeal = 16;
+                break;
+            }
+            hero.rogueRewardKill = function (hero, maxHPHero, maxHPEnemy) {
+              console.log(maxHPHero, maxHPEnemy);
+              const heal = Math.round(maxHPEnemy / (100 / modHeal));
+              hero.hp + heal > maxHPHero ? (hero.hp = maxHPHero) : (hero.hp += heal);
+              (0,_calc_hp__WEBPACK_IMPORTED_MODULE_1__["default"])(".hero_hp", hero.hp);
+              (0,_text__WEBPACK_IMPORTED_MODULE_2__["default"])(`исцеление от Награды за расправу: ${heal} здоровья`, "cyan");
+            };
+          }
+        },
+      },
+    },
   },
 
   init(talent, hero) {
@@ -5042,8 +6108,13 @@ const talentRogue = {
     this.hero = hero;
 
     if (level == "level_1" && branch == "first") {
-      // this.incStat(hero);
       this.levels.level_1.first.init(hero);
+    }
+    if (level == "level_4" && branch == "first") {
+      this.levels.level_4.first.init(hero);
+    }
+    if (level == "level_4" && branch == "second") {
+      this.levels.level_4.second.init(hero);
     }
 
     console.log(this.levels);
@@ -5068,6 +6139,9 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _update_stats__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../update_stats */ "./src/js/modules/update_stats.js");
 /* harmony import */ var _calc_hp__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../calc_hp */ "./src/js/modules/calc_hp.js");
 /* harmony import */ var _text__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../../text */ "./src/js/modules/text.js");
+/* harmony import */ var _specificity_warrior_specificity__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../../specificity/warrior_specificity */ "./src/js/modules/specificity/warrior_specificity.js");
+
+
 
 
 
@@ -5083,13 +6157,13 @@ const talentWarrior = {
         init: function () {
           if (this.learn) {
             if (this.amount == 1) {
-              return 1.15;
-            }
-            if (this.amount == 2) {
               return 1.2;
             }
+            if (this.amount == 2) {
+              return 1.28;
+            }
             if (this.amount == 3) {
-              return 1.25;
+              return 1.36;
             }
           } else {
             return 1;
@@ -5103,8 +6177,8 @@ const talentWarrior = {
         amount: 0,
         init: function (enemy) {
           if (this.learn) {
-            enemy.stun = true;
-            enemy.dodge -= 15;
+            enemy.stun++;
+            enemy.dodge -= 20;
           }
         },
       },
@@ -5131,10 +6205,10 @@ const talentWarrior = {
               heal = Math.round(maxHp / (100 / 10));
             }
             if (this.amount == 2) {
-              heal = Math.round(maxHp / (100 / 10));
+              heal = Math.round(maxHp / (100 / 13));
             }
             if (this.amount == 3) {
-              heal = Math.round(maxHp / (100 / 10));
+              heal = Math.round(maxHp / (100 / 16));
             }
             console.log(hero);
 
@@ -5172,6 +6246,80 @@ const talentWarrior = {
         },
       },
     },
+    level_4: {
+      first: {
+        learn: false,
+        amount: 0,
+        init: function (hero) {
+          if (this.learn) {
+            let bonusMod = 0;
+            switch (this.amount) {
+              case 1: {
+                hero.absorbDamage += 6;
+                bonusMod = 5;
+                _specificity_warrior_specificity__WEBPACK_IMPORTED_MODULE_3__["default"].mod += bonusMod;
+                break;
+              }
+              case 2: {
+                hero.absorbDamage += 3;
+                bonusMod = 5;
+                _specificity_warrior_specificity__WEBPACK_IMPORTED_MODULE_3__["default"].mod += bonusMod;
+                break;
+              }
+              case 3: {
+                hero.absorbDamage += 3;
+                bonusMod = 5;
+                _specificity_warrior_specificity__WEBPACK_IMPORTED_MODULE_3__["default"].mod += bonusMod;
+                break;
+              }
+              default:
+                null;
+            }
+          }
+        },
+      },
+      second: {
+        learn: false,
+        amount: 0,
+        init: function (hero) {
+          if (this.learn) {
+            let chance = 0;
+            let modDmg = 0;
+            switch (this.amount) {
+              case 1: {
+                chance = 50;
+                modDmg = 1;
+                break;
+              }
+              case 2: {
+                chance = 60;
+                modDmg = 1.3;
+                break;
+              }
+              case 3: {
+                chance = 70;
+                modDmg = 1.6;
+                break;
+              }
+              default:
+                null;
+            }
+            hero.warriorRevenge = function (hero, enemy) {
+              const chanceTotal = Math.random() * 100 + 1;
+              if (chance > chanceTotal) {
+                const dmg = Math.round(((hero.attack[0] + hero.attack[1]) / 2) * modDmg);
+                setTimeout(() => {
+                  enemy.hp -= dmg;
+                  (0,_text__WEBPACK_IMPORTED_MODULE_2__["default"])(`Вы используете реванш, нанеся противнику ${dmg} урона`, "cyan");
+                  hero.audio.crit();
+                  (0,_calc_hp__WEBPACK_IMPORTED_MODULE_1__["default"])(".enemy_hp", enemy.hp);
+                }, 200);
+              }
+            };
+          }
+        },
+      },
+    },
   },
 
   init(talent, hero) {
@@ -5184,8 +6332,13 @@ const talentWarrior = {
     this.hero = hero;
 
     if (level == "level_3" && branch == "second") {
-      // this.incStat(hero);
       this.levels.level_3.second.init(hero);
+    }
+    if (level == "level_4" && branch == "first") {
+      this.levels.level_4.first.init(hero);
+    }
+    if (level == "level_4" && branch == "second") {
+      this.levels.level_4.second.init(hero);
     }
 
     console.log(this.levels);
@@ -5220,10 +6373,10 @@ const talentWarrior = {
 
 /***/ }),
 
-/***/ "./src/js/modules/talents/talentsHeroes/witchmage.js":
-/*!***********************************************************!*\
-  !*** ./src/js/modules/talents/talentsHeroes/witchmage.js ***!
-  \***********************************************************/
+/***/ "./src/js/modules/talents/talentsHeroes/witchmag.js":
+/*!**********************************************************!*\
+  !*** ./src/js/modules/talents/talentsHeroes/witchmag.js ***!
+  \**********************************************************/
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
 __webpack_require__.r(__webpack_exports__);
@@ -5231,10 +6384,11 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
 /* harmony export */ });
 /* harmony import */ var _update_stats__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../update_stats */ "./src/js/modules/update_stats.js");
-/* harmony import */ var _calc_mp__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../calc_mp */ "./src/js/modules/calc_mp.js");
-/* harmony import */ var _text__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../../text */ "./src/js/modules/text.js");
+/* harmony import */ var _calc_hp__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../calc_hp */ "./src/js/modules/calc_hp.js");
+/* harmony import */ var _calc_mp__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../../calc_mp */ "./src/js/modules/calc_mp.js");
+/* harmony import */ var _text__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../../text */ "./src/js/modules/text.js");
 
-// import calcHp from "../../calc_hp";
+
 
 
 
@@ -5251,13 +6405,13 @@ const talentWitchmag = {
             let factorDmg = 1;
             switch (this.amount) {
               case 1:
-                factorDmg = 1.17;
+                factorDmg = 1.18;
                 break;
               case 2:
-                factorDmg = 1.23;
+                factorDmg = 1.25;
                 break;
               case 3:
-                factorDmg = 1.3;
+                factorDmg = 1.32;
                 break;
             }
             return factorDmg;
@@ -5274,7 +6428,7 @@ const talentWitchmag = {
         init: function (hero) {
           if (this.learn) {
             hero.mana += 3;
-            (0,_calc_mp__WEBPACK_IMPORTED_MODULE_1__["default"])(hero.mana);
+            (0,_calc_mp__WEBPACK_IMPORTED_MODULE_2__["default"])(hero.mana);
           }
         },
       },
@@ -5283,9 +6437,9 @@ const talentWitchmag = {
         amount: 0,
         init: function () {
           if (this.learn) {
-            return 5;
-          } else {
             return 4;
+          } else {
+            return 3;
           }
         },
       },
@@ -5352,7 +6506,88 @@ const talentWitchmag = {
             const dmg = Math.round((enemy.maxHPEnemy / (100 / factor)) * mod);
             enemy.hp -= dmg;
             // calcHp(".enemy_hp", enemy.hp);
-            (0,_text__WEBPACK_IMPORTED_MODULE_2__["default"])(`Враг получает ${dmg} урона от смертельного ритула`, "magenta");
+            (0,_text__WEBPACK_IMPORTED_MODULE_3__["default"])(`Враг получает ${dmg} урона от смертельного ритула`, "magenta");
+          }
+        },
+      },
+    },
+    level_4: {
+      first: {
+        learn: false,
+        amount: 0,
+        init: function (hero) {
+          if (this.learn) {
+            let chance = 0,
+              factor = 0;
+            switch (this.amount) {
+              case 1:
+                chance = 8;
+                factor = 0.6;
+                break;
+              case 2:
+                chance = 10;
+                factor = 0.8;
+                break;
+              case 3:
+                chance = 12;
+                factor = 1;
+                break;
+            }
+            hero.witchmagThirstBlade = function (hero, enemy) {
+              const chanceTotal = Math.random() * 100 + 1;
+              console.log(chanceTotal);
+              if (chance > chanceTotal) {
+                let value = Math.round(((hero.attack[0] + hero.attack[1]) / 2) * factor);
+                if (enemy.hp > 0) {
+                  setTimeout(() => {
+                    enemy.hp -= value;
+                    hero.hp + value > hero.maxHPHero ? (hero.hp = hero.maxHPHero) : (hero.hp += value);
+                    (0,_calc_hp__WEBPACK_IMPORTED_MODULE_1__["default"])(".hero_hp", hero.hp);
+                    (0,_calc_hp__WEBPACK_IMPORTED_MODULE_1__["default"])(".enemy_hp", enemy.hp);
+                    (0,_text__WEBPACK_IMPORTED_MODULE_3__["default"])(`Жажда клинка высасывает у врага ${value} здоровья`, "magenta");
+                  }, 200);
+                }
+              }
+            };
+          }
+        },
+      },
+      second: {
+        learn: false,
+        amount: 0,
+        init: function (hero) {
+          if (this.learn) {
+            let factor = 0,
+              currentDef = 0,
+              currentMinAttack = 0,
+              currentMaxAttack = 0;
+
+            switch (this.amount) {
+              case 1:
+                hero.witchmagCurseWeakness = {};
+                factor = 0.22;
+                break;
+              case 2:
+                factor = 0.28;
+                break;
+              case 3:
+                factor = 0.34;
+                break;
+            }
+            hero.witchmagCurseWeakness.activate = function (enemy) {
+              currentDef = enemy.def;
+              currentMinAttack = enemy.attack[0];
+              currentMaxAttack = enemy.attack[1];
+
+              enemy.def -= Math.round(enemy.def * factor);
+              enemy.attack[0] -= Math.round(enemy.attack[0] * factor);
+              enemy.attack[1] -= Math.round(enemy.attack[1] * factor);
+            };
+            hero.witchmagCurseWeakness.deactivate = function (enemy) {
+              enemy.def = currentDef;
+              enemy.attack[0] -= currentMinAttack;
+              enemy.attack[1] -= currentMaxAttack;
+            };
           }
         },
       },
@@ -5373,6 +6608,12 @@ const talentWitchmag = {
     // }
     if (level == "level_3" && branch == "first") {
       this.levels.level_3.first.init(hero);
+    }
+    if (level == "level_4" && branch == "first") {
+      this.levels.level_4.first.init(hero);
+    }
+    if (level == "level_4" && branch == "second") {
+      this.levels.level_4.second.init(hero);
     }
     // if (level == "level_3" && branch == "second") {
     //   this.levels.level_3.second.init(hero);
@@ -5557,10 +6798,12 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _modules_calc_mp__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./modules/calc_mp */ "./src/js/modules/calc_mp.js");
 /* harmony import */ var _modules_slider__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./modules/slider */ "./src/js/modules/slider.js");
 /* harmony import */ var _modules_shop__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./modules/shop */ "./src/js/modules/shop.js");
-/* harmony import */ var _modules_talents_accordion__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./modules/talents/accordion */ "./src/js/modules/talents/accordion.js");
-/* harmony import */ var _modules_talents_core_talents__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ./modules/talents/core-talents */ "./src/js/modules/talents/core-talents.js");
-/* harmony import */ var _modules_changeBg__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ./modules/changeBg */ "./src/js/modules/changeBg.js");
+/* harmony import */ var _modules_talents_core_talents__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./modules/talents/core-talents */ "./src/js/modules/talents/core-talents.js");
+/* harmony import */ var _modules_changeBg__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ./modules/changeBg */ "./src/js/modules/changeBg.js");
+/* harmony import */ var _modules_talents_accordion__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ./modules/talents/accordion */ "./src/js/modules/talents/accordion.js");
 /* harmony import */ var _modules_audio_audio__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! ./modules/audio/audio */ "./src/js/modules/audio/audio.js");
+
+
 
 
 
@@ -5582,6 +6825,8 @@ window.addEventListener("DOMContentLoaded", () => {
   let maxMpHero;
   let enemy;
   let sex = "man";
+
+  (0,_modules_talents_accordion__WEBPACK_IMPORTED_MODULE_9__["default"])();
 
   //
   const btnStart = document.querySelector(".btn__start");
@@ -5665,25 +6910,19 @@ window.addEventListener("DOMContentLoaded", () => {
       hero.boss = 0;
       hero.sex = sex;
 
-      mpHero.setAttribute("data-mp", hero.mp);
+      mpHero.setAttribute("data-mp", hero.maxMPHero);
       maxMpHero = mpHero.getAttribute("data-mp");
-      (0,_modules_calc_mp__WEBPACK_IMPORTED_MODULE_4__["default"])(0);
+      (0,_modules_calc_mp__WEBPACK_IMPORTED_MODULE_4__["default"])();
 
-      _modules_talents_core_talents__WEBPACK_IMPORTED_MODULE_8__["default"].init(hero);
-
-      //
+      _modules_talents_core_talents__WEBPACK_IMPORTED_MODULE_7__["default"].init(hero);
 
       (0,_modules_audio_audio__WEBPACK_IMPORTED_MODULE_10__["default"])("heroChosen");
       (0,_modules_audio_audio__WEBPACK_IMPORTED_MODULE_10__["default"])("background", "stop");
 
       (0,_modules_audio_audio__WEBPACK_IMPORTED_MODULE_10__.setAudioToHero)(hero);
-
-      //
-      // buff();
     });
   });
 
-  // const barHpHero = document.querySelector(".bar__hp-f");
   const hpHero = document.querySelector(".hero_hp");
   const mpHero = document.querySelector(".hero_mp");
   const hpEnemy = document.querySelector(".enemy_hp");
@@ -5697,7 +6936,7 @@ window.addEventListener("DOMContentLoaded", () => {
 
     createEnemy();
 
-    (0,_modules_changeBg__WEBPACK_IMPORTED_MODULE_9__["default"])(enemy.name);
+    (0,_modules_changeBg__WEBPACK_IMPORTED_MODULE_8__["default"])(enemy.name);
   });
 
   btnFight.addEventListener("click", () => {
@@ -5791,7 +7030,6 @@ window.addEventListener("DOMContentLoaded", () => {
       let src = btn.closest(".base__container_hero").querySelector(".img__hero").getAttribute("src");
 
       if (sex == "man" && src.substring(src.length - 9) === "Woman.png") {
-        // src = btn.closest(".base__container_hero").querySelector(".img__hero").getAttribute("src");
         btn
           .closest(".base__container_hero")
           .querySelector(".img__hero")
@@ -5800,7 +7038,6 @@ window.addEventListener("DOMContentLoaded", () => {
         btn.closest(".base__container_hero").setAttribute("sex", "man");
       }
       if (sex == "woman" && src.substring(src.length - 9) !== "Woman.png") {
-        // src = btn.closest(".base__container_hero").querySelector(".img__hero").getAttribute("src");
         btn
           .closest(".base__container_hero")
           .querySelector(".img__hero")
@@ -5808,7 +7045,6 @@ window.addEventListener("DOMContentLoaded", () => {
 
         btn.closest(".base__container_hero").setAttribute("sex", "woman");
       }
-      console.log(sex);
     });
   });
 });
