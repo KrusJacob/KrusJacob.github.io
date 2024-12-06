@@ -1,6 +1,6 @@
 const timeline = gsap.timeline();
 
-const title = document.querySelector(".home .title");
+const homeTitle = document.querySelector(".home__title");
 const descr = document.querySelector(".home__grid_left .descr");
 const button = document.querySelector(".home .button");
 
@@ -24,7 +24,7 @@ const button = document.querySelector(".home .button");
 //   });
 // });
 
-gsap.from(title, {
+gsap.from(homeTitle, {
   duration: 1,
   opacity: 0,
   x: 150,

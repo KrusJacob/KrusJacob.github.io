@@ -46,7 +46,6 @@ a {
     font-weight: 600;
     display: inline-block;
     line-height: 46px;
-    border-bottom: 5px solid var(--yellow);
 }
 .subtitle {
     font-size: 28px;
@@ -141,6 +140,10 @@ section {
 .home {
     position: relative;
 }
+
+.home__title {
+    border-bottom: 5px solid var(--yellow);
+}
 .wrapper {
     height: 100%;
     padding: 0 75px;
@@ -149,7 +152,7 @@ section {
     margin-top: 40px;
     display: grid;
     height: 100%;
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: 1.2fr 1fr;
 }
 .home__grid_left {
     height: 100%;
@@ -178,7 +181,7 @@ section {
 }
 .home__grid_right img {
     padding: 8px;
-    width: 400px;
+    width: 340px;
     border-top: 10px solid var(--yellow);
     border-right: 10px solid var(--yellow);
     border-top-right-radius: 50px;
